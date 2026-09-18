@@ -56,11 +56,11 @@ A web-based CV Generator featuring deep customization capabilities (typography, 
   - [x] Test all customization sliders, colors, font families, and section reordering.
   - [x] Build & verification without errors.
 
-- [ ] **Phase 6: Data Sanitization, Git Setup & Push to GitHub**
-  - [ ] Create `.gitignore` to ignore `node_modules`, `dist`, `*.pdf`, `.env*`, etc.
-  - [ ] Replace default profile data in `src/data/defaultCV.ts` with generic high-quality placeholder ("Alex Morgan").
-  - [ ] Sanitize placeholder texts in editor components (`PersonalInfoEditor.tsx`, `ExportImportEditor.tsx`, etc.).
-  - [ ] Sanitize `README.md` (remove personal names, absolute user paths, and personal PDF references).
-  - [ ] Thorough automated verification grep across all files for personal details.
-  - [ ] Verify build with `npm run build`.
-  - [ ] Initialize git repo, commit, set remote `https://github.com/Ax3lrod/cv-generator.git`, and push to `main`.
+- [x] **Phase 6: Data Sanitization, Git Setup & Push to GitHub**
+  - [x] Create `.gitignore` to ignore `node_modules`, `dist`, `*.pdf`, `.env*`, etc.
+  - [x] Replace default profile data in `src/data/defaultCV.ts` with generic high-quality placeholder ("Alex Morgan").
+  - [x] Sanitize placeholder texts in editor components (`PersonalInfoEditor.tsx`, `ExportImportEditor.tsx`, etc.).
+  - [x] Sanitize `README.md` (remove personal names, absolute user paths, and personal PDF references).
+  - [x] Thorough automated verification grep across all files for personal details.
+  - [x] Verify build with `npm run build`.
+  - [x] Initialize git repo, commit, set remote `https://github.com/Ax3lrod/cv-generator.git`, and push to `main`.
