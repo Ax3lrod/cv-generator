@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, Link, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Link, StyleSheet, Image } from '@react-pdf/renderer';
 import { CVData, DesignConfig, CustomSection } from '../../../types/cv';
 import { getPaperDimensions } from '../../../utils/paperDimensions';
 
@@ -426,7 +426,108 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
 
   const displayName = config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName;
   const isCentered = config.headerAlign === 'center';
-  const isSplit = config.headerAlign === 'split';
+  const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
+  const photoShape = config.photoShape || 'circle';
+  const photoSizePt = (config.photoSize || 26) * MM_TO_PT * scale;
+  const photoBorder = config.photoBorder !== false;
+  const photoPosition = config.photoPosition || 'right';
+
+  let borderRadius = 0;
+  if (photoShape === 'circle') {
+    borderRadius = photoSizePt / 2;
+  } else if (photoShape === 'rounded') {
+    borderRadius = 4 * scale;
+  }
+
+  const headerContentElement = (
+    <View style={{ flex: 1, alignItems: isCentered ? 'center' : 'flex-start' }}>
+      <Text
+        style={{
+          fontFamily,
+          fontWeight: 'bold',
+          fontSize: nameFontSize,
+          color: config.accentColor !== '#000000' ? config.accentColor : config.textColor,
+          textAlign: isCentered ? 'center' : 'left',
+          letterSpacing: -0.2,
+        }}
+      >
+        {displayName}
+      </Text>
+
+      {personalInfo.jobTitle && !isCentered && (
+        <Text style={{ fontFamily, fontSize: subFontSize * 1.1, color: config.subtextColor, marginTop: 1 }}>
+          {personalInfo.jobTitle}
+        </Text>
+      )}
+
+      {contactItems.length > 0 && (
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: isCentered ? 'center' : 'flex-start',
+            alignItems: 'center',
+            marginTop: 2,
+          }}
+        >
+          {contactItems.map((item, idx) => (
+            <React.Fragment key={idx}>
+              {idx > 0 && (
+                <Text style={{ fontFamily, fontSize: subFontSize, color: '#94a3b8', marginHorizontal: 3 }}>
+                  |
+                </Text>
+              )}
+              {item.url ? (
+                <Link
+                  src={item.url}
+                  style={{
+                    fontFamily,
+                    fontSize: subFontSize,
+                    color: config.subtextColor,
+                    textDecoration: 'none',
+                  }}
+                >
+                  {item.text}
+                </Link>
+              ) : (
+                <Text
+                  style={{
+                    fontFamily,
+                    fontSize: subFontSize,
+                    color: config.subtextColor,
+                  }}
+                >
+                  {item.text}
+                </Text>
+              )}
+            </React.Fragment>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+
+  const photoElement = hasPhoto ? (
+    <View
+      style={{
+        width: photoSizePt,
+        height: photoSizePt,
+        borderRadius,
+        overflow: 'hidden',
+        borderWidth: photoBorder ? 0.75 : 0,
+        borderColor: '#cbd5e1',
+      }}
+    >
+      <Image
+        src={personalInfo.photoUrl!}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+        }}
+      />
+    </View>
+  ) : null;
 
   return (
     <Document title={`${personalInfo.fullName.trim()}_CV`}>
@@ -444,68 +545,45 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
         }}
       >
         {/* Header */}
-        <View style={{ marginBottom: sectionGapPt * 1.2, alignItems: isCentered ? 'center' : 'flex-start' }}>
-          <Text
-            style={{
-              fontFamily,
-              fontWeight: 'bold',
-              fontSize: nameFontSize,
-              color: config.accentColor !== '#000000' ? config.accentColor : config.textColor,
-              textAlign: isCentered ? 'center' : 'left',
-              letterSpacing: -0.2,
-            }}
-          >
-            {displayName}
-          </Text>
-
-          {personalInfo.jobTitle && !isCentered && (
-            <Text style={{ fontFamily, fontSize: subFontSize * 1.1, color: config.subtextColor, marginTop: 1 }}>
-              {personalInfo.jobTitle}
-            </Text>
-          )}
-
-          {contactItems.length > 0 && (
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                justifyContent: isCentered ? 'center' : 'flex-start',
-                alignItems: 'center',
-                marginTop: 2,
-              }}
-            >
-              {contactItems.map((item, idx) => (
-                <React.Fragment key={idx}>
-                  {idx > 0 && (
-                    <Text style={{ fontFamily, fontSize: subFontSize, color: '#94a3b8', marginHorizontal: 3 }}>
-                      |
-                    </Text>
-                  )}
-                  {item.url ? (
-                    <Link
-                      src={item.url}
-                      style={{
-                        fontFamily,
-                        fontSize: subFontSize,
-                        color: config.subtextColor,
-                        textDecoration: 'none',
-                      }}
-                    >
-                      {item.text}
-                    </Link>
-                  ) : (
-                    <Text
-                      style={{
-                        fontFamily,
-                        fontSize: subFontSize,
-                        color: config.subtextColor,
-                      }}
-                    >
-                      {item.text}
-                    </Text>
-                  )}
-                </React.Fragment>
-              ))}
+        <View style={{ marginBottom: sectionGapPt * 1.2 }}>
+          {hasPhoto ? (
+            isCentered ? (
+              <View
+                style={{
+                  flexDirection: photoPosition === 'left' ? 'row' : 'row-reverse',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                {photoElement}
+                <View style={{ flex: 1, paddingHorizontal: 8 }}>
+                  {headerContentElement}
+                </View>
+                <View style={{ width: photoSizePt }} />
+              </View>
+            ) : (
+              <View
+                style={{
+                  flexDirection: photoPosition === 'left' ? 'row' : 'row-reverse',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                {photoElement}
+                <View
+                  style={{
+                    flex: 1,
+                    marginRight: photoPosition === 'right' ? 10 : 0,
+                    marginLeft: photoPosition === 'left' ? 10 : 0,
+                  }}
+                >
+                  {headerContentElement}
+                </View>
+              </View>
+            )
+          ) : (
+            <View style={{ alignItems: isCentered ? 'center' : 'flex-start' }}>
+              {headerContentElement}
             </View>
           )}
         </View>

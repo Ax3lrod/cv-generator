@@ -415,42 +415,93 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
   };
 
   const displayName = config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName;
+  const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
+  const photoShape = config.photoShape || 'circle';
+  const photoSizeMm = config.photoSize || 26;
+  const photoBorder = config.photoBorder !== false;
+  const photoPosition = config.photoPosition || 'right';
+
+  const shapeRadiusClass = 
+    photoShape === 'circle' ? 'rounded-full' :
+    photoShape === 'rounded' ? 'rounded-lg' :
+    'rounded-none';
+
+  const photoElement = hasPhoto ? (
+    <div 
+      className="shrink-0 flex items-center justify-center overflow-hidden"
+      style={{
+        width: `${photoSizeMm}mm`,
+        height: `${photoSizeMm}mm`,
+      }}
+    >
+      <img 
+        src={personalInfo.photoUrl} 
+        alt={personalInfo.fullName}
+        className={`w-full h-full object-cover ${shapeRadiusClass} ${photoBorder ? 'border border-slate-300 shadow-xs' : ''}`}
+      />
+    </div>
+  ) : null;
+
+  const headerContent = (
+    <div className={config.headerAlign === 'center' ? 'text-center' : 'text-left'}>
+      <h1 
+        className="font-bold tracking-tight text-slate-950 leading-none"
+        style={{ 
+          fontSize: `${config.nameFontSize}pt`,
+          color: config.accentColor !== '#000000' ? config.accentColor : config.textColor 
+        }}
+      >
+        {displayName}
+      </h1>
+
+      {personalInfo.jobTitle && config.headerAlign !== 'center' && (
+        <div className="text-sm font-medium mt-1" style={{ color: config.subtextColor }}>
+          {personalInfo.jobTitle}
+        </div>
+      )}
+
+      {contactParts.length > 0 && (
+        <div 
+          className="flex flex-wrap items-center text-xs mt-1.5 gap-x-2 gap-y-0.5"
+          style={{ 
+            color: config.subtextColor,
+            justifyContent: config.headerAlign === 'center' ? 'center' : 'flex-start' 
+          }}
+        >
+          {contactParts.map((item, idx) => (
+            <React.Fragment key={idx}>
+              {idx > 0 && <span className="text-slate-400 select-none">|</span>}
+              <span>{item}</span>
+            </React.Fragment>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="w-full">
       {/* CV Header */}
-      <header className={`cv-header mb-3 ${headerAlignClass}`}>
-        <h1 
-          className="font-bold tracking-tight text-slate-950 leading-none"
-          style={{ 
-            fontSize: `${config.nameFontSize}pt`,
-            color: config.accentColor !== '#000000' ? config.accentColor : config.textColor 
-          }}
-        >
-          {displayName}
-        </h1>
-
-        {personalInfo.jobTitle && config.headerAlign !== 'center' && (
-          <div className="text-sm font-medium mt-1" style={{ color: config.subtextColor }}>
-            {personalInfo.jobTitle}
-          </div>
-        )}
-
-        {contactParts.length > 0 && (
-          <div 
-            className="flex flex-wrap items-center justify-center text-xs mt-1.5 gap-x-2 gap-y-0.5"
-            style={{ 
-              color: config.subtextColor,
-              justifyContent: config.headerAlign === 'center' ? 'center' : 'flex-start' 
-            }}
-          >
-            {contactParts.map((item, idx) => (
-              <React.Fragment key={idx}>
-                {idx > 0 && <span className="text-slate-400 select-none">|</span>}
-                <span>{item}</span>
-              </React.Fragment>
-            ))}
-          </div>
+      <header className="cv-header mb-3">
+        {hasPhoto ? (
+          config.headerAlign === 'center' ? (
+            <div className={`flex items-center gap-3 ${photoPosition === 'left' ? 'flex-row' : 'flex-row-reverse'} justify-between`}>
+              {photoElement}
+              <div className="flex-1">
+                {headerContent}
+              </div>
+              <div style={{ width: `${photoSizeMm}mm` }} className="invisible shrink-0" aria-hidden="true" />
+            </div>
+          ) : (
+            <div className={`flex items-center gap-4 ${photoPosition === 'left' ? 'flex-row' : 'flex-row-reverse'} justify-between`}>
+              {photoElement}
+              <div className="flex-1">
+                {headerContent}
+              </div>
+            </div>
+          )
+        ) : (
+          headerContent
         )}
       </header>
 

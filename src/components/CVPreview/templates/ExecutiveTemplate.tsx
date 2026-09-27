@@ -38,29 +38,72 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
     personalInfo.github
   ].filter(Boolean);
 
+  const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
+  const photoShape = config.photoShape || 'circle';
+  const photoSizeMm = config.photoSize || 26;
+  const photoBorder = config.photoBorder !== false;
+  const photoPosition = config.photoPosition || 'right';
+
+  const shapeRadiusClass = 
+    photoShape === 'circle' ? 'rounded-full' :
+    photoShape === 'rounded' ? 'rounded-lg' :
+    'rounded-none';
+
+  const photoElement = hasPhoto ? (
+    <div 
+      className="shrink-0 flex items-center justify-center overflow-hidden"
+      style={{
+        width: `${photoSizeMm}mm`,
+        height: `${photoSizeMm}mm`,
+      }}
+    >
+      <img 
+        src={personalInfo.photoUrl} 
+        alt={personalInfo.fullName}
+        className={`w-full h-full object-cover ${shapeRadiusClass} ${photoBorder ? 'border-2 border-slate-400 p-0.5 shadow-sm' : ''}`}
+      />
+    </div>
+  ) : null;
+
+  const headerContent = (
+    <div className="text-center">
+      <h1 
+        className="font-serif font-bold tracking-wide"
+        style={{ fontSize: `${config.nameFontSize}pt`, color: config.accentColor }}
+      >
+        {config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName}
+      </h1>
+      {personalInfo.jobTitle && (
+        <div className="text-xs uppercase tracking-widest text-slate-600 font-medium mt-1">
+          {personalInfo.jobTitle}
+        </div>
+      )}
+      <div className="text-[11px] text-slate-600 mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
+        {contactList.map((c, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <span className="text-slate-300">◆</span>}
+            <span>{c}</span>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="w-full text-left">
       {/* Executive Header Banner */}
-      <header className="cv-header mb-4 text-center pb-3 border-b border-slate-300">
-        <h1 
-          className="font-serif font-bold tracking-wide"
-          style={{ fontSize: `${config.nameFontSize}pt`, color: config.accentColor }}
-        >
-          {config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName}
-        </h1>
-        {personalInfo.jobTitle && (
-          <div className="text-xs uppercase tracking-widest text-slate-600 font-medium mt-1">
-            {personalInfo.jobTitle}
+      <header className="cv-header mb-4 pb-3 border-b border-slate-300">
+        {hasPhoto ? (
+          <div className={`flex items-center gap-4 ${photoPosition === 'left' ? 'flex-row' : 'flex-row-reverse'} justify-between`}>
+            {photoElement}
+            <div className="flex-1">
+              {headerContent}
+            </div>
+            <div style={{ width: `${photoSizeMm}mm` }} className="invisible shrink-0" aria-hidden="true" />
           </div>
+        ) : (
+          headerContent
         )}
-        <div className="text-[11px] text-slate-600 mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
-          {contactList.map((c, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <span className="text-slate-300">◆</span>}
-              <span>{c}</span>
-            </React.Fragment>
-          ))}
-        </div>
       </header>
 
       {/* Sections */}

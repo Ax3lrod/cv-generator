@@ -148,6 +148,8 @@ export const EditorTabs: React.FC<Props> = ({
               <PersonalInfoEditor
                 data={cvData.personalInfo}
                 onChange={(updated) => onUpdateCVData({ ...cvData, personalInfo: updated })}
+                designConfig={designConfig}
+                onUpdateDesignConfig={onUpdateDesignConfig}
               />
             )}
             {activeContentSubTab === 'education' && (

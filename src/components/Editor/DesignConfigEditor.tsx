@@ -1,7 +1,7 @@
 import React from 'react';
 import { DesignConfig, TemplateId, FontFamily, PaperPreset } from '../../types/cv';
 import { PAPER_PRESETS, getPaperDimensions } from '../../utils/paperDimensions';
-import { Palette, Type, Sliders, Layout, SlidersHorizontal, Check, Lock, Unlock } from 'lucide-react';
+import { Palette, Type, Sliders, Layout, SlidersHorizontal, Check, Lock, Unlock, Camera } from 'lucide-react';
 
 interface Props {
   config: DesignConfig;
@@ -283,6 +283,71 @@ export const DesignConfigEditor: React.FC<Props> = ({ config, onChange }) => {
               <span>UPPERCASE Headings</span>
             </label>
           </div>
+        </div>
+      </div>
+
+      {/* Profile Photo Styling */}
+      <div>
+        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
+          <Camera className="w-4 h-4 text-sky-400" />
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            Profile Photo Layout & Shape
+          </h3>
+        </div>
+
+        <div className="space-y-3 bg-slate-900/60 p-3 rounded border border-slate-800">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Avatar Shape</label>
+              <select
+                value={config.photoShape || 'circle'}
+                onChange={(e) => updateConfig('photoShape', e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              >
+                <option value="circle">Circular (Modern Standard)</option>
+                <option value="rounded">Rounded Rectangle</option>
+                <option value="square">Square</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Header Placement</label>
+              <select
+                value={config.photoPosition || 'right'}
+                onChange={(e) => updateConfig('photoPosition', e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              >
+                <option value="right">Right Side</option>
+                <option value="left">Left Side</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-xs text-slate-300 mb-1">
+              <span>Photo Size</span>
+              <span className="font-mono text-sky-400">{config.photoSize || 26} mm</span>
+            </div>
+            <input
+              type="range"
+              min={18}
+              max={38}
+              step={1}
+              value={config.photoSize || 26}
+              onChange={(e) => updateConfig('photoSize', parseInt(e.target.value, 10))}
+              className="w-full accent-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none rounded"
+            />
+          </div>
+
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 pt-1">
+            <input
+              type="checkbox"
+              checked={config.photoBorder !== false}
+              onChange={(e) => updateConfig('photoBorder', e.target.checked)}
+              className="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
+            />
+            <span>Subtle photo outline border</span>
+          </label>
         </div>
       </div>
 

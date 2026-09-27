@@ -41,12 +41,40 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
   if (personalInfo.website) contactParts.push({ label: 'Portfolio', val: personalInfo.website });
   if (personalInfo.github) contactParts.push({ label: 'GitHub', val: personalInfo.github });
 
+  const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
+  const photoShape = config.photoShape || 'circle';
+  const photoSizeMm = config.photoSize || 26;
+  const photoBorder = config.photoBorder !== false;
+  const photoPosition = config.photoPosition || 'right';
+
+  const shapeRadiusClass = 
+    photoShape === 'circle' ? 'rounded-full' :
+    photoShape === 'rounded' ? 'rounded-xl' :
+    'rounded-none';
+
+  const photoElement = hasPhoto ? (
+    <div 
+      className="shrink-0 flex items-center justify-center overflow-hidden"
+      style={{
+        width: `${photoSizeMm}mm`,
+        height: `${photoSizeMm}mm`,
+      }}
+    >
+      <img 
+        src={personalInfo.photoUrl} 
+        alt={personalInfo.fullName}
+        className={`w-full h-full object-cover ${shapeRadiusClass} ${photoBorder ? 'border-2 border-slate-200 shadow-sm' : ''}`}
+      />
+    </div>
+  ) : null;
+
   return (
     <div className="w-full text-left">
       {/* Modern Header */}
       <header className="cv-header mb-4 pb-3 border-b border-slate-200">
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-          <div>
+        <div className={`flex items-center gap-4 ${photoPosition === 'left' ? 'flex-row' : 'flex-row-reverse'} justify-between`}>
+          {hasPhoto && photoElement}
+          <div className="flex-1">
             <h1 
               className="font-bold tracking-tight text-slate-900 leading-tight"
               style={{ fontSize: `${config.nameFontSize}pt`, color: config.accentColor }}
@@ -58,16 +86,16 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
                 {personalInfo.jobTitle}
               </p>
             )}
-          </div>
-        </div>
 
-        {/* Contact Badges */}
-        <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-600">
-          {contactParts.map((c, i) => (
-            <span key={i} className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-mono text-[11px]">
-              {c.val}
-            </span>
-          ))}
+            {/* Contact Badges */}
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-600">
+              {contactParts.map((c, i) => (
+                <span key={i} className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-mono text-[11px]">
+                  {c.val}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
 

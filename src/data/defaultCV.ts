@@ -12,6 +12,8 @@ export const defaultCVData: CVData = {
     github: "github.com/alexmorgan",
     summary: "Versatile Full-Stack Engineer with 4+ years of experience architecting scalable distributed web platforms and high-throughput microservices. Proficient in TypeScript, React, Next.js, Node.js, and cloud-native deployments. Demonstrated history of improving system latency, streamlining CI/CD workflows, and collaborating across multidisciplinary product teams to deliver intuitive software solutions.",
     showSummary: true,
+    photoUrl: "",
+    showPhoto: false,
   },
   education: [
     {
@@ -187,4 +189,8 @@ export const defaultDesignConfig: DesignConfig = {
   subtextColor: "#334155",
   dateLocationPlacement: "inline",
   boldCompanyOrRole: "both",
+  photoShape: "circle",
+  photoSize: 26,
+  photoBorder: true,
+  photoPosition: "right",
 };

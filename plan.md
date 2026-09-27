@@ -73,3 +73,12 @@ A web-based CV Generator featuring deep customization capabilities (typography, 
   - [x] Integrate vector PDF generator into ExportImportEditor with instant download and preview.
   - [x] Verify build, zero regression, and test PDF output quality.
 
+- [x] **Phase 8: Profile Photo Support (Upload, Toggle, Shapes, Live Preview & Vector PDF Integration)**
+  - [x] Extend PersonalInfo and DesignConfig data models in `src/types/cv.ts`.
+  - [x] Implement image uploader with client-side canvas auto-compression (max 600x600) in `PersonalInfoEditor.tsx`.
+  - [x] Add photo controls (Toggle on/off, Shape: Circle/Rounded/Square, Size slider) in `PersonalInfoEditor.tsx` and `DesignConfigEditor.tsx`.
+  - [x] Render profile photo in all 4 preview templates (`ATSClassicTemplate`, `ModernTemplate`, `ExecutiveTemplate`, `TechTemplate`).
+  - [x] Implement `<Image>` rendering in `CVPdfDocument.tsx` for 100% accurate vector PDF export.
+  - [x] Verify build, test image upload, and verify print and PDF download.
+
+

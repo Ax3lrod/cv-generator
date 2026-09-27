@@ -9,6 +9,8 @@ export interface PersonalInfo {
   github?: string;
   summary: string;
   showSummary: boolean;
+  photoUrl?: string;
+  showPhoto?: boolean;
 }
 
 export interface EducationItem {
@@ -132,6 +134,10 @@ export interface DesignConfig {
   subtextColor: string; // e.g. #374151
   dateLocationPlacement: 'inline' | 'stacked';
   boldCompanyOrRole: 'both' | 'role' | 'company';
+  photoShape?: 'circle' | 'rounded' | 'square';
+  photoSize?: number; // size in mm, e.g. 20-35 mm
+  photoBorder?: boolean;
+  photoPosition?: 'left' | 'right';
 }
 
 export interface CVData {

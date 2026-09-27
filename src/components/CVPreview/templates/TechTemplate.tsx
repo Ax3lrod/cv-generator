@@ -28,30 +28,60 @@ export const TechTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
     );
   };
 
+  const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
+  const photoShape = config.photoShape || 'circle';
+  const photoSizeMm = config.photoSize || 26;
+  const photoBorder = config.photoBorder !== false;
+  const photoPosition = config.photoPosition || 'right';
+
+  const shapeRadiusClass = 
+    photoShape === 'circle' ? 'rounded-full' :
+    photoShape === 'rounded' ? 'rounded-md' :
+    'rounded-none';
+
+  const photoElement = hasPhoto ? (
+    <div 
+      className="shrink-0 flex items-center justify-center overflow-hidden"
+      style={{
+        width: `${photoSizeMm}mm`,
+        height: `${photoSizeMm}mm`,
+      }}
+    >
+      <img 
+        src={personalInfo.photoUrl} 
+        alt={personalInfo.fullName}
+        className={`w-full h-full object-cover ${shapeRadiusClass} ${photoBorder ? 'border border-slate-400 p-0.5 shadow-xs' : ''}`}
+      />
+    </div>
+  ) : null;
+
   return (
     <div className="w-full text-left">
       {/* Tech Header */}
       <header className="cv-header mb-4 pb-3 border-b border-slate-200">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
-          <div>
-            <h1 
-              className="font-bold tracking-tight text-slate-950 font-mono"
-              style={{ fontSize: `${config.nameFontSize}pt`, color: config.accentColor }}
-            >
-              {config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName}
-            </h1>
-            {personalInfo.jobTitle && (
-              <div className="text-xs font-mono font-semibold text-slate-700 mt-0.5">
-                {personalInfo.jobTitle}
-              </div>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2 text-[11px] font-mono text-slate-600 sm:text-right">
-            {personalInfo.email && <div><span className="text-slate-400">email:</span> {personalInfo.email}</div>}
-            {personalInfo.phone && <div><span className="text-slate-400">phone:</span> {personalInfo.phone}</div>}
-            {personalInfo.github && <div><span className="text-slate-400">github:</span> {personalInfo.github}</div>}
-            {personalInfo.linkedin && <div><span className="text-slate-400">linkedin:</span> {personalInfo.linkedin}</div>}
-            {personalInfo.website && <div><span className="text-slate-400">web:</span> {personalInfo.website}</div>}
+        <div className={`flex items-center gap-4 ${photoPosition === 'left' ? 'flex-row' : 'flex-row-reverse'} justify-between`}>
+          {hasPhoto && photoElement}
+          <div className="flex-1 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
+            <div>
+              <h1 
+                className="font-bold tracking-tight text-slate-950 font-mono"
+                style={{ fontSize: `${config.nameFontSize}pt`, color: config.accentColor }}
+              >
+                {config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName}
+              </h1>
+              {personalInfo.jobTitle && (
+                <div className="text-xs font-mono font-semibold text-slate-700 mt-0.5">
+                  {personalInfo.jobTitle}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2 text-[11px] font-mono text-slate-600 sm:text-right">
+              {personalInfo.email && <div><span className="text-slate-400">email:</span> {personalInfo.email}</div>}
+              {personalInfo.phone && <div><span className="text-slate-400">phone:</span> {personalInfo.phone}</div>}
+              {personalInfo.github && <div><span className="text-slate-400">github:</span> {personalInfo.github}</div>}
+              {personalInfo.linkedin && <div><span className="text-slate-400">linkedin:</span> {personalInfo.linkedin}</div>}
+              {personalInfo.website && <div><span className="text-slate-400">web:</span> {personalInfo.website}</div>}
+            </div>
           </div>
         </div>
       </header>
