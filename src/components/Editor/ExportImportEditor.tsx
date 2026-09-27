@@ -1,10 +1,19 @@
 import React, { useRef, useState } from 'react';
 import { CVData, DesignConfig } from '../../types/cv';
 import { defaultCVData, defaultDesignConfig } from '../../data/defaultCV';
-import { getPaperDimensions } from '../../utils/paperDimensions';
-import { Printer, Download, Upload, RefreshCw, Trash2, CheckCircle2, AlertTriangle } from 'lucide-react';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+import { downloadVectorPdf, openVectorPdfInNewTab } from '../../utils/pdfExport';
+import { 
+  Printer, 
+  Download, 
+  Upload, 
+  RefreshCw, 
+  Trash2, 
+  CheckCircle2, 
+  AlertTriangle,
+  ExternalLink,
+  ShieldCheck,
+  Sparkles
+} from 'lucide-react';
 
 interface Props {
   cvData: CVData;
@@ -21,82 +30,39 @@ export const ExportImportEditor: React.FC<Props> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
 
-  // 1. Browser Native Print (Produces vector PDF)
-  const handlePrint = () => {
-    window.print();
-  };
-
-  // 2. Direct PDF Download via html2pdf
-  const handleDownloadPDF = async () => {
-    const element = document.getElementById('cv-print-target');
-    if (!element) return;
-
+  // 1. Direct Vector PDF Download (100% accurate vector, ATS-friendly)
+  const handleDownloadVectorPDF = async () => {
     setIsExporting(true);
-    const { widthMm, heightMm } = getPaperDimensions(designConfig);
-
-    // Create an isolated, unscaled container with pure white background to avoid transform clipping & dark background bleed
-    const container = document.createElement('div');
-    container.style.position = 'fixed';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = `${widthMm}mm`;
-    container.style.backgroundColor = '#ffffff';
-    container.style.zIndex = '999999';
-    container.style.opacity = '0';
-    container.style.pointerEvents = 'none';
-
-    const clone = element.cloneNode(true) as HTMLElement;
-    clone.style.transform = 'none';
-    clone.style.margin = '0';
-    clone.style.boxShadow = 'none';
-    clone.style.backgroundColor = '#ffffff';
-    clone.style.color = '#000000';
-    clone.style.width = `${widthMm}mm`;
-    clone.style.minHeight = `${heightMm}mm`;
-
-    if (designConfig.forceOnePage) {
-      clone.style.height = `${heightMm}mm`;
-      clone.style.maxHeight = `${heightMm}mm`;
-      clone.style.overflow = 'hidden';
-    }
-
-    container.appendChild(clone);
-    document.body.appendChild(container);
-
     try {
-      const opt = {
-        margin: 0,
-        filename: `${cvData.personalInfo.fullName.trim().replace(/\s+/g, '_')}_CV.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          backgroundColor: '#ffffff',
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: clone.offsetWidth,
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: [widthMm, heightMm],
-          orientation: 'portrait',
-        },
-      };
-      await html2pdf().set(opt).from(clone).save();
+      await downloadVectorPdf(cvData, designConfig);
     } catch (err) {
-      console.error('Failed to export PDF, falling back to print:', err);
+      console.error('Failed to generate vector PDF, falling back to print:', err);
       window.print();
     } finally {
-      if (document.body.contains(container)) {
-        document.body.removeChild(container);
-      }
       setIsExporting(false);
     }
   };
 
-  // 3. Export JSON Configuration & Content
+  // 2. Open Vector PDF in new tab
+  const handlePreviewVectorPDF = async () => {
+    setIsPreviewing(true);
+    try {
+      await openVectorPdfInNewTab(cvData, designConfig);
+    } catch (err) {
+      console.error('Failed to preview vector PDF:', err);
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
+
+  // 3. Browser Native Print
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // 4. Export JSON Configuration & Content
   const handleExportJSON = () => {
     const payload = {
       version: '1.0.0',
@@ -111,14 +77,14 @@ export const ExportImportEditor: React.FC<Props> = ({
     downloadAnchor.setAttribute('href', jsonString);
     downloadAnchor.setAttribute(
       'download',
-      `${cvData.personalInfo.fullName.trim().replace(/\s+/g, '_')}_cv_backup.json`
+      `${(cvData.personalInfo.fullName || 'Resume').trim().replace(/\s+/g, '_')}_cv_backup.json`
     );
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
   };
 
-  // 4. Import JSON Configuration & Content
+  // 5. Import JSON Configuration & Content
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -132,11 +98,10 @@ export const ExportImportEditor: React.FC<Props> = ({
           onUpdateDesignConfig(parsed.designConfig);
           alert('CV data and design configuration imported successfully!');
         } else if (parsed.personalInfo) {
-          // Backward compatibility if just CVData
           onUpdateCVData(parsed);
           alert('CV data imported successfully!');
         } else {
-          alert('Invalid CV configuration JSON format.');
+          alert('Invalid CV file structure.');
         }
       } catch (err) {
         alert('Failed to parse JSON file.');
@@ -146,7 +111,7 @@ export const ExportImportEditor: React.FC<Props> = ({
     e.target.value = '';
   };
 
-  // 5. Reset to Example Data
+  // 6. Reset to Example Data
   const handleResetToDefault = () => {
     if (window.confirm('Reset CV to default template example? Current changes will be overwritten.')) {
       onUpdateCVData(defaultCVData);
@@ -154,7 +119,7 @@ export const ExportImportEditor: React.FC<Props> = ({
     }
   };
 
-  // 6. Clear All Data
+  // 7. Clear All Data
   const handleClearAll = () => {
     if (window.confirm('Are you sure you want to clear all data to start with a blank CV?')) {
       onUpdateCVData({
@@ -215,7 +180,8 @@ export const ExportImportEditor: React.FC<Props> = ({
       {/* ATS Score Analyzer Widget */}
       <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-lg">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
             ATS Readiness & Keyword Score
           </span>
           <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs ${
@@ -254,33 +220,71 @@ export const ExportImportEditor: React.FC<Props> = ({
       <div>
         <div className="border-b border-slate-800 pb-2 mb-3">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Export and Print CV
+            Export and Download PDF
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 px-4 rounded transition shadow-sm focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print or Save PDF</span>
-          </button>
+        {/* Primary Vector Download Card */}
+        <div className="bg-slate-900 border border-emerald-900/60 rounded-lg p-3.5 mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-bold text-emerald-300 uppercase tracking-wide">
+                100% Vector PDF Engine (Accurate)
+              </span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-200 border border-emerald-800">
+              ATS-Optimized
+            </span>
+          </div>
+          <p className="text-xs text-slate-300 mb-3 leading-relaxed">
+            Menghasilkan file PDF vector asli: teks murni (bisa dicopy dan dibaca sempurna oleh sistem ATS), garis vector tajam tanpa pecah, link kontak dapat diklik, dan rasio millimeter 100% akurat.
+          </p>
 
-          <button
-            type="button"
-            disabled={isExporting}
-            onClick={handleDownloadPDF}
-            className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-medium py-2.5 px-4 rounded transition shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none"
-          >
-            <Download className="w-4 h-4" />
-            <span>{isExporting ? 'Generating PDF...' : 'Download PDF Direct'}</span>
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              type="button"
+              disabled={isExporting}
+              onClick={handleDownloadVectorPDF}
+              className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold py-2.5 px-3 rounded transition shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{isExporting ? 'Generating Vector PDF...' : 'Download Vector PDF'}</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={isPreviewing}
+              onClick={handlePreviewVectorPDF}
+              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 text-xs font-medium py-2.5 px-3 rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>{isPreviewing ? 'Opening...' : 'Preview in New Tab'}</span>
+            </button>
+          </div>
         </div>
-        <p className="text-[11px] text-slate-300 mt-2">
-          <strong className="text-slate-200">Recommendation:</strong> Using "Print or Save PDF" with destination set to "Save as PDF" produces searchable vector text, ideal for ATS parsers.
-        </p>
+
+        {/* Secondary: Browser Native Print */}
+        <div className="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs font-medium text-slate-300 block">
+                Browser Print Dialog
+              </span>
+              <span className="text-[11px] text-slate-400">
+                Gunakan printer bawaan Chrome/Firefox untuk mencetak fisik atau simpan via print dialog.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-1.5 px-3 rounded border border-slate-700 transition shrink-0 ml-3 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print Dialog</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Backup / Restore */}

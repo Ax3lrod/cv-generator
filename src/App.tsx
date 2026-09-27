@@ -4,6 +4,7 @@ import { defaultCVData, defaultDesignConfig } from './data/defaultCV';
 import { Navbar } from './components/Navbar';
 import { EditorTabs } from './components/Editor/EditorTabs';
 import { CVPreview } from './components/CVPreview/CVPreview';
+import { downloadVectorPdf } from './utils/pdfExport';
 
 const STORAGE_KEY_DATA = 'cv_studio_data_v1';
 const STORAGE_KEY_CONFIG = 'cv_studio_config_v1';
@@ -32,6 +33,7 @@ export function App() {
 
   const [scale, setScale] = useState<number>(0.85);
   const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Auto-save changes to localStorage
   useEffect(() => {
@@ -70,6 +72,18 @@ export function App() {
     window.print();
   };
 
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadVectorPdf(cvData, designConfig);
+    } catch (err) {
+      console.error('Failed to download vector PDF:', err);
+      window.print();
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
       {/* Top Navbar */}
@@ -77,6 +91,8 @@ export function App() {
         scale={scale}
         onScaleChange={setScale}
         onPrint={handlePrint}
+        onDownloadPDF={handleDownloadPDF}
+        isDownloading={isDownloading}
         mobileView={mobileView}
         onToggleMobileView={setMobileView}
       />

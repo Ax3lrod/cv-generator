@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   FileCheck2, 
   Printer, 
+  Download,
   ZoomIn, 
   ZoomOut, 
   RotateCcw, 
@@ -13,6 +14,8 @@ interface Props {
   scale: number;
   onScaleChange: (scale: number) => void;
   onPrint: () => void;
+  onDownloadPDF?: () => void;
+  isDownloading?: boolean;
   mobileView: 'editor' | 'preview';
   onToggleMobileView: (view: 'editor' | 'preview') => void;
 }
@@ -21,6 +24,8 @@ export const Navbar: React.FC<Props> = ({
   scale,
   onScaleChange,
   onPrint,
+  onDownloadPDF,
+  isDownloading = false,
   mobileView,
   onToggleMobileView,
 }) => {
@@ -101,16 +106,30 @@ export const Navbar: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Quick Print / Export Button */}
+        {/* Browser Native Print Button */}
         <button
           type="button"
           onClick={onPrint}
-          className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+          className="hidden sm:flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+          title="Print using browser print dialog"
         >
           <Printer className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Print / Export PDF</span>
-          <span className="sm:hidden">PDF</span>
+          <span>Print</span>
         </button>
+
+        {/* Primary Vector PDF Download Button */}
+        {onDownloadPDF && (
+          <button
+            type="button"
+            disabled={isDownloading}
+            onClick={onDownloadPDF}
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none"
+            title="Download 100% Vector PDF"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>{isDownloading ? 'Generating...' : 'Download PDF'}</span>
+          </button>
+        )}
       </div>
     </header>
   );
