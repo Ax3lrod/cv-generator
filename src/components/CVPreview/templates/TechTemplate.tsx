@@ -31,7 +31,7 @@ export const TechTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
   return (
     <div className="w-full text-left">
       {/* Tech Header */}
-      <header className="mb-4 pb-3 border-b border-slate-200">
+      <header className="cv-header mb-4 pb-3 border-b border-slate-200">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
           <div>
             <h1 

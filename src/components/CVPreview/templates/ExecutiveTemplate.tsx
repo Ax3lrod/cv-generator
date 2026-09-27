@@ -41,7 +41,7 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
   return (
     <div className="w-full text-left">
       {/* Executive Header Banner */}
-      <header className="mb-4 text-center pb-3 border-b border-slate-300">
+      <header className="cv-header mb-4 text-center pb-3 border-b border-slate-300">
         <h1 
           className="font-serif font-bold tracking-wide"
           style={{ fontSize: `${config.nameFontSize}pt`, color: config.accentColor }}

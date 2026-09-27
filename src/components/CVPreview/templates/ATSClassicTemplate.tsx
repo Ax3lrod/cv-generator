@@ -419,7 +419,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
   return (
     <div className="w-full">
       {/* CV Header */}
-      <header className={`mb-3 ${headerAlignClass}`}>
+      <header className={`cv-header mb-3 ${headerAlignClass}`}>
         <h1 
           className="font-bold tracking-tight text-slate-950 leading-none"
           style={{ 

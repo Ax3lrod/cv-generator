@@ -44,7 +44,7 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
   return (
     <div className="w-full text-left">
       {/* Modern Header */}
-      <header className="mb-4 pb-3 border-b border-slate-200">
+      <header className="cv-header mb-4 pb-3 border-b border-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
           <div>
             <h1 

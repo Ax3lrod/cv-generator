@@ -75,13 +75,29 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
     'jetbrains-mono': "'JetBrains Mono', monospace",
   };
 
+  const getPageSizeRule = () => {
+    switch (designConfig.paperSize) {
+      case 'a4':
+        return 'a4 portrait';
+      case 'letter':
+        return 'letter portrait';
+      case 'legal':
+        return 'legal portrait';
+      case 'f4':
+        return '215mm 330mm';
+      case 'custom':
+      default:
+        return `${widthMm}mm ${heightMm}mm`;
+    }
+  };
+
   return (
     <div className="relative flex flex-col items-center">
       {/* Dynamic print @page rule matching exact millimeter dimensions */}
       <style>{`
         @media print {
           @page {
-            size: ${widthMm}mm ${heightMm}mm;
+            size: ${getPageSizeRule()};
             margin: 0;
           }
           html, body {
@@ -96,6 +112,11 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
             ${designConfig.forceOnePage 
               ? `height: ${heightMm}mm !important; max-height: ${heightMm}mm !important; overflow: hidden !important; page-break-after: avoid !important; break-after: avoid !important;` 
               : `min-height: ${heightMm}mm !important;`}
+          }
+          .cv-paper header,
+          .cv-paper .cv-header {
+            display: block !important;
+            visibility: visible !important;
           }
         }
       `}</style>

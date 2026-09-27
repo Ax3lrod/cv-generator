@@ -45,14 +45,19 @@
   /* Hide entire UI except preview sheet */
   .no-print, 
   nav, 
-  header, 
   aside, 
-  button, 
   .editor-pane,
   .print-hide,
   .page-overflow-indicator {
     display: none !important;
     visibility: hidden !important;
+  }
+
+  /* CV Header must ALWAYS be visible */
+  .cv-paper header,
+  .cv-paper .cv-header {
+    display: block !important;
+    visibility: visible !important;
   }
 
   /* Reset all layout flex containers */
