@@ -30,8 +30,10 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
 
   // 1mm ≈ 3.779527px at standard 96 DPI
   const pageHeightPx = Math.round(heightMm * 3.779527);
+  // Add 4mm safety buffer so print engine metrics never overrun the bottom margin
+  const safetyBufferMm = 4;
   const availableInnerHeightPx = Math.round(
-    (heightMm - designConfig.pageMarginTop - designConfig.pageMarginBottom) * 3.779527
+    (heightMm - designConfig.pageMarginTop - designConfig.pageMarginBottom - safetyBufferMm) * 3.779527
   );
 
   // Measure content and calculate force-1-page scaling factor
@@ -41,7 +43,7 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
       setContentHeight(naturalHeight);
 
       if (designConfig.forceOnePage && naturalHeight > availableInnerHeightPx) {
-        // Calculate exact scale factor needed to lock content into 1 page
+        // Calculate exact scale factor needed to lock content into 1 page with safe bottom margin
         const neededScale = Math.max(0.6, availableInnerHeightPx / naturalHeight);
         setAutoScaleFactor(neededScale);
       } else {
@@ -108,7 +110,12 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
           }
           .cv-paper {
             width: ${widthMm}mm !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
+            box-sizing: border-box !important;
+            padding-top: ${designConfig.pageMarginTop}mm !important;
+            padding-bottom: ${designConfig.pageMarginBottom}mm !important;
+            padding-left: ${designConfig.pageMarginLeft}mm !important;
+            padding-right: ${designConfig.pageMarginRight}mm !important;
             ${designConfig.forceOnePage 
               ? `height: ${heightMm}mm !important; max-height: ${heightMm}mm !important; overflow: hidden !important; page-break-after: avoid !important; break-after: avoid !important;` 
               : `min-height: ${heightMm}mm !important;`}
@@ -201,19 +208,29 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
 
           {/* Inner Content with dynamic 1-page scaling */}
           <div
-            ref={innerContentRef}
             className="w-full"
-            style={
-              designConfig.forceOnePage && autoScaleFactor < 1
-                ? {
-                    transform: `scale(${autoScaleFactor})`,
-                    transformOrigin: 'top left',
-                    width: `${(1 / autoScaleFactor) * 100}%`,
-                  }
-                : undefined
-            }
+            style={{
+              maxHeight: designConfig.forceOnePage
+                ? `calc(${heightMm}mm - ${designConfig.pageMarginTop}mm - ${designConfig.pageMarginBottom}mm)`
+                : undefined,
+              overflow: designConfig.forceOnePage ? 'hidden' : 'visible',
+            }}
           >
-            {renderTemplate()}
+            <div
+              ref={innerContentRef}
+              className="w-full"
+              style={
+                designConfig.forceOnePage && autoScaleFactor < 1
+                  ? {
+                      transform: `scale(${autoScaleFactor})`,
+                      transformOrigin: 'top left',
+                      width: `${(1 / autoScaleFactor) * 100}%`,
+                    }
+                  : undefined
+              }
+            >
+              {renderTemplate()}
+            </div>
           </div>
         </div>
       </div>

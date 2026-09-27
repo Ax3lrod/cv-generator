@@ -38,8 +38,8 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
   const itemTitleFontSize = config.itemTitleFontSize * scale;
   const subFontSize = Math.max(7, baseFontSize * 0.9);
 
-  const marginTopPt = config.pageMarginTop * scale * MM_TO_PT;
-  const marginBottomPt = config.pageMarginBottom * scale * MM_TO_PT;
+  const marginTopPt = config.pageMarginTop * MM_TO_PT;
+  const marginBottomPt = config.pageMarginBottom * MM_TO_PT;
   const marginLeftPt = config.pageMarginLeft * MM_TO_PT;
   const marginRightPt = config.pageMarginRight * MM_TO_PT;
   const sectionGapPt = Math.max(2, config.sectionGap * scale * MM_TO_PT);
@@ -439,14 +439,18 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
     borderRadius = 4 * scale;
   }
 
-  const headerContentElement = (
-    <View style={{ flex: 1, alignItems: isCentered ? 'center' : 'flex-start' }}>
+  const contentWidthPt = widthPt - marginLeftPt - marginRightPt;
+  const infoWidthPt = hasPhoto ? contentWidthPt - photoSizePt - 14 : contentWidthPt;
+  const headingColor = config.accentColor !== '#000000' ? config.accentColor : config.textColor;
+
+  const headerInfoBlock = (
+    <View style={{ width: infoWidthPt, alignItems: isCentered ? 'center' : 'flex-start' }}>
       <Text
         style={{
           fontFamily,
           fontWeight: 'bold',
           fontSize: nameFontSize,
-          color: config.accentColor !== '#000000' ? config.accentColor : config.textColor,
+          color: headingColor,
           textAlign: isCentered ? 'center' : 'left',
           letterSpacing: -0.2,
         }}
@@ -454,35 +458,38 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
         {displayName}
       </Text>
 
-      {personalInfo.jobTitle && !isCentered && (
-        <Text style={{ fontFamily, fontSize: subFontSize * 1.1, color: config.subtextColor, marginTop: 1 }}>
+      {personalInfo.jobTitle && (
+        <Text
+          style={{
+            fontFamily,
+            fontSize: subFontSize * 1.05,
+            color: config.subtextColor,
+            marginTop: 1,
+            textAlign: isCentered ? 'center' : 'left',
+          }}
+        >
           {personalInfo.jobTitle}
         </Text>
       )}
 
       {contactItems.length > 0 && (
-        <View
+        <Text
           style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: isCentered ? 'center' : 'flex-start',
-            alignItems: 'center',
-            marginTop: 2,
+            fontFamily,
+            fontSize: subFontSize,
+            color: config.subtextColor,
+            textAlign: isCentered ? 'center' : 'left',
+            marginTop: 2.5,
+            lineHeight: 1.35,
           }}
         >
           {contactItems.map((item, idx) => (
             <React.Fragment key={idx}>
-              {idx > 0 && (
-                <Text style={{ fontFamily, fontSize: subFontSize, color: '#94a3b8', marginHorizontal: 3 }}>
-                  |
-                </Text>
-              )}
+              {idx > 0 && <Text style={{ color: '#94a3b8' }}>  |  </Text>}
               {item.url ? (
                 <Link
                   src={item.url}
                   style={{
-                    fontFamily,
-                    fontSize: subFontSize,
                     color: config.subtextColor,
                     textDecoration: 'none',
                   }}
@@ -490,43 +497,27 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
                   {item.text}
                 </Link>
               ) : (
-                <Text
-                  style={{
-                    fontFamily,
-                    fontSize: subFontSize,
-                    color: config.subtextColor,
-                  }}
-                >
-                  {item.text}
-                </Text>
+                <Text>{item.text}</Text>
               )}
             </React.Fragment>
           ))}
-        </View>
+        </Text>
       )}
     </View>
   );
 
   const photoElement = hasPhoto ? (
-    <View
+    <Image
+      src={personalInfo.photoUrl!}
       style={{
         width: photoSizePt,
         height: photoSizePt,
         borderRadius,
-        overflow: 'hidden',
-        borderWidth: photoBorder ? 0.75 : 0,
+        objectFit: 'cover',
+        borderWidth: photoBorder ? 1 : 0,
         borderColor: '#cbd5e1',
       }}
-    >
-      <Image
-        src={personalInfo.photoUrl!}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-        }}
-      />
-    </View>
+    />
   ) : null;
 
   return (
@@ -547,44 +538,21 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
         {/* Header */}
         <View style={{ marginBottom: sectionGapPt * 1.2 }}>
           {hasPhoto ? (
-            isCentered ? (
-              <View
-                style={{
-                  flexDirection: photoPosition === 'left' ? 'row' : 'row-reverse',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
+            <View
+              style={{
+                flexDirection: photoPosition === 'left' ? 'row' : 'row-reverse',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: contentWidthPt,
+              }}
+            >
+              <View style={{ width: photoSizePt, height: photoSizePt }}>
                 {photoElement}
-                <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                  {headerContentElement}
-                </View>
-                <View style={{ width: photoSizePt }} />
               </View>
-            ) : (
-              <View
-                style={{
-                  flexDirection: photoPosition === 'left' ? 'row' : 'row-reverse',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {photoElement}
-                <View
-                  style={{
-                    flex: 1,
-                    marginRight: photoPosition === 'right' ? 10 : 0,
-                    marginLeft: photoPosition === 'left' ? 10 : 0,
-                  }}
-                >
-                  {headerContentElement}
-                </View>
-              </View>
-            )
-          ) : (
-            <View style={{ alignItems: isCentered ? 'center' : 'flex-start' }}>
-              {headerContentElement}
+              {headerInfoBlock}
             </View>
+          ) : (
+            headerInfoBlock
           )}
         </View>
 

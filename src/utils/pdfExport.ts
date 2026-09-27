@@ -20,7 +20,8 @@ export function estimateAutoScaleFactor(cvData: CVData, config: DesignConfig): n
           ? (config.customPaperHeight || 297) 
           : (config.paperSize === 'f4' ? 330 : config.paperSize === 'letter' ? 279.4 : 297)
       };
-      const availableInnerHeightPx = (heightMm - config.pageMarginTop - config.pageMarginBottom) * 3.779527;
+      const safetyBufferMm = 4;
+      const availableInnerHeightPx = (heightMm - config.pageMarginTop - config.pageMarginBottom - safetyBufferMm) * 3.779527;
       if (naturalHeight > availableInnerHeightPx) {
         return Math.max(0.65, availableInnerHeightPx / naturalHeight);
       }
