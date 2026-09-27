@@ -81,13 +81,21 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
       <style>{`
         @media print {
           @page {
-            size: ${widthMm}mm ${heightMm}mm !important;
-            margin: 0mm !important;
+            size: ${widthMm}mm ${heightMm}mm;
+            margin: 0;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            ${designConfig.forceOnePage ? 'height: 100% !important; overflow: hidden !important;' : ''}
           }
           .cv-paper {
             width: ${widthMm}mm !important;
-            min-height: ${heightMm}mm !important;
-            ${designConfig.forceOnePage ? `height: ${heightMm}mm !important; max-height: ${heightMm}mm !important; overflow: hidden !important;` : ''}
+            margin: 0 !important;
+            ${designConfig.forceOnePage 
+              ? `height: ${heightMm}mm !important; max-height: ${heightMm}mm !important; overflow: hidden !important; page-break-after: avoid !important; break-after: avoid !important;` 
+              : `min-height: ${heightMm}mm !important;`}
           }
         }
       `}</style>
@@ -178,8 +186,8 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
               designConfig.forceOnePage && autoScaleFactor < 1
                 ? {
                     transform: `scale(${autoScaleFactor})`,
-                    transformOrigin: 'top center',
-                    width: '100%',
+                    transformOrigin: 'top left',
+                    width: `${(1 / autoScaleFactor) * 100}%`,
                   }
                 : undefined
             }

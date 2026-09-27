@@ -12,12 +12,24 @@
 /* Print Specific Styles for Pixel-Perfect PDF Export */
 @media print {
   @page {
-    margin: 0mm !important;
+    margin: 0;
   }
 
   /* Force pure white background on all page ancestors */
   html,
-  body,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   #root {
     background: #ffffff !important;
     background-color: #ffffff !important;
@@ -26,10 +38,8 @@
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
-    min-height: 0 !important;
+    display: block !important;
     overflow: visible !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
   /* Hide entire UI except preview sheet */
@@ -42,11 +52,17 @@
   .print-hide,
   .page-overflow-indicator {
     display: none !important;
+    visibility: hidden !important;
   }
 
+  /* Reset all layout flex containers */
+  #root > div,
+  #root > div > div,
   main,
-  .cv-preview-container {
+  .cv-preview-container,
+  .cv-preview-container > div {
     display: block !important;
+    position: static !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
     padding: 0 !important;
@@ -54,6 +70,7 @@
     box-shadow: none !important;
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
   }
 
@@ -63,18 +80,26 @@
     margin: 0 !important;
     padding: 0 !important;
     display: block !important;
-    width: auto !important;
+    width: 100% !important;
+    height: auto !important;
   }
 
   .cv-paper {
     box-shadow: none !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     border: none !important;
     border-radius: 0 !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 
