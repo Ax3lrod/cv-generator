@@ -81,4 +81,11 @@ A web-based CV Generator featuring deep customization capabilities (typography, 
   - [x] Implement `<Image>` rendering in `CVPdfDocument.tsx` for 100% accurate vector PDF export.
   - [x] Verify build, test image upload, and verify print and PDF download.
 
+- [x] **Phase 9: Interactive Photo Cropping & Adjustment**
+  - [x] Add `rawPhotoUrl?: string` to `PersonalInfo` in `src/types/cv.ts`.
+  - [x] Implement canvas crop utility `getCroppedImg` supporting zoom, rotation, pan in `src/utils/imageUtils.ts`.
+  - [x] Build `PhotoCropModal.tsx` component with `react-easy-crop` (interactive drag, zoom slider, 90° rotation, aspect ratio switcher 1:1 and 3:4, crop shape preview).
+  - [x] Integrate crop modal trigger on initial file upload and via "Crop / Adjust" button in `PersonalInfoEditor.tsx`.
+  - [x] Verify build, test cropping, rotation, zoom, and live preview update.
+
 

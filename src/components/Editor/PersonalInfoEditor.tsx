@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { PersonalInfo, DesignConfig } from '../../types/cv';
-import { processProfileImage } from '../../utils/imageUtils';
+import { readAndPreScaleImage } from '../../utils/imageUtils';
+import { PhotoCropModal } from './PhotoCropModal';
 import { 
   User, 
   Mail, 
@@ -15,7 +16,8 @@ import {
   Trash2, 
   RefreshCw,
   Sliders,
-  Check
+  Check,
+  Crop as CropIcon
 } from 'lucide-react';
 
 interface Props {
@@ -35,6 +37,8 @@ export const PersonalInfoEditor: React.FC<Props> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [cropImageSource, setCropImageSource] = useState<string>('');
 
   const handleChange = (field: keyof PersonalInfo, value: any) => {
     onChange({
@@ -51,21 +55,34 @@ export const PersonalInfoEditor: React.FC<Props> = ({
     setErrorMessage(null);
     setIsProcessing(true);
     try {
-      const compressedDataUrl = await processProfileImage(file, {
-        maxWidth: 600,
-        maxHeight: 600,
-        quality: 0.88,
-      });
+      const rawDataUrl = await readAndPreScaleImage(file, 1400);
+      setCropImageSource(rawDataUrl);
       onChange({
         ...data,
-        photoUrl: compressedDataUrl,
-        showPhoto: true,
+        rawPhotoUrl: rawDataUrl,
       });
+      setIsCropModalOpen(true);
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to process image');
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleOpenCropModal = () => {
+    const imgSrc = data.rawPhotoUrl || data.photoUrl;
+    if (imgSrc) {
+      setCropImageSource(imgSrc);
+      setIsCropModalOpen(true);
+    }
+  };
+
+  const handleApplyCrop = (croppedDataUrl: string) => {
+    onChange({
+      ...data,
+      photoUrl: croppedDataUrl,
+      showPhoto: true,
+    });
   };
 
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +115,7 @@ export const PersonalInfoEditor: React.FC<Props> = ({
     onChange({
       ...data,
       photoUrl: '',
+      rawPhotoUrl: '',
       showPhoto: false,
     });
     if (fileInputRef.current) {
@@ -177,12 +195,22 @@ export const PersonalInfoEditor: React.FC<Props> = ({
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
+                    onClick={handleOpenCropModal}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-600/25 hover:bg-blue-600/40 text-blue-200 text-xs font-medium rounded border border-blue-500/50 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+                    title="Crop and frame photo"
+                  >
+                    <CropIcon className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Crop & Frame</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isProcessing}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isProcessing ? 'animate-spin' : ''}`} />
-                    <span>Change Photo</span>
+                    <span>Change</span>
                   </button>
 
                   <button
@@ -446,6 +474,15 @@ export const PersonalInfoEditor: React.FC<Props> = ({
           />
         </div>
       </div>
+
+      {/* Interactive Photo Crop Modal */}
+      <PhotoCropModal
+        isOpen={isCropModalOpen}
+        imageSrc={cropImageSource}
+        initialShape={photoShape}
+        onClose={() => setIsCropModalOpen(false)}
+        onApplyCrop={handleApplyCrop}
+      />
     </div>
   );
 };

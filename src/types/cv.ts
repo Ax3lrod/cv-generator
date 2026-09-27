@@ -10,6 +10,7 @@ export interface PersonalInfo {
   summary: string;
   showSummary: boolean;
   photoUrl?: string;
+  rawPhotoUrl?: string;
   showPhoto?: boolean;
 }
 
