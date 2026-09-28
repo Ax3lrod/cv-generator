@@ -427,20 +427,25 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
   const displayName = config.uppercaseName ? personalInfo.fullName.toUpperCase() : personalInfo.fullName;
   const isCentered = config.headerAlign === 'center';
   const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
-  const photoShape = config.photoShape || 'circle';
-  const photoSizePt = (config.photoSize || 26) * MM_TO_PT * scale;
+  const photoAspectRatio = config.photoAspectRatio || '1:1';
+  const isPortrait = photoAspectRatio === '3:4';
+  const photoShape = isPortrait && config.photoShape === 'circle' ? 'rounded' : (config.photoShape || 'circle');
+  const photoWidthPt = (config.photoSize || 26) * MM_TO_PT * scale;
+  const photoHeightPt = isPortrait ? (photoWidthPt * 4) / 3 : photoWidthPt;
   const photoBorder = config.photoBorder !== false;
   const photoPosition = config.photoPosition || 'right';
 
   let borderRadius = 0;
-  if (photoShape === 'circle') {
-    borderRadius = photoSizePt / 2;
-  } else if (photoShape === 'rounded') {
+  if (photoShape === 'circle' && !isPortrait) {
+    borderRadius = photoWidthPt / 2;
+  } else if (photoShape === 'rounded' || isPortrait) {
     borderRadius = 4 * scale;
   }
 
   const contentWidthPt = widthPt - marginLeftPt - marginRightPt;
-  const infoWidthPt = hasPhoto ? contentWidthPt - photoSizePt - 14 : contentWidthPt;
+  const infoWidthPt = hasPhoto 
+    ? (isCentered ? contentWidthPt - (photoWidthPt * 2) - 16 : contentWidthPt - photoWidthPt - 14) 
+    : contentWidthPt;
   const headingColor = config.accentColor !== '#000000' ? config.accentColor : config.textColor;
 
   const headerInfoBlock = (
@@ -510,8 +515,8 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
     <Image
       src={personalInfo.photoUrl!}
       style={{
-        width: photoSizePt,
-        height: photoSizePt,
+        width: photoWidthPt,
+        height: photoHeightPt,
         borderRadius,
         objectFit: 'cover',
         borderWidth: photoBorder ? 1 : 0,
@@ -546,10 +551,13 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
                 width: contentWidthPt,
               }}
             >
-              <View style={{ width: photoSizePt, height: photoSizePt }}>
+              <View style={{ width: photoWidthPt, height: photoHeightPt }}>
                 {photoElement}
               </View>
               {headerInfoBlock}
+              {isCentered && (
+                <View style={{ width: photoWidthPt, height: photoHeightPt }} />
+              )}
             </View>
           ) : (
             headerInfoBlock

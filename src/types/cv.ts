@@ -136,6 +136,7 @@ export interface DesignConfig {
   dateLocationPlacement: 'inline' | 'stacked';
   boldCompanyOrRole: 'both' | 'role' | 'company';
   photoShape?: 'circle' | 'rounded' | 'square';
+  photoAspectRatio?: '1:1' | '3:4';
   photoSize?: number; // size in mm, e.g. 20-35 mm
   photoBorder?: boolean;
   photoPosition?: 'left' | 'right';

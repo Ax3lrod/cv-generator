@@ -88,4 +88,12 @@ A web-based CV Generator featuring deep customization capabilities (typography, 
   - [x] Integrate crop modal trigger on initial file upload and via "Crop / Adjust" button in `PersonalInfoEditor.tsx`.
   - [x] Verify build, test cropping, rotation, zoom, and live preview update.
 
+- [x] **Phase 10: Dynamic Photo Aspect Ratio (1:1 Square & 3:4 Portrait)**
+  - [x] Add `photoAspectRatio?: '1:1' | '3:4'` to `DesignConfig` in `src/types/cv.ts` and `defaultCV.ts`.
+  - [x] Update `PhotoCropModal.tsx` to return the chosen aspect ratio when applying crop.
+  - [x] Add Aspect Ratio selector (1:1 Square vs 3:4 Portrait) in `PersonalInfoEditor.tsx` and `DesignConfigEditor.tsx`.
+  - [x] Update all 4 templates (`ATSClassicTemplate`, `ModernTemplate`, `ExecutiveTemplate`, `TechTemplate`) to compute width & height according to `photoAspectRatio` (`height = photoWidth * 4 / 3` for 3:4).
+  - [x] Update `CVPdfDocument.tsx` to render `<Image>` with matching 3:4 aspect ratio dimensions (`photoHeightPt = photoWidthPt * 4 / 3`).
+  - [x] Verify build, test 3:4 crop application and rendering across all templates & PDF download.
+
 

@@ -77,12 +77,23 @@ export const PersonalInfoEditor: React.FC<Props> = ({
     }
   };
 
-  const handleApplyCrop = (croppedDataUrl: string) => {
+  const handleApplyCrop = (
+    croppedDataUrl: string,
+    ratio: '1:1' | '3:4',
+    shape?: 'circle' | 'rounded' | 'square'
+  ) => {
     onChange({
       ...data,
       photoUrl: croppedDataUrl,
       showPhoto: true,
     });
+    if (designConfig && onUpdateDesignConfig) {
+      onUpdateDesignConfig({
+        ...designConfig,
+        photoAspectRatio: ratio,
+        photoShape: shape || designConfig.photoShape,
+      });
+    }
   };
 
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,13 +135,15 @@ export const PersonalInfoEditor: React.FC<Props> = ({
   };
 
   const photoShape = designConfig?.photoShape || 'circle';
+  const photoAspectRatio = designConfig?.photoAspectRatio || '1:1';
+  const isPortrait = photoAspectRatio === '3:4';
   const photoSize = designConfig?.photoSize || 26;
   const photoBorder = designConfig?.photoBorder !== false;
   const photoPosition = designConfig?.photoPosition || 'right';
 
   const shapeClass = 
-    photoShape === 'circle' ? 'rounded-full' :
-    photoShape === 'rounded' ? 'rounded-xl' :
+    photoShape === 'circle' && !isPortrait ? 'rounded-full' :
+    photoShape === 'rounded' || isPortrait ? 'rounded-xl' :
     'rounded-none';
 
   return (
@@ -179,7 +192,7 @@ export const PersonalInfoEditor: React.FC<Props> = ({
                 <img
                   src={data.photoUrl}
                   alt="Profile Preview"
-                  className={`w-16 h-16 object-cover bg-slate-950 border-2 ${
+                  className={`${isPortrait ? 'w-14 h-[72px]' : 'w-16 h-16'} object-cover bg-slate-950 border-2 ${
                     data.showPhoto ? 'border-blue-500' : 'border-slate-700 opacity-60'
                   } ${shapeClass}`}
                 />
@@ -230,7 +243,7 @@ export const PersonalInfoEditor: React.FC<Props> = ({
 
             {/* Quick Photo Style Controls */}
             {designConfig && onUpdateDesignConfig && (
-              <div className="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
                 {/* Shape Picker */}
                 <div>
                   <label className="block text-[11px] text-slate-400 mb-1">Avatar Shape</label>
@@ -240,13 +253,40 @@ export const PersonalInfoEditor: React.FC<Props> = ({
                         key={shape}
                         type="button"
                         onClick={() => onUpdateDesignConfig({ ...designConfig, photoShape: shape })}
-                        className={`flex-1 py-1 px-2 text-[11px] font-medium rounded border transition ${
+                        className={`flex-1 py-1 px-1.5 text-[11px] font-medium rounded border transition ${
                           photoShape === shape
                             ? 'bg-blue-600 text-white border-blue-500'
                             : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
                         }`}
                       >
                         {shape === 'circle' ? 'Circle' : shape === 'rounded' ? 'Rounded' : 'Square'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Aspect Ratio Picker */}
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Aspect Ratio</label>
+                  <div className="flex gap-1.5">
+                    {(['1:1', '3:4'] as const).map((ratio) => (
+                      <button
+                        key={ratio}
+                        type="button"
+                        onClick={() =>
+                          onUpdateDesignConfig({
+                            ...designConfig,
+                            photoAspectRatio: ratio,
+                            ...(ratio === '3:4' && photoShape === 'circle' ? { photoShape: 'rounded' } : {}),
+                          })
+                        }
+                        className={`flex-1 py-1 px-1.5 text-[11px] font-medium rounded border transition ${
+                          photoAspectRatio === ratio
+                            ? 'bg-blue-600 text-white border-blue-500'
+                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
+                        }`}
+                      >
+                        {ratio === '1:1' ? '1:1 Sq' : '3:4 Pas'}
                       </button>
                     ))}
                   </div>
@@ -261,23 +301,25 @@ export const PersonalInfoEditor: React.FC<Props> = ({
                         key={pos}
                         type="button"
                         onClick={() => onUpdateDesignConfig({ ...designConfig, photoPosition: pos })}
-                        className={`flex-1 py-1 px-2 text-[11px] font-medium rounded border transition ${
+                        className={`flex-1 py-1 px-1.5 text-[11px] font-medium rounded border transition ${
                           photoPosition === pos
                             ? 'bg-blue-600 text-white border-blue-500'
                             : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
                         }`}
                       >
-                        {pos === 'right' ? 'Right Side' : 'Left Side'}
+                        {pos === 'right' ? 'Right' : 'Left'}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Size Slider */}
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-3">
                   <div className="flex justify-between text-[11px] text-slate-400 mb-1">
-                    <span>Photo Size</span>
-                    <span className="font-mono text-blue-400">{photoSize} mm</span>
+                    <span>Photo Width</span>
+                    <span className="font-mono text-blue-400">
+                      {photoSize} mm {isPortrait ? `× ${Math.round((photoSize * 4) / 3)} mm` : `× ${photoSize} mm`}
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -480,6 +522,7 @@ export const PersonalInfoEditor: React.FC<Props> = ({
         isOpen={isCropModalOpen}
         imageSrc={cropImageSource}
         initialShape={photoShape}
+        initialAspectRatio={photoAspectRatio}
         onClose={() => setIsCropModalOpen(false)}
         onApplyCrop={handleApplyCrop}
       />

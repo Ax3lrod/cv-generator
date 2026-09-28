@@ -18,26 +18,50 @@ interface PhotoCropModalProps {
   isOpen: boolean;
   imageSrc: string;
   initialShape?: 'circle' | 'rounded' | 'square';
+  initialAspectRatio?: '1:1' | '3:4';
   onClose: () => void;
-  onApplyCrop: (croppedDataUrl: string) => void;
+  onApplyCrop: (
+    croppedDataUrl: string,
+    ratio: '1:1' | '3:4',
+    shape?: 'circle' | 'rounded' | 'square'
+  ) => void;
 }
 
 export const PhotoCropModal: React.FC<PhotoCropModalProps> = ({
   isOpen,
   imageSrc,
   initialShape = 'circle',
+  initialAspectRatio = '1:1',
   onClose,
   onApplyCrop,
 }) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
-  const [aspectRatio, setAspectRatio] = useState<number>(1); // 1:1 default for CV
+  const [aspectRatio, setAspectRatio] = useState<number>(
+    initialAspectRatio === '3:4' ? 3 / 4 : 1
+  );
   const [cropShape, setCropShape] = useState<'round' | 'rect'>(
-    initialShape === 'circle' ? 'round' : 'rect'
+    initialAspectRatio === '3:4'
+      ? 'rect'
+      : initialShape === 'circle'
+      ? 'round'
+      : 'rect'
   );
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  // Sync state whenever modal is opened
+  React.useEffect(() => {
+    if (isOpen) {
+      const is34 = initialAspectRatio === '3:4';
+      setAspectRatio(is34 ? 3 / 4 : 1);
+      setCropShape(is34 ? 'rect' : initialShape === 'circle' ? 'round' : 'rect');
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setRotation(0);
+    }
+  }, [isOpen, initialAspectRatio, initialShape]);
 
   const onCropComplete = useCallback(
     (_croppedArea: Area, currentCroppedAreaPixels: Area) => {
@@ -56,7 +80,15 @@ export const PhotoCropModal: React.FC<PhotoCropModalProps> = ({
         rotation,
         600
       );
-      onApplyCrop(croppedImage);
+      const ratio: '1:1' | '3:4' = aspectRatio === 3 / 4 ? '3:4' : '1:1';
+      const shape: 'circle' | 'rounded' | 'square' =
+        ratio === '3:4'
+          ? 'rounded'
+          : cropShape === 'round'
+          ? 'circle'
+          : 'square';
+
+      onApplyCrop(croppedImage, ratio, shape);
       onClose();
     } catch (e) {
       console.error('Failed to crop image:', e);

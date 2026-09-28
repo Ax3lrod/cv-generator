@@ -42,22 +42,25 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
   if (personalInfo.github) contactParts.push({ label: 'GitHub', val: personalInfo.github });
 
   const hasPhoto = Boolean(personalInfo.showPhoto && personalInfo.photoUrl);
-  const photoShape = config.photoShape || 'circle';
-  const photoSizeMm = config.photoSize || 26;
+  const photoAspectRatio = config.photoAspectRatio || '1:1';
+  const isPortrait = photoAspectRatio === '3:4';
+  const photoShape = isPortrait && config.photoShape === 'circle' ? 'rounded' : (config.photoShape || 'circle');
+  const photoWidthMm = config.photoSize || 26;
+  const photoHeightMm = isPortrait ? Math.round((photoWidthMm * 4) / 3) : photoWidthMm;
   const photoBorder = config.photoBorder !== false;
   const photoPosition = config.photoPosition || 'right';
 
   const shapeRadiusClass = 
-    photoShape === 'circle' ? 'rounded-full' :
-    photoShape === 'rounded' ? 'rounded-xl' :
+    photoShape === 'circle' && !isPortrait ? 'rounded-full' :
+    photoShape === 'rounded' || isPortrait ? 'rounded-xl' :
     'rounded-none';
 
   const photoElement = hasPhoto ? (
     <div 
       className="shrink-0 flex items-center justify-center overflow-hidden"
       style={{
-        width: `${photoSizeMm}mm`,
-        height: `${photoSizeMm}mm`,
+        width: `${photoWidthMm}mm`,
+        height: `${photoHeightMm}mm`,
       }}
     >
       <img 

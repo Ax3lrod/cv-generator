@@ -296,7 +296,7 @@ export const DesignConfigEditor: React.FC<Props> = ({ config, onChange }) => {
         </div>
 
         <div className="space-y-3 bg-slate-900/60 p-3 rounded border border-slate-800">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1">Avatar Shape</label>
               <select
@@ -304,9 +304,28 @@ export const DesignConfigEditor: React.FC<Props> = ({ config, onChange }) => {
                 onChange={(e) => updateConfig('photoShape', e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
               >
-                <option value="circle">Circular (Modern Standard)</option>
+                <option value="circle">Circular (Modern)</option>
                 <option value="rounded">Rounded Rectangle</option>
                 <option value="square">Square</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Aspect Ratio</label>
+              <select
+                value={config.photoAspectRatio || '1:1'}
+                onChange={(e) => {
+                  const val = e.target.value as '1:1' | '3:4';
+                  if (val === '3:4' && config.photoShape === 'circle') {
+                    onChange({ ...config, photoAspectRatio: val, photoShape: 'rounded' });
+                  } else {
+                    updateConfig('photoAspectRatio', val);
+                  }
+                }}
+                className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              >
+                <option value="1:1">1:1 Square</option>
+                <option value="3:4">3:4 Portrait (Pas Foto)</option>
               </select>
             </div>
 
@@ -325,8 +344,13 @@ export const DesignConfigEditor: React.FC<Props> = ({ config, onChange }) => {
 
           <div>
             <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Photo Size</span>
-              <span className="font-mono text-sky-400">{config.photoSize || 26} mm</span>
+              <span>Photo Size (Width)</span>
+              <span className="font-mono text-sky-400">
+                {config.photoSize || 26} mm
+                {config.photoAspectRatio === '3:4'
+                  ? ` × ${Math.round(((config.photoSize || 26) * 4) / 3)} mm`
+                  : ` × ${config.photoSize || 26} mm`}
+              </span>
             </div>
             <input
               type="range"

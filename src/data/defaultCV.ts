@@ -190,6 +190,7 @@ export const defaultDesignConfig: DesignConfig = {
   dateLocationPlacement: "inline",
   boldCompanyOrRole: "both",
   photoShape: "circle",
+  photoAspectRatio: "1:1",
   photoSize: 26,
   photoBorder: true,
   photoPosition: "right",
