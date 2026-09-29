@@ -23,7 +23,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (config.sectionHeadingStyle === 'left-bar') {
       return (
         <div 
-          className="flex items-center gap-2 border-b pb-0.5"
+          className="cv-section-heading flex items-center gap-2 border-b pb-0.5"
           style={{ borderColor: config.accentColor, marginBottom: `${config.itemGap}mm` }}
         >
           <span 
@@ -46,7 +46,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (config.sectionHeadingStyle === 'pill') {
       return (
         <div 
-          className="border-b pb-1"
+          className="cv-section-heading border-b pb-1"
           style={{ borderColor: '#e2e8f0', marginBottom: `${config.itemGap}mm` }}
         >
           <span 
@@ -62,7 +62,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (config.sectionHeadingStyle === 'double-line') {
       return (
         <div 
-          className="border-b-2 border-t border-solid pb-0.5 pt-0.5"
+          className="cv-section-heading border-b-2 border-t border-solid pb-0.5 pt-0.5"
           style={{ borderColor: config.accentColor, marginBottom: `${config.itemGap}mm` }}
         >
           <h2 
@@ -80,7 +80,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
 
     if (config.sectionHeadingStyle === 'minimal') {
       return (
-        <div style={{ marginBottom: `${config.itemGap}mm` }}>
+        <div className="cv-section-heading" style={{ marginBottom: `${config.itemGap}mm` }}>
           <h2 
             className="font-bold tracking-tight"
             style={{ 
@@ -97,7 +97,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     // Default 'line-under' ATS standard (1:1 with user's PDF)
     return (
       <div 
-        className="border-b pb-0.5"
+        className="cv-section-heading border-b pb-0.5"
         style={{ 
           borderColor: config.accentColor, 
           borderBottomWidth: `${config.sectionLineWidth}px`,
@@ -141,7 +141,7 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
   const renderSummary = () => {
     if (!personalInfo.summary || !personalInfo.showSummary) return null;
     return (
-      <div style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div className="cv-section cv-summary" style={{ marginBottom: `${config.sectionGap}mm` }}>
         <p className="text-justify leading-relaxed" style={{ color: config.textColor }}>
           {personalInfo.summary}
         </p>
@@ -154,11 +154,11 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (visibleEdu.length === 0) return null;
 
     return (
-      <div style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
         {renderSectionHeader('Education')}
         <div className="flex flex-col" style={{ gap: `${config.itemGap}mm` }}>
           {visibleEdu.map((item) => (
-            <div key={item.id} className="text-left">
+            <div key={item.id} className="cv-entry text-left">
               <div className="flex justify-between items-baseline flex-wrap">
                 <span className="font-bold" style={{ fontSize: `${config.itemTitleFontSize}pt` }}>
                   {item.institution} {item.location ? `(${item.location})` : ''}
@@ -194,11 +194,11 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (visibleExp.length === 0) return null;
 
     return (
-      <div style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
         {renderSectionHeader('Experiences')}
         <div className="flex flex-col" style={{ gap: `${config.itemGap}mm` }}>
           {visibleExp.map((item) => (
-            <div key={item.id} className="text-left">
+            <div key={item.id} className="cv-entry text-left">
               <div className="flex justify-between items-baseline flex-wrap">
                 <span 
                   className={config.boldCompanyOrRole === 'role' ? 'font-normal' : 'font-bold'}
@@ -240,11 +240,11 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (visibleProjects.length === 0) return null;
 
     return (
-      <div style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
         {renderSectionHeader('Projects')}
         <div className="flex flex-col" style={{ gap: `${config.itemGap}mm` }}>
           {visibleProjects.map((item) => (
-            <div key={item.id} className="text-left">
+            <div key={item.id} className="cv-entry text-left">
               <div className="flex justify-between items-baseline flex-wrap">
                 <span className="font-bold" style={{ fontSize: `${config.itemTitleFontSize}pt` }}>
                   {item.name}
@@ -294,11 +294,11 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (visibleAch.length === 0) return null;
 
     return (
-      <div style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
         {renderSectionHeader('Achievements')}
         <ul className="flex flex-col" style={{ gap: `${config.bulletGap + 0.5}mm` }}>
           {visibleAch.map((item) => (
-            <li key={item.id} className="flex items-start leading-snug">
+            <li key={item.id} className="cv-entry flex items-start leading-snug">
               <span className="mr-1.5 select-none font-bold text-xs" style={{ color: config.accentColor }}>
                 {bulletSymbol()}
               </span>
@@ -323,11 +323,11 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (visibleSkills.length === 0) return null;
 
     return (
-      <div style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
         {renderSectionHeader('Skills')}
         <ul className="flex flex-col" style={{ gap: `${config.bulletGap + 0.5}mm` }}>
           {visibleSkills.map((cat) => (
-            <li key={cat.id} className="flex items-start leading-snug">
+            <li key={cat.id} className="cv-entry flex items-start leading-snug">
               <span className="mr-1.5 select-none font-bold text-xs" style={{ color: config.accentColor }}>
                 {bulletSymbol()}
               </span>
@@ -346,11 +346,11 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
     if (!customSection.isVisible || !customSection.items || customSection.items.length === 0) return null;
 
     return (
-      <div key={customSection.id} style={{ marginBottom: `${config.sectionGap}mm` }}>
+      <div key={customSection.id} className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
         {renderSectionHeader(customSection.title)}
         <div className="flex flex-col" style={{ gap: `${config.itemGap}mm` }}>
           {customSection.items.map((item) => (
-            <div key={item.id} className="text-left">
+            <div key={item.id} className="cv-entry text-left">
               <div className="flex justify-between items-baseline flex-wrap">
                 <span className="font-bold" style={{ fontSize: `${config.itemTitleFontSize}pt` }}>
                   {item.title}

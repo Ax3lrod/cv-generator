@@ -36,23 +36,20 @@ export const Navbar: React.FC<Props> = ({
     <header className="no-print h-14 bg-surface border-b border-border px-4 flex items-center justify-between shrink-0 z-30 transition-colors">
       {/* Brand */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 border border-white/20">
+        <div className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-xs border border-border">
           <FileCheck2 className="w-4 h-4" />
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-extrabold text-base tracking-tight text-foreground flex items-center gap-1.5">
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
-                CVoila
-              </span>
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 inline" />
+            <h1 className="font-bold text-base tracking-tight text-foreground">
+              CVoila
             </h1>
-            <span className="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/25 font-semibold">
-              ATS Ready
+            <span className="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface-secondary text-muted border border-border font-semibold">
+              ATS 100%
             </span>
           </div>
           <p className="text-[11px] text-muted hidden sm:block">
-            Funky &amp; Precision ATS Resume Builder
+            Precision Vector &amp; ATS Resume Builder
           </p>
         </div>
       </div>

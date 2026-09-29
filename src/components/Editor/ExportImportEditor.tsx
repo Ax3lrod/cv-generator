@@ -245,7 +245,7 @@ export const ExportImportEditor: React.FC<Props> = ({
 
         <div className="p-4 space-y-3.5">
           <p className="text-xs text-slate-400 leading-relaxed">
-            Menghasilkan file PDF vector murni: teks dapat di-copy dan diparsing sempurna oleh sistem ATS, garis vector tajam tanpa blur, hyperlink dapat diklik, dan rasio millimeter 100% akurat.
+            Generates clean native vector PDF: 100% selectable text for ATS parsers, razor-sharp vector lines, clickable hyperlinks, and exact millimeter print accuracy.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -288,7 +288,7 @@ export const ExportImportEditor: React.FC<Props> = ({
                   Browser Print Dialog
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  Cetak fisik ke printer kantor atau simpan via dialog Chrome/Firefox.
+                  Print to physical printer or save via browser print dialog.
                 </span>
               </div>
               <button
@@ -301,8 +301,8 @@ export const ExportImportEditor: React.FC<Props> = ({
               </button>
             </div>
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2 text-[11px] text-blue-300 flex items-start gap-1.5">
-              <span className="font-bold shrink-0">💡 Tips Chrome:</span>
-              <span>Di jendela cetak Chrome, pilih <b>Margins: &quot;Default&quot;</b> atau <b>&quot;None&quot;</b> (jangan Custom). Margin atas dan bawah tiap halaman sudah otomatis terisi dan terkunci rapi dari sistem.</span>
+              <span className="font-bold shrink-0">💡 Print Dialog Tip:</span>
+              <span>In your browser print dialog, keep <b>Margins: &quot;Default&quot;</b> or <b>&quot;None&quot;</b> (avoid &quot;Custom&quot;). Page margins and spacing are already calculated and balanced with exact precision.</span>
             </div>
           </div>
         </div>

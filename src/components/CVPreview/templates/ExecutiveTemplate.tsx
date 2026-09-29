@@ -12,7 +12,7 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
   const renderSectionHeader = (title: string) => {
     return (
       <div 
-        className="border-b-2 border-slate-900 pb-1 flex justify-between items-baseline uppercase tracking-wider font-serif"
+        className="cv-section-heading border-b-2 border-slate-900 pb-1 flex justify-between items-baseline uppercase tracking-wider font-serif"
         style={{ borderColor: config.accentColor, marginBottom: `${config.itemGap}mm` }}
       >
         <h2 
@@ -116,7 +116,7 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
 
           if (sectionMeta.id === 'summary' && personalInfo.summary && personalInfo.showSummary) {
             return (
-              <div key="summary" style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key="summary" className="cv-section cv-summary" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 <p className="text-slate-800 leading-relaxed text-justify text-xs italic">
                   "{personalInfo.summary}"
                 </p>
@@ -128,11 +128,11 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
             const visibleEdu = education.filter(e => e.isVisible);
             if (visibleEdu.length === 0) return null;
             return (
-              <div key="education" style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key="education" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Education')}
                 <div className="space-y-2">
                   {visibleEdu.map(e => (
-                    <div key={e.id} className="text-xs">
+                    <div key={e.id} className="cv-entry text-xs">
                       <div className="flex justify-between font-bold text-slate-900">
                         <span>{e.institution} {e.location ? `(${e.location})` : ''}</span>
                         <span className="font-normal text-slate-600">{e.startDate} - {e.endDate}</span>
@@ -151,11 +151,11 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
             const visibleExp = experiences.filter(e => e.isVisible);
             if (visibleExp.length === 0) return null;
             return (
-              <div key="experiences" style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key="experiences" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Professional Experience')}
                 <div className="space-y-3">
                   {visibleExp.map(exp => (
-                    <div key={exp.id} className="text-xs">
+                    <div key={exp.id} className="cv-entry text-xs">
                       <div className="flex justify-between font-bold text-slate-900">
                         <span>{exp.company} {exp.location ? `(${exp.location})` : ''}</span>
                         <span className="font-normal text-slate-600">{exp.startDate} - {exp.endDate}</span>
@@ -182,11 +182,11 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
             const visibleProjects = projects.filter(p => p.isVisible);
             if (visibleProjects.length === 0) return null;
             return (
-              <div key="projects" style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key="projects" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Key Projects')}
                 <div className="space-y-2">
                   {visibleProjects.map(p => (
-                    <div key={p.id} className="text-xs">
+                    <div key={p.id} className="cv-entry text-xs">
                       <div className="font-bold text-slate-900">
                         {p.name}
                         {p.techStack && <span className="font-normal text-slate-500 ml-2">[{p.techStack}]</span>}
@@ -210,11 +210,11 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
             const visibleSkills = skills.filter(s => s.isVisible);
             if (visibleSkills.length === 0) return null;
             return (
-              <div key="skills" style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key="skills" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Core Competencies')}
                 <div className="space-y-1 text-xs text-slate-800">
                   {visibleSkills.map(s => (
-                    <div key={s.id}>
+                    <div key={s.id} className="cv-entry">
                       <strong className="font-bold text-slate-900">{s.name}:</strong> {s.skills}
                     </div>
                   ))}
@@ -227,11 +227,11 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
             const visibleAch = achievements.filter(a => a.isVisible);
             if (visibleAch.length === 0) return null;
             return (
-              <div key="achievements" style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key="achievements" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Honors & Awards')}
                 <div className="space-y-1 text-xs text-slate-800">
                   {visibleAch.map(a => (
-                    <div key={a.id} className="flex justify-between">
+                    <div key={a.id} className="cv-entry flex justify-between">
                       <span><strong>{a.title}</strong>: {a.event}</span>
                       {a.date && <span className="text-slate-500">{a.date}</span>}
                     </div>
@@ -244,11 +244,11 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
           const custom = customSections.find(c => c.id === sectionMeta.id);
           if (custom && custom.isVisible) {
             return (
-              <div key={custom.id} style={{ marginBottom: `${config.sectionGap}mm` }}>
+              <div key={custom.id} className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader(custom.title)}
                 <div className="space-y-2 text-xs">
                   {custom.items.map(item => (
-                    <div key={item.id}>
+                    <div key={item.id} className="cv-entry">
                       <div className="flex justify-between font-bold">
                         <span>{item.title}</span>
                         {item.date && <span>{item.date}</span>}

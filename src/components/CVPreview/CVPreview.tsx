@@ -23,10 +23,12 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
 }) => {
   const paperRef = useRef<HTMLDivElement>(null);
   const innerContentRef = useRef<HTMLDivElement>(null);
+  const measureContentRef = useRef<HTMLDivElement>(null);
 
   const [viewMode, setViewMode] = useState<'separated' | 'continuous'>('separated');
   const [contentHeight, setContentHeight] = useState<number>(0);
   const [autoScaleFactor, setAutoScaleFactor] = useState<number>(1);
+  const [pageOffsets, setPageOffsets] = useState<number[]>([0]);
 
   const { widthMm, heightMm } = getPaperDimensions(designConfig);
 
@@ -41,24 +43,121 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
     (innerHeightMm - safetyBufferMm) * 3.779527
   );
 
-  // Measure content and calculate force-1-page scaling factor
+  // Calculate pixel-perfect, element-boundary pagination
   useEffect(() => {
-    if (innerContentRef.current) {
-      const naturalHeight = innerContentRef.current.scrollHeight;
+    const calculatePagination = () => {
+      const container = measureContentRef.current || innerContentRef.current;
+      if (!container) return;
+
+      const naturalHeight = container.scrollHeight;
       setContentHeight(naturalHeight);
 
-      if (designConfig.forceOnePage && naturalHeight > availableInnerHeightPx) {
-        // Calculate exact scale factor needed to lock content into 1 page with safe bottom margin
-        const neededScale = Math.max(0.6, availableInnerHeightPx / naturalHeight);
-        setAutoScaleFactor(neededScale);
-      } else {
-        setAutoScaleFactor(1);
+      if (designConfig.forceOnePage) {
+        if (naturalHeight > availableInnerHeightPx) {
+          const neededScale = Math.max(0.6, availableInnerHeightPx / naturalHeight);
+          setAutoScaleFactor(neededScale);
+        } else {
+          setAutoScaleFactor(1);
+        }
+        setPageOffsets([0]);
+        return;
       }
-    }
-  }, [cvData, designConfig, availableInnerHeightPx]);
 
-  const isOverflowingPageOne = contentHeight > innerHeightPx;
-  const estimatedPages = designConfig.forceOnePage ? 1 : Math.max(1, Math.ceil(contentHeight / innerHeightPx));
+      setAutoScaleFactor(1);
+
+      if (naturalHeight <= innerHeightPx) {
+        setPageOffsets([0]);
+        return;
+      }
+
+      const containerRect = container.getBoundingClientRect();
+
+      // Query all atomic blocks: header, summary, section headings, entries
+      const elements = Array.from(
+        container.querySelectorAll<HTMLElement>(
+          '.cv-header, .cv-summary, .cv-section-heading, .cv-entry'
+        )
+      );
+
+      if (elements.length === 0) {
+        const pagesCount = Math.max(1, Math.ceil(naturalHeight / innerHeightPx));
+        const fallbackOffsets = Array.from({ length: pagesCount }, (_, i) => i * innerHeightPx);
+        setPageOffsets(fallbackOffsets);
+        return;
+      }
+
+      const items = elements.map((el) => {
+        const rect = el.getBoundingClientRect();
+        return {
+          top: Math.round(rect.top - containerRect.top),
+          bottom: Math.round(rect.bottom - containerRect.top),
+          height: Math.round(rect.height),
+          isHeading: el.classList.contains('cv-section-heading'),
+        };
+      });
+
+      const offsets: number[] = [0];
+      let currentStart = 0;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const nextItem = items[i + 1];
+
+        // Does this item overflow the current page?
+        const overflowsCurrentPage = (item.bottom - currentStart) > innerHeightPx;
+
+        // Anti-orphan rule for section headings:
+        // If the item is a heading and its first entry overflows the page,
+        // move the heading itself to the next page!
+        const isOrphanHeading =
+          item.isHeading &&
+          Boolean(nextItem) &&
+          !nextItem.isHeading &&
+          ((nextItem.bottom - currentStart) > innerHeightPx);
+
+        if (overflowsCurrentPage || isOrphanHeading) {
+          if (item.top > currentStart) {
+            const breakPoint = item.top;
+            offsets.push(breakPoint);
+            currentStart = breakPoint;
+          } else {
+            // Extreme edge case: a single element taller than a full page
+            const breakPoint = currentStart + innerHeightPx;
+            offsets.push(breakPoint);
+            currentStart = breakPoint;
+          }
+        }
+      }
+
+      setPageOffsets(offsets);
+    };
+
+    calculatePagination();
+
+    // Re-calculate when fonts finish rendering
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(() => {
+        calculatePagination();
+      });
+    }
+
+    // Observe changes via ResizeObserver
+    let ro: ResizeObserver | null = null;
+    const target = measureContentRef.current || innerContentRef.current;
+    if (typeof ResizeObserver !== 'undefined' && target) {
+      ro = new ResizeObserver(() => {
+        calculatePagination();
+      });
+      ro.observe(target);
+    }
+
+    return () => {
+      if (ro) ro.disconnect();
+    };
+  }, [cvData, designConfig, innerHeightPx, availableInnerHeightPx, widthMm, heightMm]);
+
+  const isOverflowingPageOne = pageOffsets.length > 1;
+  const totalPages = designConfig.forceOnePage ? 1 : Math.max(1, pageOffsets.length);
 
   const renderTemplate = () => {
     switch (designConfig.template) {
@@ -203,7 +302,7 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
               color={isOverflowingPageOne ? 'warning' : 'success'}
             >
               <Chip.Label className="font-medium">
-                {estimatedPages === 1 ? '1 Page' : `${estimatedPages} Pages`}
+                {totalPages === 1 ? '1 Page' : `${totalPages} Pages`}
               </Chip.Label>
             </Chip>
           )}
@@ -242,6 +341,28 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
         </div>
       </div>
 
+      {/* Unscaled hidden measurement container for pixel-perfect element-boundary pagination */}
+      <div
+        aria-hidden="true"
+        className="no-print pointer-events-none opacity-0 fixed -left-[99999px] top-0"
+        style={{
+          width: `${widthMm}mm`,
+          boxSizing: 'border-box',
+          paddingTop: `${designConfig.pageMarginTop}mm`,
+          paddingBottom: `${designConfig.pageMarginBottom}mm`,
+          paddingLeft: `${designConfig.pageMarginLeft}mm`,
+          paddingRight: `${designConfig.pageMarginRight}mm`,
+          fontFamily: fontFamilies[designConfig.fontFamily] || fontFamilies['inter'],
+          fontSize: `${designConfig.baseFontSize}pt`,
+          lineHeight: designConfig.lineHeight,
+          color: designConfig.textColor,
+        }}
+      >
+        <div ref={measureContentRef} className="w-full">
+          {renderTemplate()}
+        </div>
+      </div>
+
       {/* Scalable Container for Live Preview */}
       <div 
         style={{ 
@@ -254,61 +375,70 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
         {/* VIEW 1: Separated Pages Mode (On Screen) */}
         {viewMode === 'separated' && (
           <div className="cv-screen-separated no-print flex flex-col items-center gap-8 w-full">
-            {Array.from({ length: estimatedPages }).map((_, pageIndex) => (
-              <div key={pageIndex} className="flex flex-col items-center">
-                {/* Individual Sheet Top Indicator */}
-                <div className="flex items-center justify-between w-full max-w-[215mm] mb-1.5 px-2 text-xs text-muted">
-                  <span className="font-semibold text-foreground/80 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-accent inline-block" />
-                    Page {pageIndex + 1} of {estimatedPages}
-                  </span>
-                  <span className="font-mono text-[11px] text-muted">
-                    {widthMm} × {heightMm} mm
-                  </span>
-                </div>
+            {pageOffsets.map((offset, pageIndex) => {
+              const nextOffset = pageOffsets[pageIndex + 1];
+              const pageContentHeight = nextOffset
+                ? nextOffset - offset
+                : innerHeightPx;
 
-                {/* Individual Sheet Card */}
-                <div
-                  className="cv-paper-sheet relative bg-white text-slate-900 shadow-2xl transition-all duration-200"
-                  style={{
-                    width: `${widthMm}mm`,
-                    height: `${heightMm}mm`,
-                    boxSizing: 'border-box',
-                    paddingTop: `${designConfig.pageMarginTop}mm`,
-                    paddingBottom: `${designConfig.pageMarginBottom}mm`,
-                    paddingLeft: `${designConfig.pageMarginLeft}mm`,
-                    paddingRight: `${designConfig.pageMarginRight}mm`,
-                    overflow: 'hidden',
-                    fontFamily: fontFamilies[designConfig.fontFamily] || fontFamilies['inter'],
-                    fontSize: `${designConfig.baseFontSize}pt`,
-                    lineHeight: designConfig.lineHeight,
-                    color: designConfig.textColor,
-                  }}
-                >
-                  {/* Viewport clipping exactly to one page of content */}
+              return (
+                <div key={pageIndex} className="flex flex-col items-center">
+                  {/* Individual Sheet Top Indicator */}
+                  <div className="flex items-center justify-between w-full max-w-[215mm] mb-1.5 px-2 text-xs text-muted">
+                    <span className="font-semibold text-foreground/80 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-accent inline-block" />
+                      Page {pageIndex + 1} of {totalPages}
+                    </span>
+                    <span className="font-mono text-[11px] text-muted">
+                      {widthMm} × {heightMm} mm
+                    </span>
+                  </div>
+
+                  {/* Individual Sheet Card */}
                   <div
-                    className="w-full h-full relative"
+                    className="cv-paper-sheet relative bg-white text-slate-900 shadow-2xl transition-all duration-200"
                     style={{
+                      width: `${widthMm}mm`,
+                      height: `${heightMm}mm`,
+                      boxSizing: 'border-box',
+                      paddingTop: `${designConfig.pageMarginTop}mm`,
+                      paddingBottom: `${designConfig.pageMarginBottom}mm`,
+                      paddingLeft: `${designConfig.pageMarginLeft}mm`,
+                      paddingRight: `${designConfig.pageMarginRight}mm`,
                       overflow: 'hidden',
+                      fontFamily: fontFamilies[designConfig.fontFamily] || fontFamilies['inter'],
+                      fontSize: `${designConfig.baseFontSize}pt`,
+                      lineHeight: designConfig.lineHeight,
+                      color: designConfig.textColor,
                     }}
                   >
+                    {/* Viewport clipping exactly to this page's content */}
                     <div
+                      className="w-full relative"
                       style={{
-                        transform: designConfig.forceOnePage && autoScaleFactor < 1
-                          ? `scale(${autoScaleFactor})`
-                          : `translateY(-${pageIndex * innerHeightPx}px)`,
-                        transformOrigin: 'top left',
-                        width: designConfig.forceOnePage && autoScaleFactor < 1
-                          ? `${(1 / autoScaleFactor) * 100}%`
-                          : '100%',
+                        height: `${pageContentHeight}px`,
+                        maxHeight: `${innerHeightPx}px`,
+                        overflow: 'hidden',
                       }}
                     >
-                      {renderTemplate()}
+                      <div
+                        style={{
+                          transform: designConfig.forceOnePage && autoScaleFactor < 1
+                            ? `scale(${autoScaleFactor})`
+                            : `translateY(-${offset}px)`,
+                          transformOrigin: 'top left',
+                          width: designConfig.forceOnePage && autoScaleFactor < 1
+                            ? `${(1 / autoScaleFactor) * 100}%`
+                            : '100%',
+                        }}
+                      >
+                        {renderTemplate()}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -339,16 +469,17 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
           }}
         >
           {/* Visual Page Break Indicator when forceOnePage is OFF in continuous view */}
-          {viewMode === 'continuous' && !designConfig.forceOnePage && showPageBreaks && contentHeight > availableInnerHeightPx && (
+          {viewMode === 'continuous' && !designConfig.forceOnePage && showPageBreaks && pageOffsets.slice(1).map((offset, idx) => (
             <div 
+              key={idx}
               className="page-overflow-indicator no-print absolute left-0 right-0 border-b-2 border-dashed border-rose-400 pointer-events-none z-20 flex justify-end pr-4 text-[10px] font-mono text-rose-600 uppercase font-semibold"
-              style={{ top: `${pageHeightPx}px` }}
+              style={{ top: `${Math.round(designConfig.pageMarginTop * 3.779527 + offset)}px` }}
             >
               <span className="bg-rose-100 px-2 py-0.5 rounded-t border border-rose-300">
-                End of Page 1
+                End of Page {idx + 1}
               </span>
             </div>
-          )}
+          ))}
 
           {/* Inner Content with dynamic 1-page scaling */}
           <div
@@ -380,45 +511,59 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
 
         {/* VIEW 3: Dedicated Print Container for High-Fidelity Multi-Page Print */}
         <div className="hidden print:block cv-print-container">
-          {Array.from({ length: estimatedPages }).map((_, pageIndex) => (
-            <div
-              key={pageIndex}
-              className="cv-paper-sheet"
-              style={{
-                width: `${widthMm}mm`,
-                height: `${heightMm}mm`,
-                maxHeight: `${heightMm}mm`,
-                minHeight: `${heightMm}mm`,
-                boxSizing: 'border-box',
-                paddingTop: `${designConfig.pageMarginTop}mm`,
-                paddingBottom: `${designConfig.pageMarginBottom}mm`,
-                paddingLeft: `${designConfig.pageMarginLeft}mm`,
-                paddingRight: `${designConfig.pageMarginRight}mm`,
-                overflow: 'hidden',
-                fontFamily: fontFamilies[designConfig.fontFamily] || fontFamilies['inter'],
-                fontSize: `${designConfig.baseFontSize}pt`,
-                lineHeight: designConfig.lineHeight,
-                color: designConfig.textColor,
-                background: '#ffffff',
-              }}
-            >
-              <div className="w-full h-full relative" style={{ overflow: 'hidden' }}>
+          {pageOffsets.map((offset, pageIndex) => {
+            const nextOffset = pageOffsets[pageIndex + 1];
+            const pageContentHeight = nextOffset
+              ? nextOffset - offset
+              : innerHeightPx;
+
+            return (
+              <div
+                key={pageIndex}
+                className="cv-paper-sheet"
+                style={{
+                  width: `${widthMm}mm`,
+                  height: `${heightMm}mm`,
+                  maxHeight: `${heightMm}mm`,
+                  minHeight: `${heightMm}mm`,
+                  boxSizing: 'border-box',
+                  paddingTop: `${designConfig.pageMarginTop}mm`,
+                  paddingBottom: `${designConfig.pageMarginBottom}mm`,
+                  paddingLeft: `${designConfig.pageMarginLeft}mm`,
+                  paddingRight: `${designConfig.pageMarginRight}mm`,
+                  overflow: 'hidden',
+                  fontFamily: fontFamilies[designConfig.fontFamily] || fontFamilies['inter'],
+                  fontSize: `${designConfig.baseFontSize}pt`,
+                  lineHeight: designConfig.lineHeight,
+                  color: designConfig.textColor,
+                  background: '#ffffff',
+                }}
+              >
                 <div
+                  className="w-full relative"
                   style={{
-                    transform: designConfig.forceOnePage && autoScaleFactor < 1
-                      ? `scale(${autoScaleFactor})`
-                      : `translateY(-${pageIndex * innerHeightPx}px)`,
-                    transformOrigin: 'top left',
-                    width: designConfig.forceOnePage && autoScaleFactor < 1
-                      ? `${(1 / autoScaleFactor) * 100}%`
-                      : '100%',
+                    height: `${pageContentHeight}px`,
+                    maxHeight: `${innerHeightPx}px`,
+                    overflow: 'hidden',
                   }}
                 >
-                  {renderTemplate()}
+                  <div
+                    style={{
+                      transform: designConfig.forceOnePage && autoScaleFactor < 1
+                        ? `scale(${autoScaleFactor})`
+                        : `translateY(-${offset}px)`,
+                      transformOrigin: 'top left',
+                      width: designConfig.forceOnePage && autoScaleFactor < 1
+                        ? `${(1 / autoScaleFactor) * 100}%`
+                        : '100%',
+                    }}
+                  >
+                    {renderTemplate()}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
