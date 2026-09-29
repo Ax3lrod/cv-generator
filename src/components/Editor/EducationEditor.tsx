@@ -1,7 +1,7 @@
 import React from 'react';
 import { EducationItem } from '../../types/cv';
-import { Plus, Trash2, GraduationCap } from 'lucide-react';
-import { Button, Card, Switch, Input } from '@heroui/react';
+import { Plus, Trash2, GraduationCap, Eye, EyeOff } from 'lucide-react';
+import { Button } from '@heroui/react';
 
 interface Props {
   data: EducationItem[];
@@ -42,9 +42,10 @@ export const EducationEditor: React.FC<Props> = ({ data, onChange }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between border-b border-border/70 pb-3">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+      {/* Section Header */}
+      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
             <GraduationCap className="w-4 h-4" />
           </div>
           Education ({data.length})
@@ -53,126 +54,158 @@ export const EducationEditor: React.FC<Props> = ({ data, onChange }) => {
           size="sm"
           variant="primary"
           onPress={handleAddItem}
-          className="text-xs font-medium h-8 px-3 rounded-lg"
+          className="text-xs font-semibold h-8 px-3 rounded-lg flex items-center gap-1.5"
         >
-          <Plus className="w-3.5 h-3.5 mr-1" />
+          <Plus className="w-3.5 h-3.5" />
           <span>Add Education</span>
         </Button>
       </div>
 
       {data.length === 0 ? (
-        <Card variant="secondary" className="border border-dashed border-border p-6 text-center">
-          <p className="text-muted text-xs">
+        <div className="border border-dashed border-slate-800 bg-slate-900/40 rounded-xl p-8 text-center">
+          <GraduationCap className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+          <p className="text-slate-400 text-xs font-medium">
             No education entries added yet. Click &quot;Add Education&quot; to begin.
           </p>
-        </Card>
+        </div>
       ) : (
         <div className="space-y-3.5">
           {data.map((item, index) => (
-            <Card
+            <div
               key={item.id}
-              variant="secondary"
-              className={`border transition-all ${
-                item.isVisible ? 'border-border shadow-xs' : 'border-border/40 opacity-60'
+              className={`rounded-xl border transition-all duration-200 shadow-sm ${
+                item.isVisible
+                  ? 'bg-slate-900/90 border-slate-800 hover:border-slate-700 shadow-black/20'
+                  : 'bg-slate-950/40 border-slate-800/60 opacity-60 border-dashed'
               }`}
             >
-              <Card.Header className="flex items-center justify-between border-b border-border/60 pb-2.5 px-4 pt-3">
-                <span className="text-xs font-semibold text-foreground">
-                  #{index + 1} {item.institution || 'Untitled Institution'}
-                </span>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    isSelected={item.isVisible}
-                    onChange={(checked) => handleToggleVisibility(item.id, checked)}
-                    size="sm"
+              {/* Card Header with Aligned Actions */}
+              <div className="flex items-center justify-between py-2.5 px-3.5 border-b border-slate-800/80 bg-slate-950/70 rounded-t-xl gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-bold flex items-center justify-center shrink-0">
+                    {index + 1}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-100 truncate">
+                    {item.institution || item.degree
+                      ? `${item.institution}${item.degree ? ` — ${item.degree}` : ''}`
+                      : `Education #${index + 1}`}
+                  </span>
+                  {!item.isVisible && (
+                    <span className="text-[10px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded shrink-0">
+                      Hidden
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleToggleVisibility(item.id, !item.isVisible)}
+                    className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all ${
+                      item.isVisible
+                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20'
+                        : 'text-slate-500 bg-slate-900 border-slate-800 hover:text-slate-300'
+                    }`}
+                    title={item.isVisible ? 'Visible on CV (click to hide)' : 'Hidden from CV (click to show)'}
+                    aria-label={item.isVisible ? 'Hide from CV' : 'Show on CV'}
                   >
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                  </Switch>
-                  <Button
-                    size="sm"
-                    variant="danger-soft"
-                    isIconOnly
-                    onPress={() => handleDeleteItem(item.id)}
-                    className="h-7 w-7 rounded-lg"
-                    aria-label="Delete Entry"
+                    {item.isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteItem(item.id)}
+                    className="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 flex items-center justify-center transition-all"
+                    title="Delete Education"
+                    aria-label="Delete Education"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
+                  </button>
                 </div>
-              </Card.Header>
+              </div>
 
-              <Card.Content className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Card Body */}
+              <div className="p-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1">Institution</label>
-                    <Input
-                      variant="secondary"
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                      Institution
+                    </label>
+                    <input
+                      type="text"
                       value={item.institution}
                       onChange={(e) => handleItemChange(item.id, 'institution', e.target.value)}
                       placeholder="e.g. University of California, Berkeley"
-                      className="w-full text-xs"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1">Degree / Major</label>
-                    <Input
-                      variant="secondary"
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                      Degree / Major
+                    </label>
+                    <input
+                      type="text"
                       value={item.degree}
                       onChange={(e) => handleItemChange(item.id, 'degree', e.target.value)}
                       placeholder="e.g. Bachelor of Computer Science"
-                      className="w-full text-xs"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1">Location</label>
-                    <Input
-                      variant="secondary"
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                      Location
+                    </label>
+                    <input
+                      type="text"
                       value={item.location}
                       onChange={(e) => handleItemChange(item.id, 'location', e.target.value)}
                       placeholder="e.g. Berkeley, CA"
-                      className="w-full text-xs"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1">GPA / Honors</label>
-                    <Input
-                      variant="secondary"
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                      GPA / Honors
+                    </label>
+                    <input
+                      type="text"
                       value={item.gpa || ''}
                       onChange={(e) => handleItemChange(item.id, 'gpa', e.target.value)}
                       placeholder="e.g. 3.88/4.00"
-                      className="w-full text-xs"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1">Start Date</label>
-                    <Input
-                      variant="secondary"
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                      Start Date
+                    </label>
+                    <input
+                      type="text"
                       value={item.startDate}
                       onChange={(e) => handleItemChange(item.id, 'startDate', e.target.value)}
                       placeholder="e.g. Aug 2019"
-                      className="w-full text-xs"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1">End Date</label>
-                    <Input
-                      variant="secondary"
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                      End Date
+                    </label>
+                    <input
+                      type="text"
                       value={item.endDate}
                       onChange={(e) => handleItemChange(item.id, 'endDate', e.target.value)}
                       placeholder="e.g. May 2023"
-                      className="w-full text-xs"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
                     />
                   </div>
                 </div>
-              </Card.Content>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

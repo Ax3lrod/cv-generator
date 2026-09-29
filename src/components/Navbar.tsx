@@ -44,12 +44,9 @@ export const Navbar: React.FC<Props> = ({
             <h1 className="font-bold text-sm tracking-tight text-foreground">
               CV Studio
             </h1>
-            <Chip size="sm" variant="soft" color="accent" className="hidden sm:inline-flex text-[10px] h-5 px-1.5 font-medium">
-              <Chip.Label className="flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5" />
-                <span>HeroUI v3</span>
-              </Chip.Label>
-            </Chip>
+            <span className="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">
+              ATS Ready
+            </span>
           </div>
           <p className="text-[11px] text-muted hidden sm:block">
             Professional ATS & Vector Resume Builder

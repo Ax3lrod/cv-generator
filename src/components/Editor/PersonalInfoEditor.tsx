@@ -1,8 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { PersonalInfo, DesignConfig } from '../../types/cv';
-import { readAndPreScaleImage } from '../../utils/imageUtils';
-import { PhotoCropModal } from './PhotoCropModal';
 import { 
+  Camera, 
+  Trash2, 
+  RefreshCw, 
+  Upload, 
+  Crop as CropIcon, 
   User, 
   Mail, 
   Phone, 
@@ -10,15 +13,14 @@ import {
   Globe, 
   Link2, 
   Code, 
-  FileText, 
-  Camera, 
-  Upload, 
-  Trash2, 
-  RefreshCw,
-  Crop as CropIcon,
-  Sparkles
+  FileText,
+  Eye,
+  EyeOff
 } from 'lucide-react';
-import { Button, Card, Chip, Switch, Input, TextArea } from '@heroui/react';
+import { Button } from '@heroui/react';
+import { PhotoCropModal } from './PhotoCropModal';
+import { readAndPreScaleImage } from '../../utils/imageUtils';
+import { ToggleSwitch } from '../UI/ToggleSwitch';
 
 interface Props {
   data: PersonalInfo;
@@ -34,9 +36,9 @@ export const PersonalInfoEditor: React.FC<Props> = ({
   onUpdateDesignConfig,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [cropImageSource, setCropImageSource] = useState<string>('');
 
@@ -145,7 +147,6 @@ export const PersonalInfoEditor: React.FC<Props> = ({
   const photoAspectRatio = designConfig?.photoAspectRatio || '1:1';
   const isPortrait = photoAspectRatio === '3:4';
   const photoSize = designConfig?.photoSize || 26;
-  const photoPosition = designConfig?.photoPosition || 'right';
 
   const shapeClass = 
     photoShape === 'circle' && !isPortrait ? 'rounded-full' :
@@ -155,39 +156,22 @@ export const PersonalInfoEditor: React.FC<Props> = ({
   return (
     <div className="space-y-4">
       {/* 1. Profile Photo Management Card */}
-      <Card variant="secondary" className="border border-border">
-        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/90 shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-800/80 bg-slate-950/70 px-4 py-2.5">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
               <Camera className="w-4 h-4" />
             </div>
-            <div>
-              <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                Profile Photo
-              </Card.Title>
-            </div>
-            <Chip size="sm" variant="soft" color="default" className="text-[10px] h-4.5 px-1.5">
-              <Chip.Label>Optional</Chip.Label>
-            </Chip>
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-200">
+              Profile Photo
+            </span>
+            <span className="text-[10px] font-medium bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">
+              Optional
+            </span>
           </div>
+        </div>
 
-          {data.photoUrl && (
-            <Switch
-              isSelected={data.showPhoto || false}
-              onChange={(checked) => handleChange('showPhoto', checked)}
-              size="sm"
-            >
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              <Switch.Content className="text-xs font-medium text-foreground cursor-pointer">
-                Show on CV
-              </Switch.Content>
-            </Switch>
-          )}
-        </Card.Header>
-
-        <Card.Content className="p-4 space-y-3">
+        <div className="p-4 space-y-3.5">
           {/* Hidden file input */}
           <input
             ref={fileInputRef}
@@ -200,14 +184,40 @@ export const PersonalInfoEditor: React.FC<Props> = ({
 
           {data.photoUrl ? (
             <div className="space-y-3.5">
-              <div className="flex items-center gap-4">
-                {/* Thumbnail Preview */}
+              {/* Prominent, neatly aligned Visibility Toggle Row */}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className={`p-1.5 rounded-lg border transition ${
+                    data.showPhoto
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                      : 'bg-slate-800/60 text-slate-500 border-slate-700/50'
+                  }`}>
+                    {data.showPhoto ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-200">
+                      Show Photo on CV
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Include profile photo in the exported PDF and preview
+                    </div>
+                  </div>
+                </div>
+                <ToggleSwitch
+                  checked={data.showPhoto || false}
+                  onChange={(checked) => handleChange('showPhoto', checked)}
+                  ariaLabel="Toggle photo visibility on CV"
+                />
+              </div>
+
+              {/* Photo Preview & Action Controls */}
+              <div className="flex items-center gap-4 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
                 <div className="relative shrink-0">
                   <img
                     src={data.photoUrl}
                     alt="Profile Preview"
-                    className={`${isPortrait ? 'w-14 h-[72px]' : 'w-16 h-16'} object-cover bg-surface-tertiary border-2 ${
-                      data.showPhoto ? 'border-accent shadow-sm' : 'border-border opacity-50'
+                    className={`${isPortrait ? 'w-14 h-[72px]' : 'w-16 h-16'} object-cover bg-slate-800 border-2 ${
+                      data.showPhoto ? 'border-blue-500 shadow-sm' : 'border-slate-700 opacity-50'
                     } ${shapeClass} transition-all`}
                   />
                   {!data.showPhoto && (
@@ -217,114 +227,106 @@ export const PersonalInfoEditor: React.FC<Props> = ({
                   )}
                 </div>
 
-                {/* Actions */}
                 <div className="space-y-2 flex-1">
                   <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      onPress={handleOpenCropModal}
-                      className="text-xs font-medium h-8"
+                    <button
+                      type="button"
+                      onClick={handleOpenCropModal}
+                      className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold h-8 px-3 rounded-lg flex items-center gap-1.5 transition shadow-sm"
                     >
-                      <CropIcon className="w-3.5 h-3.5 mr-1" />
-                      <span>Crop & Frame</span>
-                    </Button>
+                      <CropIcon className="w-3.5 h-3.5" />
+                      <span>Crop / Adjust</span>
+                    </button>
 
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      isDisabled={isProcessing}
-                      onPress={() => fileInputRef.current?.click()}
-                      className="text-xs font-medium h-8"
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold h-8 px-3 rounded-lg flex items-center gap-1.5 border border-slate-700 transition"
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 mr-1 ${isProcessing ? 'animate-spin' : ''}`} />
+                      <RefreshCw className={`w-3.5 h-3.5 ${isProcessing ? 'animate-spin' : ''}`} />
                       <span>Change</span>
-                    </Button>
+                    </button>
 
-                    <Button
-                      size="sm"
-                      variant="danger-soft"
-                      onPress={handleRemovePhoto}
-                      className="text-xs font-medium h-8"
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      className="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 font-semibold h-8 px-2.5 rounded-lg border border-transparent hover:border-rose-500/20 flex items-center gap-1.5 transition"
                     >
-                      <Trash2 className="w-3.5 h-3.5 mr-1" />
+                      <Trash2 className="w-3.5 h-3.5" />
                       <span>Remove</span>
-                    </Button>
+                    </button>
                   </div>
-                  <p className="text-[11px] text-muted">
-                    Auto-optimized to 600×600 px for crisp print & vector PDF export.
+                  <p className="text-[11px] text-slate-400">
+                    High-res vector PDF export with print precision.
                   </p>
                 </div>
               </div>
 
-              {/* Quick Photo Style Controls */}
+              {/* Photo Styling (Shape & Size) */}
               {designConfig && onUpdateDesignConfig && (
-                <div className="pt-3 border-t border-border/60 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                  {/* Shape Picker */}
-                  <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1.5">Avatar Shape</label>
-                    <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
-                      {(['circle', 'rounded', 'square'] as const).map((shape) => (
-                        <Button
-                          key={shape}
-                          size="sm"
-                          variant={photoShape === shape ? 'primary' : 'ghost'}
-                          onPress={() => onUpdateDesignConfig({ ...designConfig, photoShape: shape })}
-                          className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
-                        >
-                          {shape === 'circle' ? 'Circle' : shape === 'rounded' ? 'Rounded' : 'Square'}
-                        </Button>
-                      ))}
+                <div className="pt-2 border-t border-slate-800/80 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Shape Picker */}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                        Avatar Shape
+                      </label>
+                      <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                        {(['circle', 'rounded', 'square'] as const).map((shape) => (
+                          <button
+                            key={shape}
+                            type="button"
+                            onClick={() => onUpdateDesignConfig({ ...designConfig, photoShape: shape })}
+                            className={`py-1 text-xs font-semibold rounded-lg transition ${
+                              photoShape === shape
+                                ? 'bg-blue-600 text-white shadow-xs'
+                                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                            }`}
+                          >
+                            {shape === 'circle' ? 'Circle' : shape === 'rounded' ? 'Rounded' : 'Square'}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Aspect Ratio Picker */}
-                  <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1.5">Aspect Ratio</label>
-                    <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
-                      {(['1:1', '3:4'] as const).map((ratio) => (
-                        <Button
-                          key={ratio}
-                          size="sm"
-                          variant={photoAspectRatio === ratio ? 'primary' : 'ghost'}
-                          onPress={() =>
-                            onUpdateDesignConfig({
-                              ...designConfig,
-                              photoAspectRatio: ratio,
-                              ...(ratio === '3:4' && photoShape === 'circle' ? { photoShape: 'rounded' } : {}),
-                            })
-                          }
-                          className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                    {/* Aspect Ratio */}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                        Aspect Ratio
+                      </label>
+                      <div className="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                        <button
+                          type="button"
+                          onClick={() => onUpdateDesignConfig({ ...designConfig, photoAspectRatio: '1:1' })}
+                          className={`py-1 text-xs font-semibold rounded-lg transition ${
+                            photoAspectRatio === '1:1'
+                              ? 'bg-blue-600 text-white shadow-xs'
+                              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                          }`}
                         >
-                          {ratio === '1:1' ? '1:1 Sq' : '3:4 Pas'}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Position Picker */}
-                  <div>
-                    <label className="block text-[11px] font-medium text-muted mb-1.5">Header Position</label>
-                    <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
-                      {(['right', 'left'] as const).map((pos) => (
-                        <Button
-                          key={pos}
-                          size="sm"
-                          variant={photoPosition === pos ? 'primary' : 'ghost'}
-                          onPress={() => onUpdateDesignConfig({ ...designConfig, photoPosition: pos })}
-                          className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                          1:1 Square
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateDesignConfig({ ...designConfig, photoAspectRatio: '3:4' })}
+                          className={`py-1 text-xs font-semibold rounded-lg transition ${
+                            photoAspectRatio === '3:4'
+                              ? 'bg-blue-600 text-white shadow-xs'
+                              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                          }`}
                         >
-                          {pos === 'right' ? 'Right' : 'Left'}
-                        </Button>
-                      ))}
+                          3:4 Portrait
+                        </button>
+                      </div>
                     </div>
                   </div>
 
                   {/* Size Slider */}
-                  <div className="sm:col-span-3 pt-1">
-                    <div className="flex justify-between text-[11px] text-muted mb-1">
+                  <div>
+                    <div className="flex justify-between text-[11px] text-slate-400 mb-1 font-semibold uppercase tracking-wider">
                       <span>Photo Width</span>
-                      <span className="font-mono text-accent font-semibold">
+                      <span className="font-mono text-blue-400 font-bold">
                         {photoSize} mm {isPortrait ? `× ${Math.round((photoSize * 4) / 3)} mm` : `× ${photoSize} mm`}
                       </span>
                     </div>
@@ -340,7 +342,7 @@ export const PersonalInfoEditor: React.FC<Props> = ({
                           photoSize: parseInt(e.target.value, 10),
                         })
                       }
-                      className="w-full accent-accent rounded"
+                      className="w-full accent-blue-500 cursor-pointer"
                     />
                   </div>
                 </div>
@@ -353,201 +355,194 @@ export const PersonalInfoEditor: React.FC<Props> = ({
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
+              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
                 isDragging
-                  ? 'border-accent bg-accent/10 shadow-inner'
-                  : 'border-border/80 hover:border-accent/60 bg-surface-tertiary/30 hover:bg-surface-tertiary/60'
+                  ? 'border-blue-500 bg-blue-500/10'
+                  : 'border-slate-800 hover:border-blue-500/60 bg-slate-950/60 hover:bg-slate-950'
               }`}
             >
               <div className="flex flex-col items-center justify-center gap-2">
-                <div className="p-3 bg-surface-secondary text-accent rounded-2xl border border-border shadow-xs">
+                <div className="p-3 bg-slate-900 text-blue-400 rounded-xl border border-slate-800">
                   <Upload className="w-5 h-5" />
                 </div>
-                <div className="text-xs font-semibold text-foreground">
+                <div className="text-xs font-semibold text-slate-200">
                   {isProcessing ? 'Processing image...' : 'Click or drag & drop to upload profile photo'}
                 </div>
-                <p className="text-[11px] text-muted max-w-xs leading-relaxed">
-                  Supports JPG, PNG, WebP. Automatically resized and compressed client-side.
+                <p className="text-[11px] text-slate-500 max-w-xs leading-relaxed">
+                  Supports JPG, PNG, WebP. High quality client-side scaling.
                 </p>
               </div>
             </div>
           )}
 
           {errorMessage && (
-            <p className="text-xs text-danger bg-danger/10 border border-danger/30 p-2.5 rounded-xl">
+            <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/30 p-2.5 rounded-xl">
               {errorMessage}
             </p>
           )}
-        </Card.Content>
-      </Card>
+        </div>
+      </div>
 
       {/* 2. Personal Information Fields Card */}
-      <Card variant="secondary" className="border border-border">
-        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
-              <User className="w-4 h-4" />
-            </div>
-            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
-              Contact & Header Details
-            </Card.Title>
+      <div className="rounded-xl border border-slate-800 bg-slate-900/90 shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 border-b border-slate-800/80 bg-slate-950/70 px-4 py-2.5">
+          <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <User className="w-4 h-4" />
           </div>
-        </Card.Header>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-200">
+            Contact & Header Details
+          </span>
+        </div>
 
-        <Card.Content className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5">Full Name</label>
-              <Input
-                variant="secondary"
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                Full Name
+              </label>
+              <input
+                type="text"
                 value={data.fullName}
                 onChange={(e) => handleChange('fullName', e.target.value)}
                 placeholder="e.g. ALEX MORGAN"
-                className="w-full text-sm font-medium"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs font-medium placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5">Professional Title / Headline</label>
-              <Input
-                variant="secondary"
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                Professional Title / Headline
+              </label>
+              <input
+                type="text"
                 value={data.jobTitle || ''}
                 onChange={(e) => handleChange('jobTitle', e.target.value)}
-                placeholder="e.g. Senior Full-Stack Engineer"
-                className="w-full text-sm font-medium"
+                placeholder="e.g. Senior Software Engineer"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs font-medium placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-muted" />
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-slate-500" />
                 Email Address
               </label>
-              <Input
+              <input
                 type="email"
-                variant="secondary"
                 value={data.email}
                 onChange={(e) => handleChange('email', e.target.value)}
                 placeholder="e.g. alex.morgan@example.com"
-                className="w-full text-sm"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-muted" />
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-slate-500" />
                 Phone Number
               </label>
-              <Input
+              <input
                 type="text"
-                variant="secondary"
                 value={data.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
                 placeholder="e.g. +1 (555) 234-5678"
-                className="w-full text-sm"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-muted" />
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-slate-500" />
                 Location
               </label>
-              <Input
+              <input
                 type="text"
-                variant="secondary"
                 value={data.location || ''}
                 onChange={(e) => handleChange('location', e.target.value)}
                 placeholder="e.g. San Francisco, CA"
-                className="w-full text-sm"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-muted" />
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-slate-500" />
                 Portfolio Website
               </label>
-              <Input
+              <input
                 type="text"
-                variant="secondary"
                 value={data.website || ''}
                 onChange={(e) => handleChange('website', e.target.value)}
                 placeholder="e.g. alexmorgan.dev"
-                className="w-full text-sm"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5 text-muted" />
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                <Link2 className="w-3.5 h-3.5 text-slate-500" />
                 LinkedIn Profile
               </label>
-              <Input
+              <input
                 type="text"
-                variant="secondary"
                 value={data.linkedin || ''}
                 onChange={(e) => handleChange('linkedin', e.target.value)}
                 placeholder="e.g. linkedin.com/in/alexmorgan"
-                className="w-full text-sm"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
-                <Code className="w-3.5 h-3.5 text-muted" />
-                GitHub Username / URL
+              <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                <Code className="w-3.5 h-3.5 text-slate-500" />
+                GitHub Profile
               </label>
-              <Input
+              <input
                 type="text"
-                variant="secondary"
                 value={data.github || ''}
                 onChange={(e) => handleChange('github', e.target.value)}
                 placeholder="e.g. github.com/alexmorgan"
-                className="w-full text-sm"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1.5 text-xs placeholder:text-slate-600 transition"
               />
             </div>
           </div>
-        </Card.Content>
-      </Card>
+        </div>
+      </div>
 
       {/* 3. Professional Summary Card */}
-      <Card variant="secondary" className="border border-border">
-        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/90 shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-800/80 bg-slate-950/70 px-4 py-2.5">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
               <FileText className="w-4 h-4" />
             </div>
-            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-200">
               Professional Summary / Bio
-            </Card.Title>
+            </span>
           </div>
 
-          <Switch
-            isSelected={data.showSummary}
-            onChange={(checked) => handleChange('showSummary', checked)}
-            size="sm"
-          >
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            <Switch.Content className="text-xs font-medium text-foreground cursor-pointer">
-              Show on CV
-            </Switch.Content>
-          </Switch>
-        </Card.Header>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400">
+              {data.showSummary ? 'Active on CV' : 'Hidden'}
+            </span>
+            <ToggleSwitch
+              checked={data.showSummary}
+              onChange={(checked) => handleChange('showSummary', checked)}
+              ariaLabel="Toggle summary visibility"
+            />
+          </div>
+        </div>
 
-        <Card.Content className="p-4">
-          <TextArea
-            variant="secondary"
+        <div className="p-4 space-y-2">
+          <textarea
             rows={4}
             value={data.summary}
             onChange={(e) => handleChange('summary', e.target.value)}
-            placeholder="Brief 2-4 sentences highlighting your background, expertise, and career focus..."
-            className="w-full text-sm leading-relaxed"
+            placeholder="Brief 2-4 sentences highlighting your background, core technical expertise, and career focus..."
+            className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg p-3 text-xs leading-relaxed placeholder:text-slate-600 transition"
           />
-        </Card.Content>
-      </Card>
+        </div>
+      </div>
 
       {/* Interactive Photo Crop Modal */}
       <PhotoCropModal

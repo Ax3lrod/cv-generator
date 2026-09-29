@@ -12,6 +12,23 @@
 }
 
 @layer base {
+  .dark, [data-theme="dark"] {
+    --background: #020617;
+    --foreground: #f8fafc;
+    --surface: #090d16;
+    --surface-secondary: #0f172a;
+    --surface-tertiary: #1e293b;
+    --muted: #94a3b8;
+    --border: #1e293b;
+    --separator: #1e293b;
+    --field-background: #020617;
+    --field-foreground: #f8fafc;
+    --field-placeholder: #64748b;
+    --accent: #2563eb;
+    --accent-foreground: #ffffff;
+    --focus: #3b82f6;
+  }
+
   body {
     background-color: #020617;
     color: #f8fafc;

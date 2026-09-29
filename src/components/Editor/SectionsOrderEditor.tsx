@@ -1,7 +1,6 @@
 import React from 'react';
 import { SectionMeta } from '../../types/cv';
-import { ArrowUp, ArrowDown, ListOrdered } from 'lucide-react';
-import { Button, Card, Chip, Switch, Input } from '@heroui/react';
+import { ArrowUp, ArrowDown, ListOrdered, Eye, EyeOff } from 'lucide-react';
 
 interface Props {
   sections: SectionMeta[];
@@ -33,89 +32,93 @@ export const SectionsOrderEditor: React.FC<Props> = ({ sections, onChange }) => 
 
   return (
     <div className="space-y-4">
-      <Card variant="secondary" className="border border-border">
-        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
-          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/90 shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 border-b border-slate-800/80 bg-slate-950/70 px-4 py-3">
+          <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
             <ListOrdered className="w-4 h-4" />
           </div>
           <div>
-            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-200">
               Section Order & Visibility
-            </Card.Title>
-            <Card.Description className="text-[11px] text-muted mt-0.5">
-              Customize the hierarchy of your CV. Reorder sections, rename titles, or toggle visibility.
-            </Card.Description>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Reorder sections to customize your CV layout. Toggle eye icon to show or hide.
+            </p>
           </div>
-        </Card.Header>
+        </div>
 
-        <Card.Content className="p-4 space-y-2">
+        <div className="p-3.5 space-y-2">
           {sections.map((section, index) => (
             <div
               key={section.id}
-              className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${
+              className={`flex items-center justify-between p-2.5 rounded-xl border transition-all duration-200 ${
                 section.isVisible
-                  ? 'bg-surface-tertiary/60 border-border shadow-xs'
-                  : 'bg-surface-tertiary/20 border-border/40 opacity-60'
+                  ? 'bg-slate-950/80 border-slate-800 hover:border-slate-700/80 shadow-xs'
+                  : 'bg-slate-950/30 border-slate-800/60 opacity-60 border-dashed'
               }`}
             >
-              <div className="flex items-center gap-2.5 flex-1 mr-2">
-                <span className="font-mono text-xs text-muted w-5 shrink-0">
+              {/* Left: Number and Editable Title */}
+              <div className="flex items-center gap-2.5 flex-1 min-w-0 mr-3">
+                <span className="font-mono text-xs text-slate-500 font-semibold w-5 shrink-0 text-center">
                   {index + 1}.
                 </span>
-                <Input
-                  variant="secondary"
+                <input
+                  type="text"
                   value={section.title}
                   onChange={(e) => handleTitleChange(section.id, e.target.value)}
-                  className="text-xs font-medium h-7.5 max-w-xs"
+                  className="bg-slate-900 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-slate-100 rounded-lg px-2.5 py-1 text-xs font-medium w-full max-w-xs transition"
                   placeholder="Section Title"
                 />
                 {section.isCustom && (
-                  <Chip size="sm" variant="soft" color="accent" className="text-[10px] h-4.5 px-1.5">
-                    <Chip.Label>Custom</Chip.Label>
-                  </Chip>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-pink-500/10 text-pink-400 border border-pink-500/20 shrink-0">
+                    Custom
+                  </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  isIconOnly
-                  isDisabled={index === 0}
-                  onPress={() => moveSection(index, 'up')}
-                  className="h-7 w-7 rounded-lg text-muted hover:text-foreground"
+              {/* Right: Aligned Move and Toggle Controls */}
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  disabled={index === 0}
+                  onClick={() => moveSection(index, 'up')}
+                  className="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition"
+                  title="Move section up"
                   aria-label="Move Up"
                 >
                   <ArrowUp className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  isIconOnly
-                  isDisabled={index === sections.length - 1}
-                  onPress={() => moveSection(index, 'down')}
-                  className="h-7 w-7 rounded-lg text-muted hover:text-foreground"
+                </button>
+                <button
+                  type="button"
+                  disabled={index === sections.length - 1}
+                  onClick={() => moveSection(index, 'down')}
+                  className="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center transition"
+                  title="Move section down"
                   aria-label="Move Down"
                 >
                   <ArrowDown className="w-3.5 h-3.5" />
-                </Button>
+                </button>
 
-                <div className="h-4 w-px bg-border mx-0.5" />
+                <div className="h-4 w-px bg-slate-800 mx-1" />
 
-                <Switch
-                  isSelected={section.isVisible}
-                  onChange={(checked) => toggleVisibility(section.id, checked)}
-                  size="sm"
+                <button
+                  type="button"
+                  onClick={() => toggleVisibility(section.id, !section.isVisible)}
+                  className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all ${
+                    section.isVisible
+                      ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20'
+                      : 'text-slate-500 bg-slate-900 border-slate-800 hover:text-slate-300'
+                  }`}
+                  title={section.isVisible ? 'Visible on CV (click to hide)' : 'Hidden from CV (click to show)'}
+                  aria-label={section.isVisible ? 'Hide from CV' : 'Show on CV'}
                 >
-                  <Switch.Control>
-                    <Switch.Thumb />
-                  </Switch.Control>
-                </Switch>
+                  {section.isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                </button>
               </div>
             </div>
           ))}
-        </Card.Content>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

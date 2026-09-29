@@ -64,53 +64,55 @@ export const EditorTabs: React.FC<Props> = ({
   return (
     <div className="flex flex-col h-full bg-surface border-r border-border text-foreground transition-colors">
       {/* Top Main Navigation Tabs */}
-      <div className="flex border-b border-border bg-surface-secondary/70 p-2 gap-1.5 shrink-0 overflow-x-auto">
+      <div className="flex border-b border-slate-800 bg-slate-950 p-2 gap-1.5 shrink-0 overflow-x-auto custom-scrollbar">
         {mainTabs.map((t) => {
           const Icon = t.icon;
           const isActive = activeMainTab === t.id;
           return (
-            <Button
+            <button
               key={t.id}
-              variant={isActive ? 'primary' : 'tertiary'}
-              size="sm"
-              onPress={() => setActiveMainTab(t.id)}
-              className={`h-9 px-3 text-xs font-semibold rounded-xl transition whitespace-nowrap ${
-                isActive ? 'shadow-sm' : 'text-muted hover:text-foreground'
+              type="button"
+              onClick={() => setActiveMainTab(t.id)}
+              className={`h-9 px-3.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                isActive 
+                  ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20 font-semibold' 
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent hover:border-slate-800'
               }`}
             >
-              <Icon className="w-3.5 h-3.5 mr-1.5" />
+              <Icon className="w-3.5 h-3.5" />
               <span>{t.label}</span>
-            </Button>
+            </button>
           );
         })}
       </div>
 
       {/* Content Subtab Pills (Only visible when main tab is 'content') */}
       {activeMainTab === 'content' && (
-        <div className="flex border-b border-border bg-surface-secondary/40 px-3 py-2 gap-1.5 shrink-0 overflow-x-auto">
+        <div className="flex border-b border-slate-800/80 bg-slate-950/70 px-3 py-2 gap-1.5 shrink-0 overflow-x-auto custom-scrollbar">
           {contentSubTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeContentSubTab === tab.id;
             return (
-              <Button
+              <button
                 key={tab.id}
-                size="sm"
-                variant={isActive ? 'secondary' : 'ghost'}
-                onPress={() => setActiveContentSubTab(tab.id)}
-                className={`h-7 px-2.5 text-xs rounded-lg transition whitespace-nowrap ${
+                type="button"
+                onClick={() => setActiveContentSubTab(tab.id)}
+                className={`h-7 px-2.5 text-xs rounded-lg flex items-center gap-1.5 transition-all whitespace-nowrap ${
                   isActive 
-                    ? 'bg-surface-tertiary border border-accent/40 font-medium text-accent-foreground' 
-                    : 'text-muted hover:text-foreground hover:bg-surface-secondary'
+                    ? 'bg-slate-900 text-blue-400 border border-blue-500/40 font-semibold shadow-xs' 
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
                 }`}
               >
-                <Icon className="w-3 h-3 mr-1" />
+                <Icon className="w-3 h-3" />
                 <span>{tab.label}</span>
                 {tab.count !== null && tab.count > 0 && (
-                  <Chip size="sm" variant="soft" color="default" className="ml-1 text-[10px] h-4 px-1">
-                    <Chip.Label>{tab.count}</Chip.Label>
-                  </Chip>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
+                    isActive ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-800 text-slate-400'
+                  }`}>
+                    {tab.count}
+                  </span>
                 )}
-              </Button>
+              </button>
             );
           })}
         </div>
