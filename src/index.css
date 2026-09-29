@@ -82,6 +82,7 @@
   main,
   .cv-preview-container,
   .cv-preview-container > div,
+  .cv-scale-wrapper,
   .cv-preview-wrapper {
     display: block !important;
     position: static !important;

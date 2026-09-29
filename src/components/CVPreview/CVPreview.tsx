@@ -24,11 +24,16 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
   const paperRef = useRef<HTMLDivElement>(null);
   const innerContentRef = useRef<HTMLDivElement>(null);
   const measureContentRef = useRef<HTMLDivElement>(null);
+  const previewWrapperRef = useRef<HTMLDivElement>(null);
 
   const [viewMode, setViewMode] = useState<'separated' | 'continuous'>('separated');
   const [contentHeight, setContentHeight] = useState<number>(0);
   const [autoScaleFactor, setAutoScaleFactor] = useState<number>(1);
   const [pageOffsets, setPageOffsets] = useState<number[]>([0]);
+  const [containerHeights, setContainerHeights] = useState<{
+    natural: number;
+    scaled: number;
+  } | null>(null);
 
   const { widthMm, heightMm } = getPaperDimensions(designConfig);
 
@@ -155,6 +160,33 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
       if (ro) ro.disconnect();
     };
   }, [cvData, designConfig, innerHeightPx, availableInnerHeightPx, widthMm, heightMm]);
+
+  // Adjust container height to match visual transformed height, eliminating ghost scroll area
+  useEffect(() => {
+    const updateScaledHeight = () => {
+      if (previewWrapperRef.current) {
+        const naturalHeight = previewWrapperRef.current.offsetHeight;
+        setContainerHeights({
+          natural: naturalHeight,
+          scaled: Math.round(naturalHeight * scale),
+        });
+      }
+    };
+
+    updateScaledHeight();
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && previewWrapperRef.current) {
+      ro = new ResizeObserver(() => {
+        updateScaledHeight();
+      });
+      ro.observe(previewWrapperRef.current);
+    }
+
+    return () => {
+      if (ro) ro.disconnect();
+    };
+  }, [scale, pageOffsets, viewMode, cvData, designConfig]);
 
   const isOverflowingPageOne = pageOffsets.length > 1;
   const totalPages = designConfig.forceOnePage ? 1 : Math.max(1, pageOffsets.length);
@@ -363,15 +395,25 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
         </div>
       </div>
 
-      {/* Scalable Container for Live Preview */}
+      {/* Scalable Container for Live Preview with calibrated visual height to eliminate ghost scroll area */}
       <div 
-        style={{ 
-          transform: `scale(${scale})`, 
-          transformOrigin: 'top center',
-          transition: 'transform 0.15s ease-out' 
+        className="cv-scale-wrapper w-full flex justify-center print:block print:h-auto print:m-0"
+        style={{
+          height: containerHeights ? `${containerHeights.scaled}px` : undefined,
         }}
-        className="cv-preview-wrapper"
       >
+        <div 
+          ref={previewWrapperRef}
+          style={{ 
+            transform: `scale(${scale})`, 
+            transformOrigin: 'top center',
+            transition: 'transform 0.15s ease-out',
+            marginBottom: containerHeights 
+              ? `${containerHeights.scaled - containerHeights.natural}px` 
+              : undefined,
+          }}
+          className="cv-preview-wrapper"
+        >
         {/* VIEW 1: Separated Pages Mode (On Screen) */}
         {viewMode === 'separated' && (
           <div className="cv-screen-separated no-print flex flex-col items-center gap-8 w-full">
@@ -567,5 +609,6 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
