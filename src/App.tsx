@@ -6,14 +6,14 @@ import { EditorTabs } from './components/Editor/EditorTabs';
 import { CVPreview } from './components/CVPreview/CVPreview';
 import { downloadVectorPdf } from './utils/pdfExport';
 
-const STORAGE_KEY_DATA = 'cv_studio_data_v1';
-const STORAGE_KEY_CONFIG = 'cv_studio_config_v1';
+const STORAGE_KEY_DATA = 'vitago_data_v1';
+const STORAGE_KEY_CONFIG = 'vitago_config_v1';
 
 export function App() {
   // Load initial data from localStorage if available, or default to example CV
   const [cvData, setCvData] = useState<CVData>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY_DATA);
+      const saved = localStorage.getItem(STORAGE_KEY_DATA) || localStorage.getItem('cv_studio_data_v1');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Failed to load saved CV data, using default:', e);
@@ -25,6 +25,12 @@ export function App() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_CONFIG);
       if (saved) return JSON.parse(saved);
+      // Migrate from old storage key if present, defaulting forceOnePage to false
+      const oldSaved = localStorage.getItem('cv_studio_config_v1');
+      if (oldSaved) {
+        const parsed = JSON.parse(oldSaved);
+        return { ...parsed, forceOnePage: false };
+      }
     } catch (e) {
       console.warn('Failed to load saved design config, using default:', e);
     }

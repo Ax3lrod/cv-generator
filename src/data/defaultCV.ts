@@ -164,7 +164,7 @@ export const defaultDesignConfig: DesignConfig = {
   paperSize: "a4",
   customPaperWidth: 210,
   customPaperHeight: 297,
-  forceOnePage: true,
+  forceOnePage: false,
   fontFamily: "inter",
   baseFontSize: 9.3, // pt
   nameFontSize: 20, // pt
