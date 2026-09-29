@@ -1,93 +1,84 @@
-# VitaGo — Your Curriculum Vitae on the Go
+# VitaGo: Your Curriculum Vitae on the Go
 
-Sebuah aplikasi web modern untuk membuat dan mengkustomisasi CV/Resume profesional secara mendalam (**pixel-perfect, high ATS score, vector PDF export, dan freely customizable**). Dibuat dengan **React + TypeScript + Tailwind CSS + HeroUI + Vite**.
-
-Dilengkapi layout standar ATS profesional (*single-page & multi-page optimized*), dengan data contoh profil siap pakai yang mudah disesuaikan.
+A focused, precision-engineered resume builder for creating clean, ATS-compliant CVs. Fast, flexible, and completely customizable with native vector print export and dynamic multi-page flow. Built with React, TypeScript, Tailwind CSS, HeroUI, and Vite.
 
 ---
 
-## 🚀 Fitur Utama
+## Features
 
-### 1. 🎛️ Konfigurasi Desain Sangat Detail (*Customize Freely*)
-* **🔒 Force 1-Page Layout (Kunci 1 Halaman Penuh)**:
-  - Fitur kunci 1 halaman yang secara matematis menghitung rasio konten dan menskalakannya agar **semua konten yang Anda masukkan dipaksa masuk ke dalam tepat 1 halaman**. Tidak akan pernah tumpah ke halaman 2.
-  - Tombol **"Auto-Tune Spacing"** untuk mengoptimalkan margin dan ukuran teks secara natural.
-* **📏 Kebebasan Penuh Ukuran Kertas (Custom Paper Dimensions)**:
-  - **Preset Populer**: A4 (210 × 297 mm), US Letter (215.9 × 279.4 mm), **F4 / Folio Indonesia (215 × 330 mm)**, dan US Legal (215.9 × 355.6 mm).
-  - **Custom Dimensions**: Bebas mengatur angka Lebar (mm) dan Tinggi (mm) kertas sesuai kebutuhan khusus.
-* **4 Pilihan Template Desain**:
-  - **ATS Classic**: Desain standar ATS dengan garis pembatas horizontal bersih dan tipografi elegan.
-  - **Modern Minimal**: Desain kontemporer dengan badge rounded dan aksen visual modern.
-  - **Executive**: Desain formal dengan hierarki serif dan garis pembatas ganda.
-  - **Tech Compact**: Desain khusus software engineer / developer dengan gaya monospace dan chip teknologi.
-* **Typography Controls**:
-  - Pilihan font: **Inter** (Clean Modern), **EB Garamond** (Academic Serif), **Merriweather** (Editorial Serif), **Roboto** (Geometric Sans), **JetBrains Mono** (Tech Monospace).
-  - Slider ukuran font dasar (8.0pt – 12pt).
-  - Slider ukuran nama header (16pt – 28pt).
-  - Slider ukuran judul seksi (10pt – 15pt).
-  - Slider tinggi baris (*Line Height* 1.15 – 1.65).
-* **Spacing & Margin Fleksibel**:
-  - Slider margin atas/bawah & kiri/kanan (6mm – 24mm).
-  - Slider jarak antar seksi / *Section Gap* (1.0mm – 8mm).
-  - Slider jarak antar pekerjaan / *Item Gap* (0.8mm – 6mm).
-  - Slider jarak antar poin / *Bullet Gap* (0.4mm – 4mm).
-* **Styling Header & Garis Seksi**:
-  - Alignment header: *Centered*, *Left Aligned*, atau *Split*.
-  - Pilihan gaya pembatas: *Underline Full-Width*, *Left Accent Bar*, *Pill Badge*, *Double Line*, atau *Minimal*.
-  - Ketebalan garis pembatas (0.5px – 3px).
-  - Bentuk bullet: *Solid Disc (•)*, *Hyphen (-)*, *Square (▪)*, atau *Circle (○)*.
-  - Toggle UPPERCASE untuk nama & heading.
-* **Pilihan Warna & Custom Hex**:
-  - Preset warna elegan: *ATS Black, Dark Slate, Executive Navy, Forest Emerald, Deep Burgundy, Modern Indigo, Teal Blue*.
-  - Color picker untuk warna custom sesuka hati.
+### Precision Design Controls
+- **Force 1-Page Layout**: Proportionally scales typography and spacing so all content fits onto a single sheet without overflowing to a second page. Includes an auto-tune spacing helper.
+- **Paper Dimensions**: Standard presets for A4 (210 x 297 mm), US Letter (215.9 x 279.4 mm), F4 / Folio (215 x 330 mm), and US Legal (215.9 x 355.6 mm), plus custom millimeter width and height inputs.
+- **4 Resume Templates**:
+  - **ATS Classic**: Single-column layout with clean rules and clear typographic hierarchy.
+  - **Modern Minimal**: Contemporary layout with pill badges and refined visual accents.
+  - **Executive**: Formal layout with serif typography and double section dividers.
+  - **Tech Compact**: Developer-focused layout with monospace accents and inline tech badges.
+- **Typography**: Select from Inter, EB Garamond, Merriweather, Roboto, and JetBrains Mono. Configure base font size, header name size, section heading size, and line height.
+- **Margins & Spacing**: Adjust top, bottom, and side margins, as well as section gaps, item gaps, and bullet point spacing in millimeters.
+- **Header & Rule Styling**: Header alignment (centered, left-aligned, or split), section divider styles (full underline, left accent bar, pill badge, double line, minimal), line weight, and bullet markers.
+- **Color Themes**: Curated neutral presets (ATS Black, Dark Slate, Executive Navy, Forest Emerald, Deep Burgundy, Modern Indigo, Teal Blue) and a custom hex color picker.
 
 ---
 
-### 2. 📝 Editor Konten Lengkap
-Fitur lengkap untuk menyusun resume profesional:
-* **Personal Info**: Nama, gelar pekerjaan, email, telepon, domisili/lokasi, LinkedIn, website/portfolio, GitHub, dan deskripsi ringkas (*Professional Summary*).
-* **Education**: Nama kampus, jurusan/gelar, lokasi, periode studi, IPK/GPA, dan catatan prestasi.
-* **Experiences**: Organisasi / perusahaan, posisi/jabatan, lokasi, periode kerja, dan poin-poin kontribusi (*bullet points*) yang bisa ditambah/diedit/dihapus secara dinamis.
-* **Projects**: Nama proyek, tech stack, link repo/website, konteks/subtitle, dan poin-poin pencapaian teknis.
-* **Skills**: Kategori keahlian dinamis (misal: *Programming & Frameworks, Tools & Systems, Additional*, dsb.) dengan fitur *Quick Add Suggestions*.
-* **Achievements**: Daftar kejuaraan/prestasi dengan tahun dan penyelenggara.
-* **Custom Sections**: Kemampuan membuat seksi bebas baru (misal: *Certifications, Licenses, Volunteering, Publications, Languages*).
+### Structured Content Editor
+- **Personal Details**: Name, headline, contact information, portfolio links, GitHub, LinkedIn, and professional summary.
+- **Education**: Institution, degree, study period, GPA, and academic honors.
+- **Experience**: Employer, job title, location, employment dates, and bullet points describing contributions.
+- **Projects**: Project title, tech stack, repository or live demo links, and key highlights.
+- **Skills**: Group skills into categories with quick-add suggestions.
+- **Achievements**: Competitions, awards, and recognitions with dates and organizers.
+- **Custom Sections**: Create custom sections for certifications, publications, volunteer work, or languages.
 
 ---
 
-### 3. 🔄 Reorder & Visibility Seksi
-* Urutkan seksi manapun ke atas/bawah dengan tombol panah.
-* Sembunyikan (*hide/show*) seksi atau entri tertentu tanpa harus menghapus datanya.
-* Ubah nama judul seksi kapan saja (contoh: ubah "Experiences" menjadi "Work Experience").
+### Section Management
+- Reorder any section up or down.
+- Toggle visibility for entire sections or individual items without deleting data.
+- Rename section titles to match your preference (e.g. "Work Experience" instead of "Experience").
 
 ---
 
-### 4. 📤 Export, Backup & ATS Analyzer
-* **Print / Save as PDF (Native Vector)**: Menghasilkan PDF berbasis vector `@media print` murni dengan dimensi tepat sesuai kertas yang dipilih (A4, F4, Letter, atau Custom). Teks 100% tajam, tidak pecah, tanpa background gelap yang bocor, dan header profile tidak akan pernah terpotong.
-* **Download PDF Direct (Instant File)**: Menggunakan engine rendering yang diisolasi di container putih bersih unscaled, menghasilkan file `.pdf` siap kirim yang pas dengan rasio kertas tanpa melebar ke samping.
-* **JSON Backup & Restore**: Simpan data CV dan konfigurasi styling Anda ke file `.json` lokal untuk di-restore kapan saja.
-* **LocalStorage Autosave**: Perubahan yang Anda ketik tersimpan otomatis di browser sehingga tidak akan hilang saat me-refresh halaman.
-* **ATS Readiness Analyzer**: Skor kelengkapan ATS otomatis (0 - 100) dan checklist kelengkapan resume.
+### Export & Storage
+- **Print Dialog Export**: Native `@media print` vector output matching the chosen paper dimensions. Clean typography with no dark-mode background leaks or split headers.
+- **Direct PDF Download**: Client-side vector PDF generation that mirrors your selected layout and styling.
+- **JSON Backup & Restore**: Export your CV data and design settings as a JSON file to restore at any time.
+- **LocalStorage Autosave**: All changes persist automatically in your browser across sessions.
+- **ATS Readiness Check**: Real-time completeness score and checklist to ensure your resume covers all essential areas.
 
 ---
 
-## 💻 Cara Menjalankan Project
+## Getting Started
 
-1. Clone repositori & install dependencies:
+### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
    ```bash
    git clone https://github.com/Ax3lrod/cv-generator.git
    cd cv-generator
+   ```
+
+2. Install dependencies:
+   ```bash
    npm install
    ```
 
-2. Jalankan development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-3. Buka browser di [http://localhost:5173](http://localhost:5173).
+4. Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-4. Untuk build production:
-   ```bash
-   npm run build
-   ```
+### Production Build
+
+To build the static application for production:
+```bash
+npm run build
+```
+
+The compiled output will be generated in the `dist` directory.
