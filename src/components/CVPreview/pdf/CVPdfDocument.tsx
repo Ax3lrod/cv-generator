@@ -1,6 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, Link, StyleSheet, Image } from '@react-pdf/renderer';
-import { CVData, DesignConfig, CustomSection } from '../../../types/cv';
+import { CVData, DesignConfig, CustomSection, EducationItem, ExperienceItem, ProjectItem, AchievementItem, SkillCategory, CustomSectionItem } from '../../../types/cv';
 import { getPaperDimensions } from '../../../utils/paperDimensions';
 
 interface CVPdfDocumentProps {
@@ -94,14 +94,14 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
     });
   }
 
-  // Section Heading Renderer
+  // Section Heading Renderer with minPresenceAhead to avoid orphan headings
   const renderSectionHeading = (title: string) => {
     const displayTitle = config.uppercaseHeadings ? title.toUpperCase() : title;
     const headingColor = config.accentColor !== '#000000' ? config.accentColor : config.textColor;
 
     if (config.sectionHeadingStyle === 'left-bar') {
       return (
-        <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 0.5, borderBottomColor: '#cbd5e1', paddingBottom: 1.5, marginBottom: itemGapPt }}>
+        <View minPresenceAhead={55} style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 0.5, borderBottomColor: '#cbd5e1', paddingBottom: 1.5, marginBottom: itemGapPt }}>
           <View style={{ width: 3, height: sectionHeadingFontSize, backgroundColor: config.accentColor, marginRight: 5, borderRadius: 1 }} />
           <Text style={{ fontFamily, fontWeight: 'bold', fontSize: sectionHeadingFontSize, color: headingColor }}>
             {displayTitle}
@@ -112,7 +112,7 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
 
     if (config.sectionHeadingStyle === 'double-line') {
       return (
-        <View style={{ borderTopWidth: 0.5, borderTopColor: config.accentColor, borderBottomWidth: 1.5, borderBottomColor: config.accentColor, paddingVertical: 1.5, marginBottom: itemGapPt }}>
+        <View minPresenceAhead={55} style={{ borderTopWidth: 0.5, borderTopColor: config.accentColor, borderBottomWidth: 1.5, borderBottomColor: config.accentColor, paddingVertical: 1.5, marginBottom: itemGapPt }}>
           <Text style={{ fontFamily, fontWeight: 'bold', fontSize: sectionHeadingFontSize, color: headingColor }}>
             {displayTitle}
           </Text>
@@ -122,7 +122,7 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
 
     if (config.sectionHeadingStyle === 'minimal') {
       return (
-        <View style={{ marginBottom: itemGapPt }}>
+        <View minPresenceAhead={55} style={{ marginBottom: itemGapPt }}>
           <Text style={{ fontFamily, fontWeight: 'bold', fontSize: sectionHeadingFontSize, color: headingColor }}>
             {displayTitle}
           </Text>
@@ -132,7 +132,7 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
 
     if (config.sectionHeadingStyle === 'pill') {
       return (
-        <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#e2e8f0', paddingBottom: 2, marginBottom: itemGapPt }}>
+        <View minPresenceAhead={55} style={{ borderBottomWidth: 0.5, borderBottomColor: '#e2e8f0', paddingBottom: 2, marginBottom: itemGapPt }}>
           <View style={{ backgroundColor: config.accentColor, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, alignSelf: 'flex-start' }}>
             <Text style={{ fontFamily, fontWeight: 'bold', fontSize: sectionHeadingFontSize * 0.9, color: '#ffffff' }}>
               {displayTitle}
@@ -144,7 +144,7 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
 
     // Default 'line-under' ATS standard
     return (
-      <View style={{ borderBottomWidth: Math.max(0.5, config.sectionLineWidth), borderBottomColor: config.accentColor, paddingBottom: 1.5, marginBottom: itemGapPt }}>
+      <View minPresenceAhead={55} style={{ borderBottomWidth: Math.max(0.5, config.sectionLineWidth), borderBottomColor: config.accentColor, paddingBottom: 1.5, marginBottom: itemGapPt }}>
         <Text style={{ fontFamily, fontWeight: 'bold', fontSize: sectionHeadingFontSize, color: headingColor }}>
           {displayTitle}
         </Text>
@@ -152,11 +152,11 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
     );
   };
 
-  // Section Renderers
+  // Section Renderers with anti-orphan protection
   const renderSummary = () => {
     if (!personalInfo.summary || !personalInfo.showSummary) return null;
     return (
-      <View style={{ marginBottom: sectionGapPt }}>
+      <View wrap={false} minPresenceAhead={50} style={{ marginBottom: sectionGapPt }}>
         <Text style={{ fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, textAlign: 'justify' }}>
           {personalInfo.summary}
         </Text>
@@ -164,42 +164,86 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
     );
   };
 
+  const renderEduItem = (item: EducationItem) => (
+    <View key={item.id} wrap={false} style={{ marginBottom: itemGapPt }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
+          {item.institution} {item.location ? `(${item.location})` : ''}
+        </Text>
+        <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor }}>
+          {item.startDate} - {item.endDate}
+        </Text>
+      </View>
+      <Text style={{ fontFamily, fontStyle: 'italic', fontSize: baseFontSize, color: config.subtextColor, marginTop: 0.5 }}>
+        {item.degree}{item.gpa ? `, ${item.gpa}` : ''}
+      </Text>
+      {item.bullets && item.bullets.length > 0 && (
+        <View style={{ marginTop: 1 }}>
+          {item.bullets.map((b, idx) => (
+            <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
+              <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
+                {bulletSymbol()}
+              </Text>
+              <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
+                {b}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+
   const renderEducation = () => {
     const visibleEdu = education.filter(e => e.isVisible);
     if (visibleEdu.length === 0) return null;
 
+    const firstItem = visibleEdu[0];
+    const remainingItems = visibleEdu.slice(1);
+
     return (
       <View style={{ marginBottom: sectionGapPt }}>
-        {renderSectionHeading('Education')}
-        {visibleEdu.map(item => (
-          <View key={item.id} style={{ marginBottom: itemGapPt }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
-                {item.institution} {item.location ? `(${item.location})` : ''}
-              </Text>
-              <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor }}>
-                {item.startDate} - {item.endDate}
-              </Text>
-            </View>
-            <Text style={{ fontFamily, fontStyle: 'italic', fontSize: baseFontSize, color: config.subtextColor, marginTop: 0.5 }}>
-              {item.degree}{item.gpa ? `, ${item.gpa}` : ''}
-            </Text>
-            {item.bullets && item.bullets.length > 0 && (
-              <View style={{ marginTop: 1 }}>
-                {item.bullets.map((b, idx) => (
-                  <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
-                    <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
-                      {bulletSymbol()}
-                    </Text>
-                    <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
-                      {b}
-                    </Text>
-                  </View>
-                ))}
+        {/* Anti-orphan lock: Header + First Item never separated */}
+        <View wrap={false} minPresenceAhead={60}>
+          {renderSectionHeading('Education')}
+          {renderEduItem(firstItem)}
+        </View>
+        {remainingItems.map(item => renderEduItem(item))}
+      </View>
+    );
+  };
+
+  const renderExpItem = (item: ExperienceItem) => {
+    const isCompanyBold = config.boldCompanyOrRole !== 'role';
+    const isRoleBold = config.boldCompanyOrRole === 'role';
+
+    return (
+      <View key={item.id} wrap={false} style={{ marginBottom: itemGapPt }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <Text style={{ fontFamily, fontWeight: isCompanyBold ? 'bold' : 'normal', fontSize: itemTitleFontSize, color: config.textColor }}>
+            {item.company} {item.location ? `(${item.location})` : ''}
+          </Text>
+          <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor }}>
+            {item.startDate} - {item.endDate}
+          </Text>
+        </View>
+        <Text style={{ fontFamily, fontWeight: isRoleBold ? 'bold' : 'normal', fontStyle: 'italic', fontSize: baseFontSize, color: config.subtextColor, marginTop: 0.5 }}>
+          {item.role}
+        </Text>
+        {item.bullets && item.bullets.length > 0 && (
+          <View style={{ marginTop: 1 }}>
+            {item.bullets.map((bullet, idx) => (
+              <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
+                <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
+                  {bulletSymbol()}
+                </Text>
+                <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
+                  {bullet}
+                </Text>
               </View>
-            )}
+            ))}
           </View>
-        ))}
+        )}
       </View>
     );
   };
@@ -208,190 +252,210 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
     const visibleExp = experiences.filter(e => e.isVisible);
     if (visibleExp.length === 0) return null;
 
+    const firstItem = visibleExp[0];
+    const remainingItems = visibleExp.slice(1);
+
     return (
       <View style={{ marginBottom: sectionGapPt }}>
-        {renderSectionHeading('Experiences')}
-        {visibleExp.map(item => {
-          const isCompanyBold = config.boldCompanyOrRole !== 'role';
-          const isRoleBold = config.boldCompanyOrRole === 'role';
-
-          return (
-            <View key={item.id} style={{ marginBottom: itemGapPt }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <Text style={{ fontFamily, fontWeight: isCompanyBold ? 'bold' : 'normal', fontSize: itemTitleFontSize, color: config.textColor }}>
-                  {item.company} {item.location ? `(${item.location})` : ''}
-                </Text>
-                <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor }}>
-                  {item.startDate} - {item.endDate}
-                </Text>
-              </View>
-              <Text style={{ fontFamily, fontWeight: isRoleBold ? 'bold' : 'normal', fontStyle: 'italic', fontSize: baseFontSize, color: config.subtextColor, marginTop: 0.5 }}>
-                {item.role}
-              </Text>
-              {item.bullets && item.bullets.length > 0 && (
-                <View style={{ marginTop: 1 }}>
-                  {item.bullets.map((bullet, idx) => (
-                    <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
-                      <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
-                        {bulletSymbol()}
-                      </Text>
-                      <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
-                        {bullet}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
-          );
-        })}
+        {/* Anti-orphan lock: Header + First Item never separated */}
+        <View wrap={false} minPresenceAhead={65}>
+          {renderSectionHeading('Experiences')}
+          {renderExpItem(firstItem)}
+        </View>
+        {remainingItems.map(item => renderExpItem(item))}
       </View>
     );
   };
+
+  const renderProjItem = (item: ProjectItem) => (
+    <View key={item.id} wrap={false} style={{ marginBottom: itemGapPt }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', flex: 1, marginRight: 8 }}>
+          <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
+            {item.name}
+          </Text>
+          {item.techStack && (
+            <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 4 }}>
+              | {item.techStack}
+            </Text>
+          )}
+        </View>
+        {item.link && (
+          <Link
+            src={item.link.startsWith('http') ? item.link : `https://${item.link}`}
+            style={{ fontFamily, fontSize: subFontSize, color: '#2563eb', textDecoration: 'underline' }}
+          >
+            {item.link}
+          </Link>
+        )}
+      </View>
+      {item.subtitle && (
+        <Text style={{ fontFamily, fontStyle: 'italic', fontSize: subFontSize, color: config.subtextColor, marginTop: 0.5 }}>
+          {item.subtitle}
+        </Text>
+      )}
+      {item.bullets && item.bullets.length > 0 && (
+        <View style={{ marginTop: 1 }}>
+          {item.bullets.map((bullet, idx) => (
+            <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
+              <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
+                {bulletSymbol()}
+              </Text>
+              <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
+                {bullet}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
 
   const renderProjects = () => {
     const visibleProj = projects.filter(p => p.isVisible);
     if (visibleProj.length === 0) return null;
 
+    const firstItem = visibleProj[0];
+    const remainingItems = visibleProj.slice(1);
+
     return (
       <View style={{ marginBottom: sectionGapPt }}>
-        {renderSectionHeading('Projects')}
-        {visibleProj.map(item => (
-          <View key={item.id} style={{ marginBottom: itemGapPt }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', flex: 1, marginRight: 8 }}>
-                <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
-                  {item.name}
-                </Text>
-                {item.techStack && (
-                  <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 4 }}>
-                    | {item.techStack}
-                  </Text>
-                )}
-              </View>
-              {item.link && (
-                <Link
-                  src={item.link.startsWith('http') ? item.link : `https://${item.link}`}
-                  style={{ fontFamily, fontSize: subFontSize, color: '#2563eb', textDecoration: 'underline' }}
-                >
-                  {item.link}
-                </Link>
-              )}
-            </View>
-            {item.subtitle && (
-              <Text style={{ fontFamily, fontStyle: 'italic', fontSize: subFontSize, color: config.subtextColor, marginTop: 0.5 }}>
-                {item.subtitle}
-              </Text>
-            )}
-            {item.bullets && item.bullets.length > 0 && (
-              <View style={{ marginTop: 1 }}>
-                {item.bullets.map((bullet, idx) => (
-                  <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
-                    <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
-                      {bulletSymbol()}
-                    </Text>
-                    <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
-                      {bullet}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </View>
-        ))}
+        {/* Anti-orphan lock: Header + First Item never separated */}
+        <View wrap={false} minPresenceAhead={60}>
+          {renderSectionHeading('Projects')}
+          {renderProjItem(firstItem)}
+        </View>
+        {remainingItems.map(item => renderProjItem(item))}
       </View>
     );
   };
+
+  const renderAchItem = (item: AchievementItem) => (
+    <View key={item.id} wrap={false} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt + 0.5 }}>
+      <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
+        {bulletSymbol()}
+      </Text>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <Text style={{ fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, flex: 1 }}>
+          <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>: {item.event}
+          {item.description ? ` (${item.description})` : ''}
+        </Text>
+        {item.date && (
+          <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 8 }}>
+            {item.date}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
 
   const renderAchievements = () => {
     const visibleAch = achievements.filter(a => a.isVisible);
     if (visibleAch.length === 0) return null;
 
+    const firstItems = visibleAch.slice(0, 2);
+    const remainingItems = visibleAch.slice(2);
+
     return (
       <View style={{ marginBottom: sectionGapPt }}>
-        {renderSectionHeading('Achievements')}
-        {visibleAch.map(item => (
-          <View key={item.id} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt + 0.5 }}>
-            <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
-              {bulletSymbol()}
-            </Text>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <Text style={{ fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, flex: 1 }}>
-                <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>: {item.event}
-                {item.description ? ` (${item.description})` : ''}
-              </Text>
-              {item.date && (
-                <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 8 }}>
-                  {item.date}
-                </Text>
-              )}
-            </View>
-          </View>
-        ))}
+        {/* Anti-orphan lock: Header + First 2 items never separated */}
+        <View wrap={false} minPresenceAhead={55}>
+          {renderSectionHeading('Achievements')}
+          {firstItems.map(item => renderAchItem(item))}
+        </View>
+        {remainingItems.map(item => renderAchItem(item))}
       </View>
     );
   };
+
+  const renderSkillItem = (cat: SkillCategory) => (
+    <View key={cat.id} wrap={false} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt + 0.5 }}>
+      <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
+        {bulletSymbol()}
+      </Text>
+      <Text style={{ flex: 1, fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor }}>
+        <Text style={{ fontWeight: 'bold' }}>{cat.name}:</Text> {cat.skills}
+      </Text>
+    </View>
+  );
 
   const renderSkills = () => {
     const visibleSkills = skills.filter(s => s.isVisible);
     if (visibleSkills.length === 0) return null;
 
+    // Skills section: Header is permanently locked to at least the first 2 skill items
+    // If the whole section is 4 or fewer items, keep the entire section together!
+    if (visibleSkills.length <= 4) {
+      return (
+        <View wrap={false} minPresenceAhead={60} style={{ marginBottom: sectionGapPt }}>
+          {renderSectionHeading('Skills')}
+          {visibleSkills.map(cat => renderSkillItem(cat))}
+        </View>
+      );
+    }
+
+    const firstGroup = visibleSkills.slice(0, 2);
+    const restGroup = visibleSkills.slice(2);
+
     return (
       <View style={{ marginBottom: sectionGapPt }}>
-        {renderSectionHeading('Skills')}
-        {visibleSkills.map(cat => (
-          <View key={cat.id} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt + 0.5 }}>
-            <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
-              {bulletSymbol()}
-            </Text>
-            <Text style={{ flex: 1, fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor }}>
-              <Text style={{ fontWeight: 'bold' }}>{cat.name}:</Text> {cat.skills}
-            </Text>
-          </View>
-        ))}
+        <View wrap={false} minPresenceAhead={60}>
+          {renderSectionHeading('Skills')}
+          {firstGroup.map(cat => renderSkillItem(cat))}
+        </View>
+        {restGroup.map(cat => renderSkillItem(cat))}
       </View>
     );
   };
 
+  const renderCustomItem = (item: CustomSectionItem) => (
+    <View key={item.id} wrap={false} style={{ marginBottom: itemGapPt }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
+          {item.title}
+        </Text>
+        {item.date && (
+          <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor }}>
+            {item.date}
+          </Text>
+        )}
+      </View>
+      {item.subtitle && (
+        <Text style={{ fontFamily, fontStyle: 'italic', fontSize: subFontSize, color: config.subtextColor, marginTop: 0.5 }}>
+          {item.subtitle}
+        </Text>
+      )}
+      {item.bullets && item.bullets.length > 0 && (
+        <View style={{ marginTop: 1 }}>
+          {item.bullets.map((bullet, idx) => (
+            <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
+              <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
+                {bulletSymbol()}
+              </Text>
+              <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
+                {bullet}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+
   const renderCustomSection = (customSection: CustomSection) => {
     if (!customSection.isVisible || !customSection.items || customSection.items.length === 0) return null;
 
+    const firstItem = customSection.items[0];
+    const remainingItems = customSection.items.slice(1);
+
     return (
       <View key={customSection.id} style={{ marginBottom: sectionGapPt }}>
-        {renderSectionHeading(customSection.title)}
-        {customSection.items.map(item => (
-          <View key={item.id} style={{ marginBottom: itemGapPt }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
-                {item.title}
-              </Text>
-              {item.date && (
-                <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor }}>
-                  {item.date}
-                </Text>
-              )}
-            </View>
-            {item.subtitle && (
-              <Text style={{ fontFamily, fontStyle: 'italic', fontSize: subFontSize, color: config.subtextColor, marginTop: 0.5 }}>
-                {item.subtitle}
-              </Text>
-            )}
-            {item.bullets && item.bullets.length > 0 && (
-              <View style={{ marginTop: 1 }}>
-                {item.bullets.map((bullet, idx) => (
-                  <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: bulletGapPt }}>
-                    <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
-                      {bulletSymbol()}
-                    </Text>
-                    <Text style={{ flex: 1, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, fontFamily }}>
-                      {bullet}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </View>
-        ))}
+        {/* Anti-orphan lock: Header + First Item never separated */}
+        <View wrap={false} minPresenceAhead={60}>
+          {renderSectionHeading(customSection.title)}
+          {renderCustomItem(firstItem)}
+        </View>
+        {remainingItems.map(item => renderCustomItem(item))}
       </View>
     );
   };
@@ -541,7 +605,7 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
         }}
       >
         {/* Header */}
-        <View style={{ marginBottom: sectionGapPt * 1.2 }}>
+        <View wrap={false} minPresenceAhead={70} style={{ marginBottom: sectionGapPt * 1.2 }}>
           {hasPhoto ? (
             <View
               style={{
