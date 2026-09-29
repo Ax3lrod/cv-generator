@@ -281,23 +281,29 @@ export const ExportImportEditor: React.FC<Props> = ({
           </div>
 
           {/* Browser Native Print Button */}
-          <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between">
-            <div>
-              <span className="text-xs font-semibold text-slate-200 block">
-                Browser Print Dialog
-              </span>
-              <span className="text-[11px] text-slate-400">
-                Cetak fisik ke printer kantor atau simpan via dialog Chrome/Firefox.
-              </span>
+          <div className="pt-2.5 border-t border-slate-800/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-semibold text-slate-200 block">
+                  Browser Print Dialog
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  Cetak fisik ke printer kantor atau simpan via dialog Chrome/Firefox.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="text-xs font-medium h-8 px-3 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 shrink-0 ml-3 transition"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Dialog</span>
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="text-xs font-medium h-8 px-3 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 shrink-0 ml-3 transition"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Print Dialog</span>
-            </button>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2 text-[11px] text-blue-300 flex items-start gap-1.5">
+              <span className="font-bold shrink-0">💡 Tips Chrome:</span>
+              <span>Di jendela cetak Chrome, pilih <b>Margins: &quot;Default&quot;</b> atau <b>&quot;None&quot;</b> (jangan Custom). Margin atas dan bawah tiap halaman sudah otomatis terisi dan terkunci rapi dari sistem.</span>
+            </div>
           </div>
         </div>
       </div>

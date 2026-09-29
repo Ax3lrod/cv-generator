@@ -47,7 +47,7 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -76,19 +76,13 @@
     visibility: hidden !important;
   }
 
-  /* CV Header must ALWAYS be visible */
-  .cv-paper header,
-  .cv-paper .cv-header {
-    display: block !important;
-    visibility: visible !important;
-  }
-
-  /* Reset all layout flex containers */
+  /* Reset all layout flex and scroll containers so Chrome does not truncate print pages */
   #root > div,
   #root > div > div,
   main,
   .cv-preview-container,
-  .cv-preview-container > div {
+  .cv-preview-container > div,
+  .cv-preview-wrapper {
     display: block !important;
     position: static !important;
     background: #ffffff !important;
@@ -98,18 +92,10 @@
     box-shadow: none !important;
     width: 100% !important;
     height: auto !important;
+    max-height: none !important;
     min-height: 0 !important;
     overflow: visible !important;
-  }
-
-  /* Remove scale transform during print so header and margins are 100% accurate */
-  .cv-preview-wrapper {
     transform: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
   }
 
   .cv-paper {

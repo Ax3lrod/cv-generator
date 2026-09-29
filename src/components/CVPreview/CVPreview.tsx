@@ -105,10 +105,7 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
         @media print {
           @page {
             size: ${getPageSizeRule()};
-            margin-top: ${designConfig.pageMarginTop}mm;
-            margin-bottom: ${designConfig.pageMarginBottom}mm;
-            margin-left: ${designConfig.pageMarginLeft}mm;
-            margin-right: ${designConfig.pageMarginRight}mm;
+            margin: 0;
           }
           html, body {
             margin: 0 !important;
@@ -117,34 +114,48 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
             color: #000000 !important;
             width: 100% !important;
             height: auto !important;
-            ${designConfig.forceOnePage ? 'height: 100% !important; overflow: hidden !important;' : ''}
+            overflow: visible !important;
           }
-          .cv-screen-separated {
-            display: none !important;
-          }
+          .no-print,
+          .cv-screen-separated,
           #cv-print-target {
-            position: static !important;
-            left: auto !important;
-            top: auto !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
+            display: none !important;
+            visibility: hidden !important;
+          }
+          .cv-print-container {
             display: block !important;
-            visibility: visible !important;
             width: 100% !important;
-            max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
+            background: #ffffff !important;
+          }
+          .cv-paper-sheet {
+            display: block !important;
+            width: ${widthMm}mm !important;
+            height: ${heightMm}mm !important;
+            max-height: ${heightMm}mm !important;
+            min-height: ${heightMm}mm !important;
             box-sizing: border-box !important;
+            padding-top: ${designConfig.pageMarginTop}mm !important;
+            padding-bottom: ${designConfig.pageMarginBottom}mm !important;
+            padding-left: ${designConfig.pageMarginLeft}mm !important;
+            padding-right: ${designConfig.pageMarginRight}mm !important;
+            margin: 0 auto !important;
             box-shadow: none !important;
             border: none !important;
-            page-break-inside: auto !important;
-            break-inside: auto !important;
-            ${designConfig.forceOnePage 
-              ? `height: calc(${heightMm}mm - ${designConfig.pageMarginTop}mm - ${designConfig.pageMarginBottom}mm) !important; max-height: calc(${heightMm}mm - ${designConfig.pageMarginTop}mm - ${designConfig.pageMarginBottom}mm) !important; overflow: hidden !important; page-break-after: avoid !important; break-after: avoid !important;` 
-              : `min-height: 0 !important; height: auto !important;`}
+            overflow: hidden !important;
+            page-break-after: always !important;
+            break-after: page !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            background: #ffffff !important;
           }
-          .cv-paper header,
-          .cv-paper .cv-header {
+          .cv-paper-sheet:last-child {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+          .cv-paper-sheet header,
+          .cv-paper-sheet .cv-header {
             display: block !important;
             visibility: visible !important;
           }
@@ -301,13 +312,13 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
           </div>
         )}
 
-        {/* VIEW 2: Continuous Mode (On Screen) & Primary Print/Measure Target */}
+        {/* VIEW 2: Continuous Mode (On Screen) & Primary Measurement Target */}
         <div
           id="cv-print-target"
           ref={paperRef}
           className={`cv-paper relative bg-white text-slate-900 transition-all duration-200 ${
             viewMode === 'separated'
-              ? 'absolute -left-[99999px] top-0 opacity-0 pointer-events-none print:relative print:left-auto print:top-auto print:opacity-100 print:pointer-events-auto print:shadow-none'
+              ? 'absolute -left-[99999px] top-0 opacity-0 pointer-events-none'
               : 'shadow-2xl'
           }`}
           style={{
@@ -365,6 +376,49 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
               {renderTemplate()}
             </div>
           </div>
+        </div>
+
+        {/* VIEW 3: Dedicated Print Container for High-Fidelity Multi-Page Print */}
+        <div className="hidden print:block cv-print-container">
+          {Array.from({ length: estimatedPages }).map((_, pageIndex) => (
+            <div
+              key={pageIndex}
+              className="cv-paper-sheet"
+              style={{
+                width: `${widthMm}mm`,
+                height: `${heightMm}mm`,
+                maxHeight: `${heightMm}mm`,
+                minHeight: `${heightMm}mm`,
+                boxSizing: 'border-box',
+                paddingTop: `${designConfig.pageMarginTop}mm`,
+                paddingBottom: `${designConfig.pageMarginBottom}mm`,
+                paddingLeft: `${designConfig.pageMarginLeft}mm`,
+                paddingRight: `${designConfig.pageMarginRight}mm`,
+                overflow: 'hidden',
+                fontFamily: fontFamilies[designConfig.fontFamily] || fontFamilies['inter'],
+                fontSize: `${designConfig.baseFontSize}pt`,
+                lineHeight: designConfig.lineHeight,
+                color: designConfig.textColor,
+                background: '#ffffff',
+              }}
+            >
+              <div className="w-full h-full relative" style={{ overflow: 'hidden' }}>
+                <div
+                  style={{
+                    transform: designConfig.forceOnePage && autoScaleFactor < 1
+                      ? `scale(${autoScaleFactor})`
+                      : `translateY(-${pageIndex * innerHeightPx}px)`,
+                    transformOrigin: 'top left',
+                    width: designConfig.forceOnePage && autoScaleFactor < 1
+                      ? `${(1 / autoScaleFactor) * 100}%`
+                      : '100%',
+                  }}
+                >
+                  {renderTemplate()}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
