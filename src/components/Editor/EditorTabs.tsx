@@ -23,7 +23,6 @@ import {
   Award, 
   Layers 
 } from 'lucide-react';
-import { Button, Chip } from '@heroui/react';
 
 interface Props {
   cvData: CVData;

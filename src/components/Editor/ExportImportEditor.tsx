@@ -12,7 +12,8 @@ import {
   AlertTriangle,
   ExternalLink,
   ShieldCheck,
-  Loader2
+  Loader2,
+  Info
 } from 'lucide-react';
 import { Button } from '@heroui/react';
 
@@ -300,9 +301,12 @@ export const ExportImportEditor: React.FC<Props> = ({
                 <span>Print Dialog</span>
               </button>
             </div>
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2 text-[11px] text-blue-300 flex items-start gap-1.5">
-              <span className="font-bold shrink-0">💡 Print Dialog Tip:</span>
-              <span>In your browser print dialog, keep <b>Margins: &quot;Default&quot;</b> or <b>&quot;None&quot;</b> (avoid &quot;Custom&quot;). Page margins and spacing are already calculated and balanced with exact precision.</span>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2.5 text-[11px] text-blue-300 flex items-start gap-2">
+              <Info className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-blue-200 mr-1">Print Dialog Tip:</span>
+                <span>In your browser print dialog, keep <b>Margins: &quot;Default&quot;</b> or <b>&quot;None&quot;</b> (avoid &quot;Custom&quot;). Page margins and spacing are already calculated and balanced with exact precision.</span>
+              </div>
             </div>
           </div>
         </div>

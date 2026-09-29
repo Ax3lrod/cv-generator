@@ -2,16 +2,15 @@ import React from 'react';
 import { 
   FileCheck2, 
   Printer, 
-  Download,
+  Download, 
   ZoomIn, 
   ZoomOut, 
   RotateCcw, 
   Eye, 
   Edit3,
-  Sparkles,
   Loader2
 } from 'lucide-react';
-import { Button, Chip } from '@heroui/react';
+import { Button } from '@heroui/react';
 
 interface Props {
   scale: number;
@@ -42,14 +41,14 @@ export const Navbar: React.FC<Props> = ({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="font-bold text-base tracking-tight text-foreground">
-              CVoila
+              VitaGo
             </h1>
             <span className="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface-secondary text-muted border border-border font-semibold">
               ATS 100%
             </span>
           </div>
           <p className="text-[11px] text-muted hidden sm:block">
-            Precision Vector &amp; ATS Resume Builder
+            Your Curriculum Vitae on the Go
           </p>
         </div>
       </div>
