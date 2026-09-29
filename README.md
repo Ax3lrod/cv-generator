@@ -1,6 +1,28 @@
 # VitaGo: Your Curriculum Vitae on the Go
 
-A focused, precision-engineered resume builder for creating clean, ATS-compliant CVs. Fast, flexible, and completely customizable with native vector print export and dynamic multi-page flow. Built with React, TypeScript, Tailwind CSS, HeroUI, and Vite.
+A focused, precision-engineered resume builder for creating clean, ATS-compliant CVs. Fast, flexible, and completely customizable with native vector print export and dynamic multi-page flow.
+
+<p align="left">
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite_6-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" /></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
+  <a href="https://heroui.com/"><img src="https://img.shields.io/badge/HeroUI-000000?style=for-the-badge&logo=heroui&logoColor=white" alt="HeroUI" /></a>
+</p>
+
+---
+
+## Tech Stack
+
+| Technology | Role |
+| :--- | :--- |
+| [![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/) | Core UI library with reactive state management |
+| [![TypeScript](https://img.shields.io/badge/TypeScript_5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) | End-to-end type safety and component contracts |
+| [![Vite](https://img.shields.io/badge/Vite_6-646CFF?style=flat-square&logo=vite&logoColor=FFD62E)](https://vitejs.dev/) | Fast build tooling and hot module replacement |
+| [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/) | Utility-first styling with modern CSS engine |
+| [![HeroUI](https://img.shields.io/badge/HeroUI-000000?style=flat-square&logo=heroui&logoColor=white)](https://heroui.com/) | Accessible design system and interface components |
+| [![Lucide Icons](https://img.shields.io/badge/Lucide_Icons-F56565?style=flat-square&logo=lucide&logoColor=white)](https://lucide.dev/) | Clean, lightweight iconography |
+| [![React PDF](https://img.shields.io/badge/@react--pdf/renderer-E11D48?style=flat-square&logo=adobeacrobatreader&logoColor=white)](https://react-pdf.org/) | Client-side vector PDF document rendering |
 
 ---
 
