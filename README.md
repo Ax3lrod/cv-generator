@@ -1,8 +1,8 @@
-# 📄 CV Studio - ATS Pro & Fully Customizable Resume Builder
+# 🪄 CVoila — Funky & Precision ATS Resume Builder
 
-Sebuah aplikasi web modern untuk membuat dan mengkustomisasi CV/Resume profesional secara mendalam (**pixel-perfect, high ATS score, dan freely customizable**). Dibuat dengan **React + TypeScript + Tailwind CSS + Vite**.
+Sebuah aplikasi web modern untuk membuat dan mengkustomisasi CV/Resume profesional secara mendalam (**pixel-perfect, high ATS score, vector PDF export, dan freely customizable**). Dibuat dengan **React + TypeScript + Tailwind CSS + HeroUI + Vite**.
 
-Dilengkapi layout standar ATS profesional (*single-page optimized*), dengan data contoh profil siap pakai yang mudah disesuaikan.
+Dilengkapi layout standar ATS profesional (*single-page & multi-page optimized*), dengan data contoh profil siap pakai yang mudah disesuaikan.
 
 ---
 
