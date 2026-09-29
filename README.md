@@ -1,4 +1,4 @@
-# 🪄 CVoila — Funky & Precision ATS Resume Builder
+# VitaGo — Your Curriculum Vitae on the Go
 
 Sebuah aplikasi web modern untuk membuat dan mengkustomisasi CV/Resume profesional secara mendalam (**pixel-perfect, high ATS score, vector PDF export, dan freely customizable**). Dibuat dengan **React + TypeScript + Tailwind CSS + HeroUI + Vite**.
 
