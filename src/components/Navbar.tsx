@@ -7,8 +7,11 @@ import {
   ZoomOut, 
   RotateCcw, 
   Eye, 
-  Edit3 
+  Edit3,
+  Sparkles,
+  Loader2
 } from 'lucide-react';
+import { Button, Chip } from '@heroui/react';
 
 interface Props {
   scale: number;
@@ -30,105 +33,128 @@ export const Navbar: React.FC<Props> = ({
   onToggleMobileView,
 }) => {
   return (
-    <header className="no-print h-14 bg-slate-950 border-b border-slate-800 px-4 flex items-center justify-between shrink-0 z-30">
+    <header className="no-print h-14 bg-surface border-b border-border px-4 flex items-center justify-between shrink-0 z-30 transition-colors">
       {/* Brand */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center border border-blue-500/30">
-          <FileCheck2 className="w-4 h-4 text-white" />
+        <div className="w-8 h-8 rounded-xl bg-accent text-accent-foreground flex items-center justify-center shadow-md shadow-accent/20 border border-white/10">
+          <FileCheck2 className="w-4 h-4" />
         </div>
         <div>
-          <h1 className="font-bold text-sm text-slate-100">
-            CV Studio
-          </h1>
-          <p className="text-[11px] text-slate-300 hidden sm:block">
-            ATS & Customizable Resume Generator
+          <div className="flex items-center gap-2">
+            <h1 className="font-bold text-sm tracking-tight text-foreground">
+              CV Studio
+            </h1>
+            <Chip size="sm" variant="soft" color="accent" className="hidden sm:inline-flex text-[10px] h-5 px-1.5 font-medium">
+              <Chip.Label className="flex items-center gap-1">
+                <Sparkles className="w-2.5 h-2.5" />
+                <span>HeroUI v3</span>
+              </Chip.Label>
+            </Chip>
+          </div>
+          <p className="text-[11px] text-muted hidden sm:block">
+            Professional ATS & Vector Resume Builder
           </p>
         </div>
       </div>
 
-      {/* Center Zoom Controls (Hidden on small mobile) */}
-      <div className="hidden md:flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1">
-        <button
-          type="button"
-          onClick={() => onScaleChange(Math.max(0.4, scale - 0.1))}
-          className="p-1 text-slate-300 hover:text-white transition rounded focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          title="Zoom Out"
+      {/* Center Zoom Controls (Desktop & Tablet) */}
+      <div className="hidden md:flex items-center gap-1 bg-surface-secondary border border-border rounded-xl px-1.5 py-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          isIconOnly
+          onPress={() => onScaleChange(Math.max(0.4, scale - 0.1))}
+          className="text-foreground hover:bg-surface-tertiary transition rounded-lg h-7 w-7"
+          aria-label="Zoom Out"
         >
           <ZoomOut className="w-3.5 h-3.5" />
-        </button>
+        </Button>
 
-        <span className="text-xs font-mono text-slate-200 w-12 text-center select-none">
+        <span className="text-xs font-mono font-medium text-foreground w-12 text-center select-none">
           {Math.round(scale * 100)}%
         </span>
 
-        <button
-          type="button"
-          onClick={() => onScaleChange(Math.min(1.6, scale + 0.1))}
-          className="p-1 text-slate-300 hover:text-white transition rounded focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          title="Zoom In"
+        <Button
+          variant="ghost"
+          size="sm"
+          isIconOnly
+          onPress={() => onScaleChange(Math.min(1.6, scale + 0.1))}
+          className="text-foreground hover:bg-surface-tertiary transition rounded-lg h-7 w-7"
+          aria-label="Zoom In"
         >
           <ZoomIn className="w-3.5 h-3.5" />
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          onClick={() => onScaleChange(0.9)}
-          className="p-1 text-slate-300 hover:text-white transition rounded border-l border-slate-800 ml-1 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          title="Reset Zoom"
+        <div className="h-4 w-px bg-border mx-0.5" />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          isIconOnly
+          onPress={() => onScaleChange(0.9)}
+          className="text-muted hover:text-foreground hover:bg-surface-tertiary transition rounded-lg h-7 w-7"
+          aria-label="Reset Zoom"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-        </button>
+        </Button>
       </div>
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
         {/* Mobile View Toggle (Only on screens < lg) */}
-        <div className="flex lg:hidden bg-slate-900 p-1 rounded-lg border border-slate-800">
-          <button
-            type="button"
-            onClick={() => onToggleMobileView('editor')}
-            className={`px-2.5 py-1 text-xs rounded font-medium flex items-center gap-1.5 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-              mobileView === 'editor' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'
-            }`}
+        <div className="flex lg:hidden bg-surface-secondary p-1 rounded-xl border border-border">
+          <Button
+            size="sm"
+            variant={mobileView === 'editor' ? 'primary' : 'ghost'}
+            onPress={() => onToggleMobileView('editor')}
+            className="h-7 px-2.5 text-xs font-medium rounded-lg"
           >
-            <Edit3 className="w-3 h-3" />
+            <Edit3 className="w-3 h-3 mr-1" />
             Editor
-          </button>
-          <button
-            type="button"
-            onClick={() => onToggleMobileView('preview')}
-            className={`px-2.5 py-1 text-xs rounded font-medium flex items-center gap-1.5 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-              mobileView === 'preview' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'
-            }`}
+          </Button>
+          <Button
+            size="sm"
+            variant={mobileView === 'preview' ? 'primary' : 'ghost'}
+            onPress={() => onToggleMobileView('preview')}
+            className="h-7 px-2.5 text-xs font-medium rounded-lg"
           >
-            <Eye className="w-3 h-3" />
+            <Eye className="w-3 h-3 mr-1" />
             Preview
-          </button>
+          </Button>
         </div>
 
         {/* Browser Native Print Button */}
-        <button
-          type="button"
-          onClick={onPrint}
-          className="hidden sm:flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          title="Print using browser print dialog"
+        <Button
+          variant="outline"
+          size="sm"
+          onPress={onPrint}
+          className="hidden sm:inline-flex text-xs font-medium rounded-lg border-border hover:bg-surface-secondary"
         >
-          <Printer className="w-3.5 h-3.5" />
-          <span>Print</span>
-        </button>
+          <Printer className="w-3.5 h-3.5 mr-1" />
+          <span>Print Dialog</span>
+        </Button>
 
         {/* Primary Vector PDF Download Button */}
         {onDownloadPDF && (
-          <button
-            type="button"
-            disabled={isDownloading}
-            onClick={onDownloadPDF}
-            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none"
-            title="Download 100% Vector PDF"
+          <Button
+            variant="primary"
+            size="sm"
+            isDisabled={isDownloading}
+            onPress={onDownloadPDF}
+            className="font-semibold text-xs rounded-lg shadow-sm"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>{isDownloading ? 'Generating...' : 'Download PDF'}</span>
-          </button>
+            {isDownloading ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" />
+                <span>Generating...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 mr-1" />
+                <span>Download PDF</span>
+              </>
+            )}
+          </Button>
         )}
       </div>
     </header>

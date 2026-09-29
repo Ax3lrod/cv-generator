@@ -1,6 +1,7 @@
 import React from 'react';
 import { CustomSection, CustomSectionItem, SectionMeta } from '../../types/cv';
-import { Plus, Trash2, Eye, EyeOff, Layers } from 'lucide-react';
+import { Button, Card, Input } from '@heroui/react';
+import { Plus, Trash2, Layers } from 'lucide-react';
 
 interface Props {
   customSections: CustomSection[];
@@ -101,95 +102,107 @@ export const CustomSectionsEditor: React.FC<Props> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-          <Layers className="w-4 h-4 text-pink-400" />
+      <div className="flex items-center justify-between border-b border-border pb-3">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground flex items-center gap-2">
+          <Layers className="w-4 h-4 text-accent" />
           Custom Sections ({customSections.length})
         </h3>
-        <button
-          type="button"
-          onClick={handleAddSection}
-          className="flex items-center gap-1.5 text-xs bg-pink-600 hover:bg-pink-500 text-white px-2.5 py-1 rounded transition"
+        <Button
+          variant="primary"
+          size="sm"
+          onPress={handleAddSection}
+          className="flex items-center gap-1.5"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Section
-        </button>
+        </Button>
       </div>
 
       {customSections.length === 0 ? (
-        <div className="text-center py-6 text-slate-500 text-xs border border-dashed border-slate-800 rounded">
-          No custom sections yet. Add sections like "Certifications", "Languages", "Publications", or "Volunteer Experience".
-        </div>
+        <Card variant="secondary" className="text-center py-8 text-muted text-xs border-dashed border-border">
+          <Card.Content>
+            No custom sections yet. Add sections like &quot;Certifications&quot;, &quot;Languages&quot;, &quot;Publications&quot;, or &quot;Volunteer Experience&quot;.
+          </Card.Content>
+        </Card>
       ) : (
         <div className="space-y-4">
           {customSections.map((section) => (
-            <div key={section.id} className="p-3 bg-slate-900 border border-slate-800 rounded space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <input
-                  type="text"
-                  value={section.title}
-                  onChange={(e) => handleTitleChange(section.id, e.target.value)}
-                  className="bg-slate-950 font-semibold text-xs border border-slate-700 rounded px-2 py-1 text-slate-100 flex-1 focus:outline-none focus:border-pink-500"
-                  placeholder="Section Title (e.g. Certifications)"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAddItem(section.id)}
-                  className="text-xs text-pink-400 hover:text-pink-300 flex items-center gap-1"
-                >
-                  <Plus className="w-3 h-3" /> Add Item
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteSection(section.id)}
-                  className="p-1 text-slate-400 hover:text-rose-400"
-                  title="Delete Section"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
+            <Card key={section.id} variant="secondary" className="border-border">
+              <Card.Header className="flex items-center justify-between gap-3 py-2.5 px-4 border-b border-border">
+                <div className="flex-1 max-w-sm">
+                  <Input
+                    variant="secondary"
+                    value={section.title}
+                    onChange={(e) => handleTitleChange(section.id, e.target.value)}
+                    placeholder="Section Title (e.g. Certifications)"
+                    className="font-semibold text-xs"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    onPress={() => handleAddItem(section.id)}
+                    className="flex items-center gap-1 text-xs text-accent"
+                  >
+                    <Plus className="w-3 h-3" /> Add Item
+                  </Button>
+                  <Button
+                    variant="danger-soft"
+                    size="sm"
+                    isIconOnly
+                    onPress={() => handleDeleteSection(section.id)}
+                    aria-label="Delete Section"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </Card.Header>
 
-              {/* Items */}
-              <div className="space-y-2">
+              <Card.Content className="p-4 space-y-3">
                 {section.items.map((item) => (
-                  <div key={item.id} className="bg-slate-950/60 p-2.5 rounded border border-slate-800 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <input
-                        type="text"
-                        value={item.title}
-                        onChange={(e) => handleItemFieldChange(section.id, item.id, 'title', e.target.value)}
-                        placeholder="Item Title (e.g. AWS Certified Developer)"
-                        className="bg-slate-900 text-xs border border-slate-700/80 rounded px-2 py-1 text-slate-200 flex-1 mr-2"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteItem(section.id, item.id)}
-                        className="text-slate-500 hover:text-rose-400 p-1"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
+                  <Card key={item.id} variant="secondary" className="border-border/60 bg-surface/50">
+                    <Card.Content className="p-3 space-y-2.5">
+                      <div className="flex justify-between items-center gap-2">
+                        <Input
+                          variant="secondary"
+                          value={item.title}
+                          onChange={(e) => handleItemFieldChange(section.id, item.id, 'title', e.target.value)}
+                          placeholder="Item Title (e.g. AWS Certified Developer)"
+                          className="flex-1 text-xs"
+                        />
+                        <Button
+                          variant="danger-soft"
+                          size="sm"
+                          isIconOnly
+                          onPress={() => handleDeleteItem(section.id, item.id)}
+                          aria-label="Delete Item"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="text"
-                        value={item.subtitle || ''}
-                        onChange={(e) => handleItemFieldChange(section.id, item.id, 'subtitle', e.target.value)}
-                        placeholder="Issuer / Subtitle"
-                        className="bg-slate-900 text-xs border border-slate-700/80 rounded px-2 py-1 text-slate-200"
-                      />
-                      <input
-                        type="text"
-                        value={item.date || ''}
-                        onChange={(e) => handleItemFieldChange(section.id, item.id, 'date', e.target.value)}
-                        placeholder="Date / Year"
-                        className="bg-slate-900 text-xs border border-slate-700/80 rounded px-2 py-1 text-slate-200"
-                      />
-                    </div>
-                  </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <Input
+                          variant="secondary"
+                          value={item.subtitle || ''}
+                          onChange={(e) => handleItemFieldChange(section.id, item.id, 'subtitle', e.target.value)}
+                          placeholder="Issuer / Subtitle"
+                          className="text-xs"
+                        />
+                        <Input
+                          variant="secondary"
+                          value={item.date || ''}
+                          onChange={(e) => handleItemFieldChange(section.id, item.id, 'date', e.target.value)}
+                          placeholder="Date / Year"
+                          className="text-xs"
+                        />
+                      </div>
+                    </Card.Content>
+                  </Card>
                 ))}
-              </div>
-            </div>
+              </Card.Content>
+            </Card>
           ))}
         </div>
       )}

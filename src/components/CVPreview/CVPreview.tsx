@@ -5,7 +5,8 @@ import { ModernTemplate } from './templates/ModernTemplate';
 import { ExecutiveTemplate } from './templates/ExecutiveTemplate';
 import { TechTemplate } from './templates/TechTemplate';
 import { getPaperDimensions } from '../../utils/paperDimensions';
-import { Lock, FileText, CheckCircle2 } from 'lucide-react';
+import { Lock, FileText } from 'lucide-react';
+import { Chip } from '@heroui/react';
 
 interface CVPreviewProps {
   cvData: CVData;
@@ -129,37 +130,43 @@ export const CVPreview: React.FC<CVPreviewProps> = ({
       `}</style>
 
       {/* Page status toolbar (preview only, hidden on print) */}
-      <div className="no-print mb-3 flex items-center justify-between w-full max-w-[215mm] text-xs px-2 text-slate-300">
+      <div className="no-print mb-3 flex items-center justify-between w-full max-w-[215mm] text-xs px-2 text-muted">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono bg-slate-800 text-slate-200 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1">
-            <FileText className="w-3 h-3 text-slate-400" />
-            {designConfig.paperSize.toUpperCase()} ({widthMm} × {heightMm} mm)
-          </span>
+          <Chip size="sm" variant="secondary">
+            <Chip.Label className="font-mono flex items-center gap-1">
+              <FileText className="w-3 h-3 text-muted" />
+              {designConfig.paperSize.toUpperCase()} ({widthMm} × {heightMm} mm)
+            </Chip.Label>
+          </Chip>
 
           {designConfig.forceOnePage ? (
-            <span className="px-2 py-0.5 rounded font-medium bg-emerald-950 text-emerald-200 border border-emerald-700 flex items-center gap-1">
-              <Lock className="w-3 h-3 text-emerald-400" />
-              1 Page Locked
-              {autoScaleFactor < 1 && (
-                <span className="text-[10px] font-mono text-emerald-300 ml-1">
-                  ({Math.round(autoScaleFactor * 100)}% fit scale)
-                </span>
-              )}
-            </span>
+            <Chip size="sm" variant="soft" color="success">
+              <Chip.Label className="flex items-center gap-1 font-medium">
+                <Lock className="w-3 h-3 text-success" />
+                1 Page Locked
+                {autoScaleFactor < 1 && (
+                  <span className="text-[10px] font-mono opacity-90 ml-1">
+                    ({Math.round(autoScaleFactor * 100)}% fit)
+                  </span>
+                )}
+              </Chip.Label>
+            </Chip>
           ) : (
-            <span className={`px-2 py-0.5 rounded font-medium ${
-              isOverflowingPageOne 
-                ? 'bg-amber-950 text-amber-200 border border-amber-800' 
-                : 'bg-emerald-950 text-emerald-200 border border-emerald-800'
-            }`}>
-              {estimatedPages === 1 ? '1 Page' : `${estimatedPages} Pages`}
-            </span>
+            <Chip
+              size="sm"
+              variant="soft"
+              color={isOverflowingPageOne ? 'warning' : 'success'}
+            >
+              <Chip.Label className="font-medium">
+                {estimatedPages === 1 ? '1 Page' : `${estimatedPages} Pages`}
+              </Chip.Label>
+            </Chip>
           )}
         </div>
 
         {!designConfig.forceOnePage && isOverflowingPageOne && (
-          <span className="text-amber-300 text-[11px] font-medium">
-            Tip: Enable "Force 1-Page" in Design tab to lock content to 1 page
+          <span className="text-warning text-[11px] font-medium">
+            Tip: Enable &quot;Force 1-Page&quot; in Design tab to lock content to 1 page
           </span>
         )}
       </div>

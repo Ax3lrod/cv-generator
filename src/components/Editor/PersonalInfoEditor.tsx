@@ -15,10 +15,10 @@ import {
   Upload, 
   Trash2, 
   RefreshCw,
-  Sliders,
-  Check,
-  Crop as CropIcon
+  Crop as CropIcon,
+  Sparkles
 } from 'lucide-react';
+import { Button, Card, Chip, Switch, Input, TextArea } from '@heroui/react';
 
 interface Props {
   data: PersonalInfo;
@@ -49,31 +49,31 @@ export const PersonalInfoEditor: React.FC<Props> = ({
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      setErrorMessage('Please select a valid image file (JPG, PNG, or WebP).');
+      setErrorMessage('Please upload a valid image file (JPG, PNG, WebP).');
       return;
     }
-    setErrorMessage(null);
+
+    if (file.size > 8 * 1024 * 1024) {
+      setErrorMessage('Image size exceeds 8MB. Please choose a smaller photo.');
+      return;
+    }
+
     setIsProcessing(true);
+    setErrorMessage(null);
+
     try {
-      const rawDataUrl = await readAndPreScaleImage(file, 1400);
-      setCropImageSource(rawDataUrl);
+      const dataUrl = await readAndPreScaleImage(file);
+      setCropImageSource(dataUrl);
+      setIsCropModalOpen(true);
       onChange({
         ...data,
-        rawPhotoUrl: rawDataUrl,
+        rawPhotoUrl: dataUrl,
       });
-      setIsCropModalOpen(true);
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to process image');
+      console.error('Failed to load image:', err);
+      setErrorMessage(err.message || 'Failed to process image.');
     } finally {
       setIsProcessing(false);
-    }
-  };
-
-  const handleOpenCropModal = () => {
-    const imgSrc = data.rawPhotoUrl || data.photoUrl;
-    if (imgSrc) {
-      setCropImageSource(imgSrc);
-      setIsCropModalOpen(true);
     }
   };
 
@@ -91,24 +91,32 @@ export const PersonalInfoEditor: React.FC<Props> = ({
       onUpdateDesignConfig({
         ...designConfig,
         photoAspectRatio: ratio,
-        photoShape: shape || designConfig.photoShape,
+        ...(shape ? { photoShape: shape } : {}),
       });
     }
   };
 
+  const handleOpenCropModal = () => {
+    const sourceToCrop = data.rawPhotoUrl || data.photoUrl;
+    if (sourceToCrop) {
+      setCropImageSource(sourceToCrop);
+      setIsCropModalOpen(true);
+    }
+  };
+
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFile(file);
+    const files = e.target.files;
+    if (files && files[0]) {
+      handleFile(files[0]);
     }
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFile(file);
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      handleFile(files[0]);
     }
   };
 
@@ -117,8 +125,7 @@ export const PersonalInfoEditor: React.FC<Props> = ({
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
+  const handleDragLeave = () => {
     setIsDragging(false);
   };
 
@@ -138,7 +145,6 @@ export const PersonalInfoEditor: React.FC<Props> = ({
   const photoAspectRatio = designConfig?.photoAspectRatio || '1:1';
   const isPortrait = photoAspectRatio === '3:4';
   const photoSize = designConfig?.photoSize || 26;
-  const photoBorder = designConfig?.photoBorder !== false;
   const photoPosition = designConfig?.photoPosition || 'right';
 
   const shapeClass = 
@@ -147,375 +153,401 @@ export const PersonalInfoEditor: React.FC<Props> = ({
     'rounded-none';
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* 1. Profile Photo Management Card */}
-      <div className="bg-slate-900 border border-slate-700/80 rounded-lg p-3.5 space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
           <div className="flex items-center gap-2">
-            <Camera className="w-4 h-4 text-blue-400" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-200">
-              Profile Photo
-            </h3>
-            <span className="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded font-mono">
-              Optional
-            </span>
+            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+              <Camera className="w-4 h-4" />
+            </div>
+            <div>
+              <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                Profile Photo
+              </Card.Title>
+            </div>
+            <Chip size="sm" variant="soft" color="default" className="text-[10px] h-4.5 px-1.5">
+              <Chip.Label>Optional</Chip.Label>
+            </Chip>
           </div>
 
           {data.photoUrl && (
-            <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">
-              <input
-                type="checkbox"
-                checked={data.showPhoto || false}
-                onChange={(e) => handleChange('showPhoto', e.target.checked)}
-                className="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-              />
-              <span className="font-medium">Show Photo on CV</span>
-            </label>
+            <Switch
+              isSelected={data.showPhoto || false}
+              onChange={(checked) => handleChange('showPhoto', checked)}
+              size="sm"
+            >
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+              <Switch.Content className="text-xs font-medium text-foreground cursor-pointer">
+                Show on CV
+              </Switch.Content>
+            </Switch>
           )}
-        </div>
+        </Card.Header>
 
-        {/* Hidden file input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp,image/avif"
-          onChange={onFileInputChange}
-          className="hidden"
-          id="photo-upload-input"
-        />
+        <Card.Content className="p-4 space-y-3">
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/avif"
+            onChange={onFileInputChange}
+            className="hidden"
+            id="photo-upload-input"
+          />
 
-        {data.photoUrl ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-4">
-              {/* Thumbnail Preview */}
-              <div className="relative shrink-0">
-                <img
-                  src={data.photoUrl}
-                  alt="Profile Preview"
-                  className={`${isPortrait ? 'w-14 h-[72px]' : 'w-16 h-16'} object-cover bg-slate-950 border-2 ${
-                    data.showPhoto ? 'border-blue-500' : 'border-slate-700 opacity-60'
-                  } ${shapeClass}`}
-                />
-                {!data.showPhoto && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-[10px] font-semibold text-slate-300 rounded">
-                    Hidden
+          {data.photoUrl ? (
+            <div className="space-y-3.5">
+              <div className="flex items-center gap-4">
+                {/* Thumbnail Preview */}
+                <div className="relative shrink-0">
+                  <img
+                    src={data.photoUrl}
+                    alt="Profile Preview"
+                    className={`${isPortrait ? 'w-14 h-[72px]' : 'w-16 h-16'} object-cover bg-surface-tertiary border-2 ${
+                      data.showPhoto ? 'border-accent shadow-sm' : 'border-border opacity-50'
+                    } ${shapeClass} transition-all`}
+                  />
+                  {!data.showPhoto && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-[10px] font-semibold text-slate-200 rounded">
+                      Hidden
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-2 flex-1">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onPress={handleOpenCropModal}
+                      className="text-xs font-medium h-8"
+                    >
+                      <CropIcon className="w-3.5 h-3.5 mr-1" />
+                      <span>Crop & Frame</span>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      isDisabled={isProcessing}
+                      onPress={() => fileInputRef.current?.click()}
+                      className="text-xs font-medium h-8"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 mr-1 ${isProcessing ? 'animate-spin' : ''}`} />
+                      <span>Change</span>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="danger-soft"
+                      onPress={handleRemovePhoto}
+                      className="text-xs font-medium h-8"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1" />
+                      <span>Remove</span>
+                    </Button>
                   </div>
-                )}
+                  <p className="text-[11px] text-muted">
+                    Auto-optimized to 600×600 px for crisp print & vector PDF export.
+                  </p>
+                </div>
               </div>
 
-              {/* Actions */}
-              <div className="space-y-1.5 flex-1">
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={handleOpenCropModal}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-600/25 hover:bg-blue-600/40 text-blue-200 text-xs font-medium rounded border border-blue-500/50 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-                    title="Crop and frame photo"
-                  >
-                    <CropIcon className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Crop & Frame</span>
-                  </button>
+              {/* Quick Photo Style Controls */}
+              {designConfig && onUpdateDesignConfig && (
+                <div className="pt-3 border-t border-border/60 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                  {/* Shape Picker */}
+                  <div>
+                    <label className="block text-[11px] font-medium text-muted mb-1.5">Avatar Shape</label>
+                    <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+                      {(['circle', 'rounded', 'square'] as const).map((shape) => (
+                        <Button
+                          key={shape}
+                          size="sm"
+                          variant={photoShape === shape ? 'primary' : 'ghost'}
+                          onPress={() => onUpdateDesignConfig({ ...designConfig, photoShape: shape })}
+                          className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                        >
+                          {shape === 'circle' ? 'Circle' : shape === 'rounded' ? 'Rounded' : 'Square'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isProcessing}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${isProcessing ? 'animate-spin' : ''}`} />
-                    <span>Change</span>
-                  </button>
+                  {/* Aspect Ratio Picker */}
+                  <div>
+                    <label className="block text-[11px] font-medium text-muted mb-1.5">Aspect Ratio</label>
+                    <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+                      {(['1:1', '3:4'] as const).map((ratio) => (
+                        <Button
+                          key={ratio}
+                          size="sm"
+                          variant={photoAspectRatio === ratio ? 'primary' : 'ghost'}
+                          onPress={() =>
+                            onUpdateDesignConfig({
+                              ...designConfig,
+                              photoAspectRatio: ratio,
+                              ...(ratio === '3:4' && photoShape === 'circle' ? { photoShape: 'rounded' } : {}),
+                            })
+                          }
+                          className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                        >
+                          {ratio === '1:1' ? '1:1 Sq' : '3:4 Pas'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 text-xs font-medium rounded border border-rose-800/60 transition focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Remove</span>
-                  </button>
+                  {/* Position Picker */}
+                  <div>
+                    <label className="block text-[11px] font-medium text-muted mb-1.5">Header Position</label>
+                    <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+                      {(['right', 'left'] as const).map((pos) => (
+                        <Button
+                          key={pos}
+                          size="sm"
+                          variant={photoPosition === pos ? 'primary' : 'ghost'}
+                          onPress={() => onUpdateDesignConfig({ ...designConfig, photoPosition: pos })}
+                          className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                        >
+                          {pos === 'right' ? 'Right' : 'Left'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size Slider */}
+                  <div className="sm:col-span-3 pt-1">
+                    <div className="flex justify-between text-[11px] text-muted mb-1">
+                      <span>Photo Width</span>
+                      <span className="font-mono text-accent font-semibold">
+                        {photoSize} mm {isPortrait ? `× ${Math.round((photoSize * 4) / 3)} mm` : `× ${photoSize} mm`}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={18}
+                      max={38}
+                      step={1}
+                      value={photoSize}
+                      onChange={(e) =>
+                        onUpdateDesignConfig({
+                          ...designConfig,
+                          photoSize: parseInt(e.target.value, 10),
+                        })
+                      }
+                      className="w-full accent-accent rounded"
+                    />
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-400">
-                  Auto-optimized to 600×600 px for crisp print & vector PDF export.
+              )}
+            </div>
+          ) : (
+            /* Dropzone Upload Area */
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
+                isDragging
+                  ? 'border-accent bg-accent/10 shadow-inner'
+                  : 'border-border/80 hover:border-accent/60 bg-surface-tertiary/30 hover:bg-surface-tertiary/60'
+              }`}
+            >
+              <div className="flex flex-col items-center justify-center gap-2">
+                <div className="p-3 bg-surface-secondary text-accent rounded-2xl border border-border shadow-xs">
+                  <Upload className="w-5 h-5" />
+                </div>
+                <div className="text-xs font-semibold text-foreground">
+                  {isProcessing ? 'Processing image...' : 'Click or drag & drop to upload profile photo'}
+                </div>
+                <p className="text-[11px] text-muted max-w-xs leading-relaxed">
+                  Supports JPG, PNG, WebP. Automatically resized and compressed client-side.
                 </p>
               </div>
             </div>
+          )}
 
-            {/* Quick Photo Style Controls */}
-            {designConfig && onUpdateDesignConfig && (
-              <div className="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                {/* Shape Picker */}
-                <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Avatar Shape</label>
-                  <div className="flex gap-1.5">
-                    {(['circle', 'rounded', 'square'] as const).map((shape) => (
-                      <button
-                        key={shape}
-                        type="button"
-                        onClick={() => onUpdateDesignConfig({ ...designConfig, photoShape: shape })}
-                        className={`flex-1 py-1 px-1.5 text-[11px] font-medium rounded border transition ${
-                          photoShape === shape
-                            ? 'bg-blue-600 text-white border-blue-500'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
-                        }`}
-                      >
-                        {shape === 'circle' ? 'Circle' : shape === 'rounded' ? 'Rounded' : 'Square'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          {errorMessage && (
+            <p className="text-xs text-danger bg-danger/10 border border-danger/30 p-2.5 rounded-xl">
+              {errorMessage}
+            </p>
+          )}
+        </Card.Content>
+      </Card>
 
-                {/* Aspect Ratio Picker */}
-                <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Aspect Ratio</label>
-                  <div className="flex gap-1.5">
-                    {(['1:1', '3:4'] as const).map((ratio) => (
-                      <button
-                        key={ratio}
-                        type="button"
-                        onClick={() =>
-                          onUpdateDesignConfig({
-                            ...designConfig,
-                            photoAspectRatio: ratio,
-                            ...(ratio === '3:4' && photoShape === 'circle' ? { photoShape: 'rounded' } : {}),
-                          })
-                        }
-                        className={`flex-1 py-1 px-1.5 text-[11px] font-medium rounded border transition ${
-                          photoAspectRatio === ratio
-                            ? 'bg-blue-600 text-white border-blue-500'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
-                        }`}
-                      >
-                        {ratio === '1:1' ? '1:1 Sq' : '3:4 Pas'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Position Picker */}
-                <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Header Position</label>
-                  <div className="flex gap-1.5">
-                    {(['right', 'left'] as const).map((pos) => (
-                      <button
-                        key={pos}
-                        type="button"
-                        onClick={() => onUpdateDesignConfig({ ...designConfig, photoPosition: pos })}
-                        className={`flex-1 py-1 px-1.5 text-[11px] font-medium rounded border transition ${
-                          photoPosition === pos
-                            ? 'bg-blue-600 text-white border-blue-500'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
-                        }`}
-                      >
-                        {pos === 'right' ? 'Right' : 'Left'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Size Slider */}
-                <div className="sm:col-span-3">
-                  <div className="flex justify-between text-[11px] text-slate-400 mb-1">
-                    <span>Photo Width</span>
-                    <span className="font-mono text-blue-400">
-                      {photoSize} mm {isPortrait ? `× ${Math.round((photoSize * 4) / 3)} mm` : `× ${photoSize} mm`}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min={18}
-                    max={38}
-                    step={1}
-                    value={photoSize}
-                    onChange={(e) =>
-                      onUpdateDesignConfig({
-                        ...designConfig,
-                        photoSize: parseInt(e.target.value, 10),
-                      })
-                    }
-                    className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-                  />
-                </div>
-              </div>
-            )}
+      {/* 2. Personal Information Fields Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+              <User className="w-4 h-4" />
+            </div>
+            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+              Contact & Header Details
+            </Card.Title>
           </div>
-        ) : (
-          /* Dropzone Upload Area */
-          <div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition ${
-              isDragging
-                ? 'border-blue-400 bg-blue-950/30'
-                : 'border-slate-700 hover:border-slate-500 bg-slate-950/40 hover:bg-slate-900/40'
-            }`}
-          >
-            <div className="flex flex-col items-center justify-center gap-1.5">
-              <div className="p-2.5 bg-slate-800 rounded-full text-slate-300">
-                <Upload className="w-5 h-5 text-blue-400" />
-              </div>
-              <div className="text-xs font-semibold text-slate-200">
-                {isProcessing ? 'Processing image...' : 'Click or drag & drop to upload profile photo'}
-              </div>
-              <p className="text-[11px] text-slate-400 max-w-xs">
-                Supports JPG, PNG, WebP. Automatically resized and compressed client-side.
-              </p>
+        </Card.Header>
+
+        <Card.Content className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5">Full Name</label>
+              <Input
+                variant="secondary"
+                value={data.fullName}
+                onChange={(e) => handleChange('fullName', e.target.value)}
+                placeholder="e.g. ALEX MORGAN"
+                className="w-full text-sm font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5">Professional Title / Headline</label>
+              <Input
+                variant="secondary"
+                value={data.jobTitle || ''}
+                onChange={(e) => handleChange('jobTitle', e.target.value)}
+                placeholder="e.g. Senior Full-Stack Engineer"
+                className="w-full text-sm font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-muted" />
+                Email Address
+              </label>
+              <Input
+                type="email"
+                variant="secondary"
+                value={data.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                placeholder="e.g. alex.morgan@example.com"
+                className="w-full text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-muted" />
+                Phone Number
+              </label>
+              <Input
+                type="text"
+                variant="secondary"
+                value={data.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                placeholder="e.g. +1 (555) 234-5678"
+                className="w-full text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-muted" />
+                Location
+              </label>
+              <Input
+                type="text"
+                variant="secondary"
+                value={data.location || ''}
+                onChange={(e) => handleChange('location', e.target.value)}
+                placeholder="e.g. San Francisco, CA"
+                className="w-full text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-muted" />
+                Portfolio Website
+              </label>
+              <Input
+                type="text"
+                variant="secondary"
+                value={data.website || ''}
+                onChange={(e) => handleChange('website', e.target.value)}
+                placeholder="e.g. alexmorgan.dev"
+                className="w-full text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
+                <Link2 className="w-3.5 h-3.5 text-muted" />
+                LinkedIn Profile
+              </label>
+              <Input
+                type="text"
+                variant="secondary"
+                value={data.linkedin || ''}
+                onChange={(e) => handleChange('linkedin', e.target.value)}
+                placeholder="e.g. linkedin.com/in/alexmorgan"
+                className="w-full text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5 flex items-center gap-1.5">
+                <Code className="w-3.5 h-3.5 text-muted" />
+                GitHub Username / URL
+              </label>
+              <Input
+                type="text"
+                variant="secondary"
+                value={data.github || ''}
+                onChange={(e) => handleChange('github', e.target.value)}
+                placeholder="e.g. github.com/alexmorgan"
+                className="w-full text-sm"
+              />
             </div>
           </div>
-        )}
+        </Card.Content>
+      </Card>
 
-        {errorMessage && (
-          <p className="text-xs text-rose-400 bg-rose-950/30 border border-rose-800/50 p-2 rounded">
-            {errorMessage}
-          </p>
-        )}
-      </div>
-
-      {/* 2. Personal Information Fields */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-            <User className="w-4 h-4 text-blue-400" />
-            Contact & Header Details
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
-            <input
-              type="text"
-              value={data.fullName}
-              onChange={(e) => handleChange('fullName', e.target.value)}
-              placeholder="e.g. ALEX MORGAN"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Professional Title / Headline</label>
-            <input
-              type="text"
-              value={data.jobTitle || ''}
-              onChange={(e) => handleChange('jobTitle', e.target.value)}
-              placeholder="e.g. Senior Full-Stack Engineer"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-slate-400" />
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={data.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="e.g. alex.morgan@example.com"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-slate-400" />
-              Phone Number
-            </label>
-            <input
-              type="text"
-              value={data.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder="e.g. +1 (555) 234-5678"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-slate-400" />
-              Location
-            </label>
-            <input
-              type="text"
-              value={data.location || ''}
-              onChange={(e) => handleChange('location', e.target.value)}
-              placeholder="e.g. San Francisco, CA"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
-              <Link2 className="w-3.5 h-3.5 text-blue-400" />
-              LinkedIn URL / Handle
-            </label>
-            <input
-              type="text"
-              value={data.linkedin}
-              onChange={(e) => handleChange('linkedin', e.target.value)}
-              placeholder="e.g. linkedin.com/in/alexmorgan-dev"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-emerald-400" />
-              Portfolio / Website
-            </label>
-            <input
-              type="text"
-              value={data.website}
-              onChange={(e) => handleChange('website', e.target.value)}
-              placeholder="e.g. alexmorgan.dev"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
-              <Code className="w-3.5 h-3.5 text-slate-300" />
-              GitHub URL / Profile
-            </label>
-            <input
-              type="text"
-              value={data.github || ''}
-              onChange={(e) => handleChange('github', e.target.value)}
-              placeholder="e.g. github.com/alexmorgan"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-            />
-          </div>
-        </div>
-
-        {/* Summary */}
-        <div className="pt-2 border-t border-slate-800">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-blue-400" />
+      {/* 3. Professional Summary Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+              <FileText className="w-4 h-4" />
+            </div>
+            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
               Professional Summary / Bio
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-400 hover:text-slate-200">
-              <input
-                type="checkbox"
-                checked={data.showSummary}
-                onChange={(e) => handleChange('showSummary', e.target.checked)}
-                className="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-              />
-              <span>Show on CV</span>
-            </label>
+            </Card.Title>
           </div>
-          <textarea
+
+          <Switch
+            isSelected={data.showSummary}
+            onChange={(checked) => handleChange('showSummary', checked)}
+            size="sm"
+          >
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            <Switch.Content className="text-xs font-medium text-foreground cursor-pointer">
+              Show on CV
+            </Switch.Content>
+          </Switch>
+        </Card.Header>
+
+        <Card.Content className="p-4">
+          <TextArea
+            variant="secondary"
             rows={4}
             value={data.summary}
             onChange={(e) => handleChange('summary', e.target.value)}
-            placeholder="Brief 2-4 sentences highlighting your background, expertise, and focus..."
-            className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+            placeholder="Brief 2-4 sentences highlighting your background, expertise, and career focus..."
+            className="w-full text-sm leading-relaxed"
           />
-        </div>
-      </div>
+        </Card.Content>
+      </Card>
 
       {/* Interactive Photo Crop Modal */}
       <PhotoCropModal

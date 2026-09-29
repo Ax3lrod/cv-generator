@@ -1,7 +1,8 @@
 import React from 'react';
 import { DesignConfig, TemplateId, FontFamily, PaperPreset } from '../../types/cv';
 import { PAPER_PRESETS, getPaperDimensions } from '../../utils/paperDimensions';
-import { Palette, Type, Sliders, Layout, SlidersHorizontal, Check, Lock, Unlock, Camera } from 'lucide-react';
+import { Palette, Type, Sliders, Layout, SlidersHorizontal, Check, Lock, Unlock, Camera, Sparkles } from 'lucide-react';
+import { Button, Card, Chip, Switch, Input } from '@heroui/react';
 
 interface Props {
   config: DesignConfig;
@@ -83,269 +84,331 @@ export const DesignConfigEditor: React.FC<Props> = ({ config, onChange }) => {
   const currentDims = getPaperDimensions(config);
 
   return (
-    <div className="space-y-6">
-      {/* 1-Page Lock & Optimization Control */}
-      <div className="p-3.5 bg-slate-900 border border-slate-700 rounded-lg space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div className={`p-1.5 rounded ${config.forceOnePage ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-slate-800 text-slate-400'}`}>
-              {config.forceOnePage ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-slate-200">
-                Force 1-Page Layout
+    <div className="space-y-4">
+      {/* 1-Page Lock & Optimization Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Content className="p-4 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className={`p-2 rounded-xl transition ${config.forceOnePage ? 'bg-success/20 text-success' : 'bg-surface-tertiary text-muted'}`}>
+                {config.forceOnePage ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
               </div>
-              <p className="text-[11px] text-slate-400">
-                {config.forceOnePage 
-                  ? 'Active: All content is strictly locked to 1 single page without spilling.' 
-                  : 'Disabled: Content will span across multiple pages if long.'}
-              </p>
+              <div>
+                <div className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <span>Force 1-Page Layout</span>
+                  {config.forceOnePage && (
+                    <Chip size="sm" variant="soft" color="success" className="h-4.5 text-[10px] px-1.5">
+                      <Chip.Label>Locked</Chip.Label>
+                    </Chip>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted">
+                  {config.forceOnePage 
+                    ? 'All content is mathematically constrained to 1 single page without spilling.' 
+                    : 'Content will naturally flow to page 2 if entries exceed page height.'}
+                </p>
+              </div>
             </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => updateConfig('forceOnePage', !config.forceOnePage)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-              config.forceOnePage 
-                ? 'bg-emerald-600 hover:bg-emerald-500 text-white' 
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-            }`}
-          >
-            {config.forceOnePage ? '1-Page Locked' : 'Enable 1-Page Lock'}
-          </button>
-        </div>
 
-        <div className="pt-2.5 border-t border-slate-800 flex items-center justify-between">
-          <span className="text-[11px] text-slate-400">
-            Need fine-tuning? Auto-optimize margins and font sizes for a single page:
-          </span>
-          <button
-            type="button"
-            onClick={handleAutoFitOnePage}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none shrink-0 ml-2"
-          >
-            <SlidersHorizontal className="w-3 h-3 text-blue-400" />
-            Auto-Tune Spacing
-          </button>
-        </div>
-      </div>
-
-      {/* 1. Paper Size & Custom Dimensions */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Sliders className="w-4 h-4 text-emerald-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Paper Size & Custom Dimensions
-          </h3>
-        </div>
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Paper Format Preset</label>
-            <select
-              value={config.paperSize}
-              onChange={(e) => handlePaperPresetChange(e.target.value as PaperPreset)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+            <Switch
+              isSelected={config.forceOnePage}
+              onChange={(checked) => updateConfig('forceOnePage', checked)}
+              size="sm"
             >
-              <option value="a4">A4 (210 × 297 mm) - Global & Indonesia Standard</option>
-              <option value="letter">US Letter (215.9 × 279.4 mm) - North America</option>
-              <option value="f4">F4 / Folio (215 × 330 mm) - Indonesia Standard</option>
-              <option value="legal">US Legal (215.9 × 355.6 mm) - Extended</option>
-              <option value="custom">Custom Dimensions (Freely specify Width & Height)</option>
-            </select>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch>
           </div>
 
-          {/* Custom Dimension Inputs */}
-          <div className="p-3 bg-slate-900/70 border border-slate-800 rounded space-y-3">
-            <div className="text-[11px] font-medium text-slate-300 flex justify-between">
-              <span>Current Dimensions:</span>
-              <span className="font-mono text-emerald-400">{currentDims.widthMm} mm × {currentDims.heightMm} mm</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Width (mm)</label>
-                <input
-                  type="number"
-                  min={120}
-                  max={350}
-                  step={1}
-                  value={currentDims.widthMm}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value) || 210;
-                    onChange({
-                      ...config,
-                      paperSize: 'custom',
-                      customPaperWidth: val,
-                      customPaperHeight: currentDims.heightMm,
-                    });
-                  }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Height (mm)</label>
-                <input
-                  type="number"
-                  min={180}
-                  max={500}
-                  step={1}
-                  value={currentDims.heightMm}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value) || 297;
-                    onChange({
-                      ...config,
-                      paperSize: 'custom',
-                      customPaperWidth: currentDims.widthMm,
-                      customPaperHeight: val,
-                    });
-                  }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-                />
-              </div>
-            </div>
+          <div className="pt-2.5 border-t border-border/70 flex items-center justify-between">
+            <span className="text-[11px] text-muted">
+              Auto-calculate ideal margins and font sizing for 1-page fit:
+            </span>
+            <Button
+              size="sm"
+              variant="secondary"
+              onPress={handleAutoFitOnePage}
+              className="text-xs font-medium h-7.5 px-2.5 shrink-0 ml-2"
+            >
+              <SlidersHorizontal className="w-3 h-3 mr-1 text-accent" />
+              <span>Auto-Tune</span>
+            </Button>
           </div>
-        </div>
-      </div>
+        </Card.Content>
+      </Card>
 
-      {/* 2. Template Choice */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Layout className="w-4 h-4 text-blue-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+      {/* 1. Paper Size & Custom Dimensions Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Sliders className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            Paper Size & Format
+          </Card.Title>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {(['a4', 'letter', 'legal', 'f4'] as PaperPreset[]).map((preset) => {
+              const p = PAPER_PRESETS[preset];
+              const isSelected = config.paperSize === preset;
+              return (
+                <Button
+                  key={preset}
+                  size="sm"
+                  variant={isSelected ? 'primary' : 'secondary'}
+                  onPress={() => handlePaperPresetChange(preset)}
+                  className={`h-auto py-2 px-2.5 flex flex-col items-start rounded-xl text-left transition ${
+                    isSelected ? 'shadow-sm' : 'border border-border'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-semibold text-xs">{p.name}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5" />}
+                  </div>
+                  <span className="text-[10px] opacity-75 font-mono mt-0.5">
+                    {p.widthMm} × {p.heightMm} mm
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
+
+          <div className="pt-2 border-t border-border/60">
+            <Button
+              size="sm"
+              variant={config.paperSize === 'custom' ? 'primary' : 'ghost'}
+              onPress={() => handlePaperPresetChange('custom')}
+              className="w-full text-xs font-medium justify-between h-8 px-3 rounded-lg border border-border"
+            >
+              <span>Custom Dimensions (Free Size)</span>
+              <span className="font-mono text-[11px] opacity-80">
+                {currentDims.widthMm} × {currentDims.heightMm} mm
+              </span>
+            </Button>
+
+            {config.paperSize === 'custom' && (
+              <div className="grid grid-cols-2 gap-3 mt-3 bg-surface-tertiary/40 p-3 rounded-xl border border-border">
+                <div>
+                  <label className="block text-[11px] text-muted mb-1 font-medium">Width (mm)</label>
+                  <Input
+                    type="number"
+                    variant="secondary"
+                    value={String(currentDims.widthMm)}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value) || 210;
+                      onChange({
+                        ...config,
+                        paperSize: 'custom',
+                        customPaperWidth: val,
+                        customPaperHeight: currentDims.heightMm,
+                      });
+                    }}
+                    className="w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-muted mb-1 font-medium">Height (mm)</label>
+                  <Input
+                    type="number"
+                    variant="secondary"
+                    value={String(currentDims.heightMm)}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value) || 297;
+                      onChange({
+                        ...config,
+                        paperSize: 'custom',
+                        customPaperWidth: currentDims.widthMm,
+                        customPaperHeight: val,
+                      });
+                    }}
+                    className="w-full text-xs"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </Card.Content>
+      </Card>
+
+      {/* 2. Resume Template Style Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Layout className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
             Resume Template Style
-          </h3>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {TEMPLATE_OPTIONS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => updateConfig('template', t.id)}
-              className={`text-left p-2.5 rounded border transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-                config.template === t.id
-                  ? 'bg-slate-800 border-blue-500 text-white'
-                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-xs text-slate-200">{t.name}</span>
-                {config.template === t.id && <Check className="w-3.5 h-3.5 text-blue-400" />}
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1 leading-tight">{t.desc}</p>
-            </button>
-          ))}
-        </div>
-      </div>
+          </Card.Title>
+        </Card.Header>
 
-      {/* 3. Header Alignment & Text Toggles */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Sliders className="w-4 h-4 text-slate-300" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Header Layout & Letter Case
-          </h3>
-        </div>
+        <Card.Content className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {TEMPLATE_OPTIONS.map((t) => {
+              const isSelected = config.template === t.id;
+              return (
+                <Button
+                  key={t.id}
+                  variant={isSelected ? 'primary' : 'secondary'}
+                  onPress={() => updateConfig('template', t.id)}
+                  className={`h-auto p-3 flex flex-col items-start rounded-xl text-left transition ${
+                    isSelected ? 'shadow-sm' : 'border border-border hover:bg-surface-tertiary'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-semibold text-xs">{t.name}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5" />}
+                  </div>
+                  <p className="text-[11px] opacity-75 mt-1 leading-snug font-normal">
+                    {t.desc}
+                  </p>
+                </Button>
+              );
+            })}
+          </div>
+        </Card.Content>
+      </Card>
 
-        <div className="space-y-3">
+      {/* 3. Header Layout & Letter Case Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Sliders className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            Header Layout & Case
+          </Card.Title>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3.5">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Header Alignment</label>
-            <select
-              value={config.headerAlign}
-              onChange={(e) => updateConfig('headerAlign', e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-            >
-              <option value="center">Centered (ATS Standard)</option>
-              <option value="left">Left Aligned</option>
-              <option value="split">Split (Name Left, Details Right)</option>
-            </select>
+            <label className="block text-xs font-medium text-muted mb-1.5">Header Alignment</label>
+            <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+              {[
+                { id: 'center', label: 'Centered (ATS Standard)' },
+                { id: 'left', label: 'Left Aligned' },
+                { id: 'split', label: 'Split (Name Left, Info Right)' },
+              ].map((item) => (
+                <Button
+                  key={item.id}
+                  size="sm"
+                  variant={config.headerAlign === item.id ? 'primary' : 'ghost'}
+                  onPress={() => updateConfig('headerAlign', item.id)}
+                  className="flex-1 h-7.5 text-[11px] px-2 font-medium rounded-lg"
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <label className="flex items-center gap-2 cursor-pointer bg-slate-900 p-2 rounded border border-slate-800 text-xs text-slate-300 hover:border-slate-700">
-              <input
-                type="checkbox"
-                checked={config.uppercaseName}
-                onChange={(e) => updateConfig('uppercaseName', e.target.checked)}
-                className="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-              />
-              <span>UPPERCASE Name</span>
-            </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="flex items-center justify-between bg-surface-tertiary/50 p-2.5 rounded-xl border border-border">
+              <span className="text-xs font-medium text-foreground">UPPERCASE Name</span>
+              <Switch
+                isSelected={config.uppercaseName}
+                onChange={(checked) => updateConfig('uppercaseName', checked)}
+                size="sm"
+              >
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch>
+            </div>
 
-            <label className="flex items-center gap-2 cursor-pointer bg-slate-900 p-2 rounded border border-slate-800 text-xs text-slate-300 hover:border-slate-700">
-              <input
-                type="checkbox"
-                checked={config.uppercaseHeadings}
-                onChange={(e) => updateConfig('uppercaseHeadings', e.target.checked)}
-                className="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-              />
-              <span>UPPERCASE Headings</span>
-            </label>
+            <div className="flex items-center justify-between bg-surface-tertiary/50 p-2.5 rounded-xl border border-border">
+              <span className="text-xs font-medium text-foreground">UPPERCASE Headings</span>
+              <Switch
+                isSelected={config.uppercaseHeadings}
+                onChange={(checked) => updateConfig('uppercaseHeadings', checked)}
+                size="sm"
+              >
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch>
+            </div>
           </div>
-        </div>
-      </div>
+        </Card.Content>
+      </Card>
 
-      {/* Profile Photo Styling */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Camera className="w-4 h-4 text-sky-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+      {/* 4. Profile Photo Layout & Shape Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Camera className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
             Profile Photo Layout & Shape
-          </h3>
-        </div>
+          </Card.Title>
+        </Card.Header>
 
-        <div className="space-y-3 bg-slate-900/60 p-3 rounded border border-slate-800">
+        <Card.Content className="p-4 space-y-3.5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Avatar Shape</label>
-              <select
-                value={config.photoShape || 'circle'}
-                onChange={(e) => updateConfig('photoShape', e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              >
-                <option value="circle">Circular (Modern)</option>
-                <option value="rounded">Rounded Rectangle</option>
-                <option value="square">Square</option>
-              </select>
+              <label className="block text-xs font-medium text-muted mb-1.5">Avatar Shape</label>
+              <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+                {(['circle', 'rounded', 'square'] as const).map((shape) => (
+                  <Button
+                    key={shape}
+                    size="sm"
+                    variant={(config.photoShape || 'circle') === shape ? 'primary' : 'ghost'}
+                    onPress={() => updateConfig('photoShape', shape)}
+                    className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                  >
+                    {shape === 'circle' ? 'Circle' : shape === 'rounded' ? 'Rounded' : 'Square'}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Aspect Ratio</label>
-              <select
-                value={config.photoAspectRatio || '1:1'}
-                onChange={(e) => {
-                  const val = e.target.value as '1:1' | '3:4';
-                  if (val === '3:4' && config.photoShape === 'circle') {
-                    onChange({ ...config, photoAspectRatio: val, photoShape: 'rounded' });
-                  } else {
-                    updateConfig('photoAspectRatio', val);
-                  }
-                }}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              >
-                <option value="1:1">1:1 Square</option>
-                <option value="3:4">3:4 Portrait (Pas Foto)</option>
-              </select>
+              <label className="block text-xs font-medium text-muted mb-1.5">Aspect Ratio</label>
+              <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+                {(['1:1', '3:4'] as const).map((ratio) => (
+                  <Button
+                    key={ratio}
+                    size="sm"
+                    variant={(config.photoAspectRatio || '1:1') === ratio ? 'primary' : 'ghost'}
+                    onPress={() => {
+                      if (ratio === '3:4' && config.photoShape === 'circle') {
+                        onChange({ ...config, photoAspectRatio: ratio, photoShape: 'rounded' });
+                      } else {
+                        updateConfig('photoAspectRatio', ratio);
+                      }
+                    }}
+                    className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                  >
+                    {ratio === '1:1' ? '1:1 Sq' : '3:4 Pas'}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Header Placement</label>
-              <select
-                value={config.photoPosition || 'right'}
-                onChange={(e) => updateConfig('photoPosition', e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              >
-                <option value="right">Right Side</option>
-                <option value="left">Left Side</option>
-              </select>
+              <label className="block text-xs font-medium text-muted mb-1.5">Header Placement</label>
+              <div className="flex gap-1 bg-surface-tertiary/60 p-1 rounded-xl border border-border">
+                {(['right', 'left'] as const).map((pos) => (
+                  <Button
+                    key={pos}
+                    size="sm"
+                    variant={(config.photoPosition || 'right') === pos ? 'primary' : 'ghost'}
+                    onPress={() => updateConfig('photoPosition', pos)}
+                    className="flex-1 h-7 text-[11px] px-1 font-medium rounded-lg"
+                  >
+                    {pos === 'right' ? 'Right' : 'Left'}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
+            <div className="flex justify-between text-xs text-muted mb-1.5">
               <span>Photo Size (Width)</span>
-              <span className="font-mono text-sky-400">
+              <span className="font-mono text-accent font-semibold">
                 {config.photoSize || 26} mm
                 {config.photoAspectRatio === '3:4'
                   ? ` × ${Math.round(((config.photoSize || 26) * 4) / 3)} mm`
@@ -359,325 +422,352 @@ export const DesignConfigEditor: React.FC<Props> = ({ config, onChange }) => {
               step={1}
               value={config.photoSize || 26}
               onChange={(e) => updateConfig('photoSize', parseInt(e.target.value, 10))}
-              className="w-full accent-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none rounded"
+              className="w-full accent-accent rounded"
             />
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 pt-1">
-            <input
-              type="checkbox"
-              checked={config.photoBorder !== false}
-              onChange={(e) => updateConfig('photoBorder', e.target.checked)}
-              className="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0"
-            />
-            <span>Subtle photo outline border</span>
-          </label>
-        </div>
-      </div>
+          <div className="flex items-center justify-between bg-surface-tertiary/50 p-2.5 rounded-xl border border-border">
+            <span className="text-xs font-medium text-foreground">Subtle outline border around photo</span>
+            <Switch
+              isSelected={config.photoBorder !== false}
+              onChange={(checked) => updateConfig('photoBorder', checked)}
+              size="sm"
+            >
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch>
+          </div>
+        </Card.Content>
+      </Card>
 
-      {/* 4. Typography */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Type className="w-4 h-4 text-purple-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+      {/* 5. Typography Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Type className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
             Typography & Font Sizing
-          </h3>
-        </div>
+          </Card.Title>
+        </Card.Header>
 
-        {/* Font Family selector */}
-        <div className="mb-4">
-          <label className="block text-xs font-medium text-slate-300 mb-1.5">Font Family</label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {FONT_OPTIONS.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => updateConfig('fontFamily', f.id)}
-                className={`text-left p-2 rounded border transition focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none ${
-                  config.fontFamily === f.id
-                    ? 'bg-slate-800 border-purple-500 text-white'
-                    : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
-                }`}
-              >
-                <div className="font-semibold text-xs text-slate-200">{f.name}</div>
-                <div className="text-[10px] text-slate-400">{f.type}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders for font sizes */}
-        <div className="space-y-3 bg-slate-900/60 p-3 rounded border border-slate-800">
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Base Font Size</span>
-              <span className="font-mono text-blue-400">{config.baseFontSize} pt</span>
-            </div>
-            <input
-              type="range"
-              min={8.0}
-              max={12.0}
-              step={0.1}
-              value={config.baseFontSize}
-              onChange={(e) => updateConfig('baseFontSize', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Name Title Font Size</span>
-              <span className="font-mono text-blue-400">{config.nameFontSize} pt</span>
-            </div>
-            <input
-              type="range"
-              min={16}
-              max={28}
-              step={1}
-              value={config.nameFontSize}
-              onChange={(e) => updateConfig('nameFontSize', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Section Heading Font Size</span>
-              <span className="font-mono text-blue-400">{config.sectionHeadingFontSize} pt</span>
-            </div>
-            <input
-              type="range"
-              min={10}
-              max={15}
-              step={0.5}
-              value={config.sectionHeadingFontSize}
-              onChange={(e) => updateConfig('sectionHeadingFontSize', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Line Height (Leading)</span>
-              <span className="font-mono text-blue-400">{config.lineHeight}</span>
-            </div>
-            <input
-              type="range"
-              min={1.15}
-              max={1.65}
-              step={0.02}
-              value={config.lineHeight}
-              onChange={(e) => updateConfig('lineHeight', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Page Margins & Section Gaps */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Sliders className="w-4 h-4 text-slate-300" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Page Margins & Spacing (mm)
-          </h3>
-        </div>
-
-        <div className="space-y-3 bg-slate-900/60 p-3 rounded border border-slate-800">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <div className="flex justify-between text-xs text-slate-300 mb-1">
-                <span>Top / Bottom</span>
-                <span className="font-mono text-slate-200">{config.pageMarginTop} mm</span>
-              </div>
-              <input
-                type="range"
-                min={6}
-                max={24}
-                step={1}
-                value={config.pageMarginTop}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  updateConfig('pageMarginTop', val);
-                  updateConfig('pageMarginBottom', val);
-                }}
-                className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs text-slate-300 mb-1">
-                <span>Left / Right</span>
-                <span className="font-mono text-slate-200">{config.pageMarginLeft} mm</span>
-              </div>
-              <input
-                type="range"
-                min={6}
-                max={24}
-                step={1}
-                value={config.pageMarginLeft}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  updateConfig('pageMarginLeft', val);
-                  updateConfig('pageMarginRight', val);
-                }}
-                className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Section Gap</span>
-              <span className="font-mono text-slate-200">{config.sectionGap} mm</span>
-            </div>
-            <input
-              type="range"
-              min={1.0}
-              max={8.0}
-              step={0.2}
-              value={config.sectionGap}
-              onChange={(e) => updateConfig('sectionGap', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Item Gap</span>
-              <span className="font-mono text-slate-200">{config.itemGap} mm</span>
-            </div>
-            <input
-              type="range"
-              min={0.8}
-              max={6.0}
-              step={0.2}
-              value={config.itemGap}
-              onChange={(e) => updateConfig('itemGap', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-slate-300 mb-1">
-              <span>Bullet Gap</span>
-              <span className="font-mono text-slate-200">{config.bulletGap} mm</span>
-            </div>
-            <input
-              type="range"
-              min={0.4}
-              max={4.0}
-              step={0.2}
-              value={config.bulletGap}
-              onChange={(e) => updateConfig('bulletGap', parseFloat(e.target.value))}
-              className="w-full accent-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none rounded"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 6. Section Heading Line & Bullet Styles */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Sliders className="w-4 h-4 text-cyan-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Section Divider & Bullet Style
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Section Divider Style</label>
-            <select
-              value={config.sectionHeadingStyle}
-              onChange={(e) => updateConfig('sectionHeadingStyle', e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-            >
-              <option value="line-under">Underline Full-Width (Classic ATS)</option>
-              <option value="left-bar">Left Accent Bar</option>
-              <option value="pill">Pill Badge</option>
-              <option value="double-line">Double Line</option>
-              <option value="minimal">Minimal (No Line)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Bullet Point Style</label>
-            <select
-              value={config.bulletStyle}
-              onChange={(e) => updateConfig('bulletStyle', e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-            >
-              <option value="disc">• Solid Disc</option>
-              <option value="dash">- Hyphen</option>
-              <option value="square">▪ Square</option>
-              <option value="circle">○ Circle</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-xs text-slate-300 mb-1">
-            <span>Divider Line Thickness</span>
-            <span className="font-mono text-cyan-400">{config.sectionLineWidth} px</span>
-          </div>
-          <input
-            type="range"
-            min={0.5}
-            max={3}
-            step={0.5}
-            value={config.sectionLineWidth}
-            onChange={(e) => updateConfig('sectionLineWidth', parseFloat(e.target.value))}
-            className="w-full accent-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded"
-          />
-        </div>
-      </div>
-
-      {/* 7. Accent Color Customization */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2 mb-3">
-          <Palette className="w-4 h-4 text-pink-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Accent & Text Colors
-          </h3>
-        </div>
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">Accent Color Presets</label>
-            <div className="flex flex-wrap gap-2">
-              {COLOR_PRESETS.map((color) => (
-                <button
-                  key={color.hex}
-                  type="button"
-                  onClick={() => updateConfig('accentColor', color.hex)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-                    config.accentColor === color.hex
-                      ? 'bg-slate-800 border-white text-white font-semibold'
-                      : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'
+        <Card.Content className="p-4 space-y-3.5">
+          {/* Font family selection */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {FONT_OPTIONS.map((f) => {
+              const isSelected = config.fontFamily === f.id;
+              return (
+                <Button
+                  key={f.id}
+                  size="sm"
+                  variant={isSelected ? 'primary' : 'secondary'}
+                  onPress={() => updateConfig('fontFamily', f.id)}
+                  className={`h-auto py-2 px-2.5 flex flex-col items-start rounded-xl text-left transition ${
+                    isSelected ? 'shadow-sm' : 'border border-border hover:bg-surface-tertiary'
                   }`}
                 >
-                  <span className="w-3 h-3 rounded-full border border-slate-600" style={{ backgroundColor: color.hex }} />
-                  <span>{color.name}</span>
-                </button>
-              ))}
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-semibold text-xs">{f.name}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5" />}
+                  </div>
+                  <span className="text-[10px] opacity-75 mt-0.5">{f.type}</span>
+                </Button>
+              );
+            })}
+          </div>
+
+          {/* Sliders for font sizes */}
+          <div className="space-y-3 bg-surface-tertiary/40 p-3.5 rounded-xl border border-border">
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Base Font Size</span>
+                <span className="font-mono text-accent font-semibold">{config.baseFontSize} pt</span>
+              </div>
+              <input
+                type="range"
+                min={8.0}
+                max={12.0}
+                step={0.1}
+                value={config.baseFontSize}
+                onChange={(e) => updateConfig('baseFontSize', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Name Title Font Size</span>
+                <span className="font-mono text-accent font-semibold">{config.nameFontSize} pt</span>
+              </div>
+              <input
+                type="range"
+                min={16}
+                max={28}
+                step={1}
+                value={config.nameFontSize}
+                onChange={(e) => updateConfig('nameFontSize', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Section Heading Font Size</span>
+                <span className="font-mono text-accent font-semibold">{config.sectionHeadingFontSize} pt</span>
+              </div>
+              <input
+                type="range"
+                min={10}
+                max={15}
+                step={0.5}
+                value={config.sectionHeadingFontSize}
+                onChange={(e) => updateConfig('sectionHeadingFontSize', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Line Height (Leading)</span>
+                <span className="font-mono text-accent font-semibold">{config.lineHeight}</span>
+              </div>
+              <input
+                type="range"
+                min={1.15}
+                max={1.65}
+                step={0.02}
+                value={config.lineHeight}
+                onChange={(e) => updateConfig('lineHeight', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
+
+      {/* 6. Page Margins & Section Gaps Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Sliders className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            Page Margins & Spacing (mm)
+          </Card.Title>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-surface-tertiary/40 p-3 rounded-xl border border-border">
+            <div>
+              <label className="block text-[11px] text-muted mb-1 font-medium">Top Margin</label>
+              <Input
+                type="number"
+                variant="secondary"
+                value={String(config.pageMarginTop)}
+                onChange={(e) => updateConfig('pageMarginTop', parseFloat(e.target.value) || 0)}
+                className="w-full text-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-muted mb-1 font-medium">Bottom Margin</label>
+              <Input
+                type="number"
+                variant="secondary"
+                value={String(config.pageMarginBottom)}
+                onChange={(e) => updateConfig('pageMarginBottom', parseFloat(e.target.value) || 0)}
+                className="w-full text-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-muted mb-1 font-medium">Left Margin</label>
+              <Input
+                type="number"
+                variant="secondary"
+                value={String(config.pageMarginLeft)}
+                onChange={(e) => updateConfig('pageMarginLeft', parseFloat(e.target.value) || 0)}
+                className="w-full text-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-muted mb-1 font-medium">Right Margin</label>
+              <Input
+                type="number"
+                variant="secondary"
+                value={String(config.pageMarginRight)}
+                onChange={(e) => updateConfig('pageMarginRight', parseFloat(e.target.value) || 0)}
+                className="w-full text-xs"
+              />
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5">
+          <div className="space-y-3 bg-surface-tertiary/40 p-3.5 rounded-xl border border-border">
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Section Gap</span>
+                <span className="font-mono text-accent font-semibold">{config.sectionGap} mm</span>
+              </div>
+              <input
+                type="range"
+                min={1.5}
+                max={9.0}
+                step={0.5}
+                value={config.sectionGap}
+                onChange={(e) => updateConfig('sectionGap', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Entry Item Gap</span>
+                <span className="font-mono text-accent font-semibold">{config.itemGap} mm</span>
+              </div>
+              <input
+                type="range"
+                min={1.0}
+                max={7.0}
+                step={0.5}
+                value={config.itemGap}
+                onChange={(e) => updateConfig('itemGap', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Bullet Point Gap</span>
+                <span className="font-mono text-accent font-semibold">{config.bulletGap} mm</span>
+              </div>
+              <input
+                type="range"
+                min={0.4}
+                max={4.0}
+                step={0.2}
+                value={config.bulletGap}
+                onChange={(e) => updateConfig('bulletGap', parseFloat(e.target.value))}
+                className="w-full accent-accent rounded"
+              />
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
+
+      {/* 7. Section Heading Line & Bullet Styles Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Sliders className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            Divider & Bullet Style
+          </Card.Title>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5">Section Divider Style</label>
+              <select
+                value={config.sectionHeadingStyle}
+                onChange={(e) => updateConfig('sectionHeadingStyle', e.target.value)}
+                className="w-full bg-surface-tertiary border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+              >
+                <option value="line-under">Underline Full-Width (Classic ATS)</option>
+                <option value="left-bar">Left Accent Bar</option>
+                <option value="pill">Pill Badge</option>
+                <option value="double-line">Double Line</option>
+                <option value="minimal">Minimal (No Line)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1.5">Bullet Point Style</label>
+              <select
+                value={config.bulletStyle}
+                onChange={(e) => updateConfig('bulletStyle', e.target.value)}
+                className="w-full bg-surface-tertiary border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+              >
+                <option value="disc">• Solid Disc</option>
+                <option value="dash">- Hyphen</option>
+                <option value="square">▪ Square</option>
+                <option value="circle">○ Circle</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-xs text-muted mb-1">
+              <span>Divider Line Thickness</span>
+              <span className="font-mono text-accent font-semibold">{config.sectionLineWidth} px</span>
+            </div>
+            <input
+              type="range"
+              min={0.5}
+              max={3}
+              step={0.5}
+              value={config.sectionLineWidth}
+              onChange={(e) => updateConfig('sectionLineWidth', parseFloat(e.target.value))}
+              className="w-full accent-accent rounded"
+            />
+          </div>
+        </Card.Content>
+      </Card>
+
+      {/* 8. Accent Color Customization Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Palette className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+            Accent & Palette Colors
+          </Card.Title>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3.5">
+          <div>
+            <label className="block text-xs font-medium text-muted mb-2">Accent Presets</label>
+            <div className="flex flex-wrap gap-2">
+              {COLOR_PRESETS.map((color) => {
+                const isSelected = config.accentColor === color.hex;
+                return (
+                  <Button
+                    key={color.hex}
+                    size="sm"
+                    variant={isSelected ? 'primary' : 'secondary'}
+                    onPress={() => updateConfig('accentColor', color.hex)}
+                    className={`h-8 px-2.5 text-xs rounded-xl flex items-center gap-1.5 transition ${
+                      isSelected ? 'shadow-sm' : 'border border-border'
+                    }`}
+                  >
+                    <span
+                      className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0 shadow-xs"
+                      style={{ backgroundColor: color.hex }}
+                    />
+                    <span>{color.name}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-2.5 bg-surface-tertiary px-3 py-1.5 rounded-xl border border-border">
               <input
                 type="color"
                 value={config.accentColor}
                 onChange={(e) => updateConfig('accentColor', e.target.value)}
-                className="w-6 h-6 rounded cursor-pointer bg-transparent border-0"
+                className="w-6 h-6 rounded-lg cursor-pointer bg-transparent border-0"
               />
-              <span className="font-mono text-xs text-slate-300 uppercase">{config.accentColor}</span>
+              <span className="font-mono text-xs text-foreground uppercase font-semibold tracking-wider">
+                {config.accentColor}
+              </span>
             </div>
-            <span className="text-xs text-slate-300">Custom Accent Hex</span>
+            <span className="text-xs text-muted">Custom Hex Picker</span>
           </div>
-        </div>
-      </div>
+        </Card.Content>
+      </Card>
     </div>
   );
 };

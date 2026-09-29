@@ -96,4 +96,21 @@ A web-based CV Generator featuring deep customization capabilities (typography, 
   - [x] Update `CVPdfDocument.tsx` to render `<Image>` with matching 3:4 aspect ratio dimensions (`photoHeightPt = photoWidthPt * 4 / 3`).
   - [x] Verify build, test 3:4 crop application and rendering across all templates & PDF download.
 
-
+- [x] **Phase 11: Modernize UI with HeroUI v3 (React 19 + Tailwind CSS v4 + @heroui/react)**
+  - [x] Upgrade core dependencies (`react` 19, `tailwindcss` 4, `@tailwindcss/vite`, `@heroui/react` 3.2.6, `@heroui/styles` 3.2.6).
+  - [x] Configure Tailwind v4 `@theme`, `@import "@heroui/styles"`, and `data-theme="dark"`.
+  - [x] Upgrade Navbar with HeroUI `Button`, `Chip`, and design tokens.
+  - [x] Upgrade EditorTabs navigation with HeroUI `Button` and badge `Chip`.
+  - [x] Upgrade PersonalInfoEditor with HeroUI `Card`, `Input`, `TextArea`, `Switch`, and `Button`.
+  - [x] Upgrade DesignConfigEditor with HeroUI `Card`, `Input`, `Switch`, and `Button`.
+  - [x] Upgrade SectionsOrderEditor with HeroUI `Card`, `Input`, `Switch`, and `Button`.
+  - [x] Upgrade ExportImportEditor with HeroUI `Card`, `Button`, and score `Chip`.
+  - [x] Upgrade EducationEditor with HeroUI `Card`, `Input`, `Switch`, and `Button`.
+  - [x] Upgrade ExperienceEditor with HeroUI `Card`, `Input`, `Switch`, and `Button`.
+  - [x] Upgrade ProjectsEditor with HeroUI `Card`, `Input`, `TextArea`, `Switch`, and `Button`.
+  - [x] Upgrade SkillsEditor with HeroUI `Card`, `Input`, `Chip`, and `Button`.
+  - [x] Upgrade AchievementsEditor with HeroUI `Card`, `Input`, `Switch`, and `Button`.
+  - [x] Upgrade CustomSectionsEditor with HeroUI `Card`, `Input`, `Switch`, and `Button`.
+  - [x] Upgrade PhotoCropModal with HeroUI `Button` and interactive controls.
+  - [x] Upgrade CVPreview toolbar indicators with HeroUI `Chip`.
+  - [x] Verify build, zero regression, commit and push to GitHub.

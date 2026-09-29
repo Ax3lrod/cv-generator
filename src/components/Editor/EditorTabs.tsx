@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CVData, DesignConfig, SectionMeta } from '../../types/cv';
+import { CVData, DesignConfig } from '../../types/cv';
 import { PersonalInfoEditor } from './PersonalInfoEditor';
 import { EducationEditor } from './EducationEditor';
 import { ExperienceEditor } from './ExperienceEditor';
@@ -23,6 +23,7 @@ import {
   Award, 
   Layers 
 } from 'lucide-react';
+import { Button, Chip } from '@heroui/react';
 
 interface Props {
   cvData: CVData;
@@ -43,6 +44,13 @@ export const EditorTabs: React.FC<Props> = ({
   const [activeMainTab, setActiveMainTab] = useState<MainTab>('content');
   const [activeContentSubTab, setActiveContentSubTab] = useState<ContentSubTab>('personal');
 
+  const mainTabs = [
+    { id: 'content' as const, label: 'CV Content', icon: FileText },
+    { id: 'design' as const, label: 'Design & Layout', icon: Palette },
+    { id: 'order' as const, label: 'Sections Order', icon: ListOrdered },
+    { id: 'export' as const, label: 'Export & ATS', icon: Download },
+  ];
+
   const contentSubTabs = [
     { id: 'personal' as const, label: 'Profile', icon: User, count: null },
     { id: 'education' as const, label: 'Education', icon: GraduationCap, count: cvData.education.length },
@@ -54,87 +62,55 @@ export const EditorTabs: React.FC<Props> = ({
   ];
 
   return (
-    <div className="flex flex-col h-full bg-slate-900/90 border-r border-slate-800 text-slate-100">
+    <div className="flex flex-col h-full bg-surface border-r border-border text-foreground transition-colors">
       {/* Top Main Navigation Tabs */}
-      <div className="flex border-b border-slate-800 bg-slate-950 p-2 gap-1.5 shrink-0 overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setActiveMainTab('content')}
-          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition whitespace-nowrap focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-            activeMainTab === 'content'
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-300 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          <span>CV Content</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveMainTab('design')}
-          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition whitespace-nowrap focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-            activeMainTab === 'design'
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-300 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <Palette className="w-3.5 h-3.5" />
-          <span>Design & Layout</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveMainTab('order')}
-          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition whitespace-nowrap focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-            activeMainTab === 'order'
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-300 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <ListOrdered className="w-3.5 h-3.5" />
-          <span>Sections Order</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveMainTab('export')}
-          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition whitespace-nowrap focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-            activeMainTab === 'export'
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-300 hover:text-white hover:bg-slate-900'
-          }`}
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>Export & ATS</span>
-        </button>
+      <div className="flex border-b border-border bg-surface-secondary/70 p-2 gap-1.5 shrink-0 overflow-x-auto">
+        {mainTabs.map((t) => {
+          const Icon = t.icon;
+          const isActive = activeMainTab === t.id;
+          return (
+            <Button
+              key={t.id}
+              variant={isActive ? 'primary' : 'tertiary'}
+              size="sm"
+              onPress={() => setActiveMainTab(t.id)}
+              className={`h-9 px-3 text-xs font-semibold rounded-xl transition whitespace-nowrap ${
+                isActive ? 'shadow-sm' : 'text-muted hover:text-foreground'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5 mr-1.5" />
+              <span>{t.label}</span>
+            </Button>
+          );
+        })}
       </div>
 
       {/* Content Subtab Pills (Only visible when main tab is 'content') */}
       {activeMainTab === 'content' && (
-        <div className="flex border-b border-slate-800 bg-slate-900 px-3 py-2 gap-1.5 shrink-0 overflow-x-auto">
+        <div className="flex border-b border-border bg-surface-secondary/40 px-3 py-2 gap-1.5 shrink-0 overflow-x-auto">
           {contentSubTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeContentSubTab === tab.id;
             return (
-              <button
+              <Button
                 key={tab.id}
-                type="button"
-                onClick={() => setActiveContentSubTab(tab.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md transition whitespace-nowrap focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
-                  isActive
-                    ? 'bg-slate-800 text-blue-400 font-medium border border-blue-500/40'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                size="sm"
+                variant={isActive ? 'secondary' : 'ghost'}
+                onPress={() => setActiveContentSubTab(tab.id)}
+                className={`h-7 px-2.5 text-xs rounded-lg transition whitespace-nowrap ${
+                  isActive 
+                    ? 'bg-surface-tertiary border border-accent/40 font-medium text-accent-foreground' 
+                    : 'text-muted hover:text-foreground hover:bg-surface-secondary'
                 }`}
               >
-                <Icon className="w-3 h-3" />
+                <Icon className="w-3 h-3 mr-1" />
                 <span>{tab.label}</span>
                 {tab.count !== null && tab.count > 0 && (
-                  <span className="text-[10px] bg-slate-700/80 text-slate-200 px-1.5 py-0.2 rounded-full font-mono">
-                    {tab.count}
-                  </span>
+                  <Chip size="sm" variant="soft" color="default" className="ml-1 text-[10px] h-4 px-1">
+                    <Chip.Label>{tab.count}</Chip.Label>
+                  </Chip>
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>

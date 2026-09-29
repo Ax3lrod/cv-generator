@@ -85,7 +85,7 @@ export function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
+    <div className="flex flex-col h-screen overflow-hidden bg-surface-secondary text-foreground font-sans">
       {/* Top Navbar */}
       <Navbar
         scale={scale}
@@ -115,7 +115,7 @@ export function App() {
 
         {/* Right Pane: Live CV Canvas Preview */}
         <main
-          className={`flex-1 h-full overflow-y-auto bg-slate-900/70 p-4 sm:p-8 flex justify-center cv-preview-container custom-scrollbar ${
+          className={`flex-1 h-full overflow-y-auto bg-surface/40 p-4 sm:p-8 flex justify-center cv-preview-container custom-scrollbar ${
             mobileView === 'editor' ? 'hidden lg:flex' : 'flex'
           }`}
         >

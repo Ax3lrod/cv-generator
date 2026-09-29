@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExperienceItem } from '../../types/cv';
-import { Plus, Trash2, Eye, EyeOff, Briefcase, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, Briefcase, Minus } from 'lucide-react';
+import { Button, Card, Switch, Input } from '@heroui/react';
 
 interface Props {
   data: ExperienceItem[];
@@ -32,9 +33,9 @@ export const ExperienceEditor: React.FC<Props> = ({ data, onChange }) => {
     onChange(data.filter((item) => item.id !== id));
   };
 
-  const handleToggleVisibility = (id: string) => {
+  const handleToggleVisibility = (id: string, isVisible: boolean) => {
     onChange(
-      data.map((item) => (item.id === id ? { ...item, isVisible: !item.isVisible } : item))
+      data.map((item) => (item.id === id ? { ...item, isVisible } : item))
     );
   };
 
@@ -71,156 +72,170 @@ export const ExperienceEditor: React.FC<Props> = ({ data, onChange }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-          <Briefcase className="w-4 h-4 text-amber-400" />
+      <div className="flex items-center justify-between border-b border-border/70 pb-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <Briefcase className="w-4 h-4" />
+          </div>
           Experiences ({data.length})
         </h3>
-        <button
-          type="button"
-          onClick={handleAddItem}
-          className="flex items-center gap-1.5 text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition"
+        <Button
+          size="sm"
+          variant="primary"
+          onPress={handleAddItem}
+          className="text-xs font-medium h-8 px-3 rounded-lg"
         >
-          <Plus className="w-3.5 h-3.5" />
-          Add Experience
-        </button>
+          <Plus className="w-3.5 h-3.5 mr-1" />
+          <span>Add Experience</span>
+        </Button>
       </div>
 
       {data.length === 0 ? (
-        <div className="text-center py-6 text-slate-500 text-xs border border-dashed border-slate-800 rounded">
-          No experience items yet. Click "Add Experience" to add work or organizational roles.
-        </div>
+        <Card variant="secondary" className="border border-dashed border-border p-6 text-center">
+          <p className="text-muted text-xs">
+            No experience items yet. Click &quot;Add Experience&quot; to add work or organizational roles.
+          </p>
+        </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {data.map((item, index) => (
-            <div
+            <Card
               key={item.id}
-              className={`p-3 rounded border transition ${
-                item.isVisible
-                  ? 'bg-slate-900/80 border-slate-800'
-                  : 'bg-slate-900/30 border-slate-800/40 opacity-60'
+              variant="secondary"
+              className={`border transition-all ${
+                item.isVisible ? 'border-border shadow-xs' : 'border-border/40 opacity-60'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-slate-300">
-                  #{index + 1} {item.company || 'Untitled Organization / Company'}
+              <Card.Header className="flex items-center justify-between border-b border-border/60 pb-2.5 px-4 pt-3">
+                <span className="text-xs font-semibold text-foreground">
+                  #{index + 1} {item.company ? `${item.company} · ${item.role}` : 'Untitled Role'}
                 </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleVisibility(item.id)}
-                    title={item.isVisible ? 'Hide from CV' : 'Show on CV'}
-                    className="p-1 text-slate-400 hover:text-slate-200 transition"
+                <div className="flex items-center gap-2">
+                  <Switch
+                    isSelected={item.isVisible}
+                    onChange={(checked) => handleToggleVisibility(item.id, checked)}
+                    size="sm"
                   >
-                    {item.isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5 text-slate-600" />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteItem(item.id)}
-                    title="Delete Entry"
-                    className="p-1 text-slate-400 hover:text-rose-400 transition"
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </Switch>
+                  <Button
+                    size="sm"
+                    variant="danger-soft"
+                    isIconOnly
+                    onPress={() => handleDeleteItem(item.id)}
+                    className="h-7 w-7 rounded-lg"
+                    aria-label="Delete Entry"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card.Header>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Company / Organization</label>
-                  <input
-                    type="text"
-                    value={item.company}
-                    onChange={(e) => handleItemChange(item.id, 'company', e.target.value)}
-                    placeholder="e.g. Apex Cloud Technologies"
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Role / Position</label>
-                  <input
-                    type="text"
-                    value={item.role}
-                    onChange={(e) => handleItemChange(item.id, 'role', e.target.value)}
-                    placeholder="e.g. Lead Full-Stack Developer"
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Location</label>
-                  <input
-                    type="text"
-                    value={item.location}
-                    onChange={(e) => handleItemChange(item.id, 'location', e.target.value)}
-                    placeholder="e.g. San Francisco, CA"
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
+              <Card.Content className="p-4 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">Start Date</label>
-                    <input
-                      type="text"
-                      value={item.startDate}
-                      onChange={(e) => handleItemChange(item.id, 'startDate', e.target.value)}
-                      placeholder="e.g. Jun 2023"
-                      className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                    <label className="block text-[11px] font-medium text-muted mb-1">Company / Organization</label>
+                    <Input
+                      variant="secondary"
+                      value={item.company}
+                      onChange={(e) => handleItemChange(item.id, 'company', e.target.value)}
+                      placeholder="e.g. Apex Cloud Technologies"
+                      className="w-full text-xs font-medium"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">End Date</label>
-                    <input
-                      type="text"
-                      value={item.endDate}
-                      onChange={(e) => handleItemChange(item.id, 'endDate', e.target.value)}
-                      placeholder="e.g. Present"
-                      className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                    <label className="block text-[11px] font-medium text-muted mb-1">Role / Position</label>
+                    <Input
+                      variant="secondary"
+                      value={item.role}
+                      onChange={(e) => handleItemChange(item.id, 'role', e.target.value)}
+                      placeholder="e.g. Lead Full-Stack Developer"
+                      className="w-full text-xs font-medium"
                     />
                   </div>
-                </div>
-              </div>
 
-              {/* Bullet Points */}
-              <div className="border-t border-slate-800/80 pt-2.5">
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                    Bullet Points / Key Contributions
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => handleAddBullet(item.id)}
-                    className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 font-medium"
-                  >
-                    <Plus className="w-3 h-3" /> Add Bullet
-                  </button>
-                </div>
-                <div className="space-y-1.5">
-                  {item.bullets.map((bullet, bIdx) => (
-                    <div key={bIdx} className="flex items-start gap-1.5">
-                      <span className="text-slate-500 text-xs mt-2 select-none">•</span>
-                      <textarea
-                        rows={2}
-                        value={bullet}
-                        onChange={(e) => handleBulletChange(item.id, bIdx, e.target.value)}
-                        placeholder="Action verb + context + measurable impact (e.g., Designed and implemented a dashboard...)"
-                        className="flex-1 bg-slate-950 border border-slate-700/80 rounded px-2 py-1 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                  <div>
+                    <label className="block text-[11px] font-medium text-muted mb-1">Location</label>
+                    <Input
+                      variant="secondary"
+                      value={item.location}
+                      onChange={(e) => handleItemChange(item.id, 'location', e.target.value)}
+                      placeholder="e.g. San Francisco, CA"
+                      className="w-full text-xs"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-medium text-muted mb-1">Start Date</label>
+                      <Input
+                        variant="secondary"
+                        value={item.startDate}
+                        onChange={(e) => handleItemChange(item.id, 'startDate', e.target.value)}
+                        placeholder="e.g. Jun 2023"
+                        className="w-full text-xs"
                       />
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteBullet(item.id, bIdx)}
-                        className="p-1 text-slate-500 hover:text-rose-400 transition mt-1"
-                        title="Delete bullet"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
                     </div>
-                  ))}
+                    <div>
+                      <label className="block text-[11px] font-medium text-muted mb-1">End Date</label>
+                      <Input
+                        variant="secondary"
+                        value={item.endDate}
+                        onChange={(e) => handleItemChange(item.id, 'endDate', e.target.value)}
+                        placeholder="e.g. Present"
+                        className="w-full text-xs"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+
+                {/* Bullets List */}
+                <div className="pt-2 border-t border-border/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[11px] font-medium text-muted">
+                      Key Responsibilities & Achievements (Bullets)
+                    </label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onPress={() => handleAddBullet(item.id)}
+                      className="text-[11px] text-accent hover:text-accent-foreground font-medium h-6 px-2"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add Bullet
+                    </Button>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    {item.bullets.map((bullet, bIdx) => (
+                      <div key={bIdx} className="flex items-center gap-1.5">
+                        <span className="text-muted text-xs select-none w-3 text-center">•</span>
+                        <Input
+                          variant="secondary"
+                          value={bullet}
+                          onChange={(e) => handleBulletChange(item.id, bIdx, e.target.value)}
+                          placeholder="e.g. Architected microservices boosting throughput by 42%..."
+                          className="flex-1 text-xs"
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          isIconOnly
+                          onPress={() => handleDeleteBullet(item.id, bIdx)}
+                          className="h-7 w-7 text-muted hover:text-danger rounded-lg shrink-0"
+                          aria-label="Remove Bullet"
+                        >
+                          <Minus className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card.Content>
+            </Card>
           ))}
         </div>
       )}

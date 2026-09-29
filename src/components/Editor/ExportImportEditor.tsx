@@ -12,8 +12,10 @@ import {
   AlertTriangle,
   ExternalLink,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
+import { Button, Card, Chip } from '@heroui/react';
 
 interface Props {
   cvData: CVData;
@@ -176,172 +178,196 @@ export const ExportImportEditor: React.FC<Props> = ({
   const { score, checks } = calculateATSScore();
 
   return (
-    <div className="space-y-6">
-      {/* ATS Score Analyzer Widget */}
-      <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-lg">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-            ATS Readiness & Keyword Score
-          </span>
-          <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs ${
-            score >= 90 ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' :
-            score >= 70 ? 'bg-blue-950 text-blue-300 border border-blue-800' :
-            'bg-amber-950 text-amber-300 border border-amber-800'
-          }`}>
-            {score} / 100
-          </span>
-        </div>
-
-        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-3">
-          <div 
-            className={`h-full transition-all duration-500 ${
-              score >= 90 ? 'bg-emerald-500' : score >= 70 ? 'bg-blue-500' : 'bg-amber-500'
-            }`}
-            style={{ width: `${score}%` }}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
-          {checks.map((c, i) => (
-            <div key={i} className="flex items-center gap-1.5">
-              {c.pass ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              ) : (
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              )}
-              <span className={c.pass ? 'text-slate-200' : 'text-slate-400'}>{c.label}</span>
+    <div className="space-y-4">
+      {/* ATS Score Analyzer Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+              <ShieldCheck className="w-4 h-4" />
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Export Options */}
-      <div>
-        <div className="border-b border-slate-800 pb-2 mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Export and Download PDF
-          </h3>
-        </div>
-
-        {/* Primary Vector Download Card */}
-        <div className="bg-slate-900 border border-emerald-900/60 rounded-lg p-3.5 mb-3">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-bold text-emerald-300 uppercase tracking-wide">
-                100% Vector PDF Engine (Accurate)
-              </span>
-            </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-200 border border-emerald-800">
-              ATS-Optimized
-            </span>
+            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+              ATS Readiness & Keyword Score
+            </Card.Title>
           </div>
-          <p className="text-xs text-slate-300 mb-3 leading-relaxed">
-            Menghasilkan file PDF vector asli: teks murni (bisa dicopy dan dibaca sempurna oleh sistem ATS), garis vector tajam tanpa pecah, link kontak dapat diklik, dan rasio millimeter 100% akurat.
+
+          <Chip
+            size="sm"
+            variant="soft"
+            color={score >= 90 ? 'success' : score >= 70 ? 'accent' : 'warning'}
+            className="font-mono font-bold text-xs"
+          >
+            <Chip.Label>{score} / 100</Chip.Label>
+          </Chip>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3">
+          <div className="w-full bg-surface-tertiary h-2 rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all duration-500 ${
+                score >= 90 ? 'bg-success' : score >= 70 ? 'bg-accent' : 'bg-warning'
+              }`}
+              style={{ width: `${score}%` }}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+            {checks.map((c, i) => (
+              <div key={i} className="flex items-center gap-2">
+                {c.pass ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-3.5 h-3.5 text-warning shrink-0" />
+                )}
+                <span className={c.pass ? 'text-foreground' : 'text-muted'}>{c.label}</span>
+              </div>
+            ))}
+          </div>
+        </Card.Content>
+      </Card>
+
+      {/* Vector PDF Export Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center justify-between border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-success/20 text-success">
+              <Download className="w-4 h-4" />
+            </div>
+            <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
+              Vector PDF Engine (Accurate)
+            </Card.Title>
+          </div>
+
+          <Chip size="sm" variant="soft" color="success" className="text-[10px] font-mono">
+            <Chip.Label>100% Vector</Chip.Label>
+          </Chip>
+        </Card.Header>
+
+        <Card.Content className="p-4 space-y-3">
+          <p className="text-xs text-muted leading-relaxed">
+            Menghasilkan file PDF vector murni: teks dapat di-copy dan diparsing sempurna oleh sistem ATS, garis vector tajam tanpa blur, link dapat diklik, dan rasio millimeter 100% akurat.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button
-              type="button"
-              disabled={isExporting}
-              onClick={handleDownloadVectorPDF}
-              className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold py-2.5 px-3 rounded transition shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none"
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <Button
+              variant="primary"
+              size="md"
+              isDisabled={isExporting}
+              onPress={handleDownloadVectorPDF}
+              className="font-semibold text-xs h-9 rounded-xl shadow-sm"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>{isExporting ? 'Generating Vector PDF...' : 'Download Vector PDF'}</span>
-            </button>
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                  <span>Generating Vector PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
+                  <span>Download Vector PDF</span>
+                </>
+              )}
+            </Button>
 
-            <button
-              type="button"
-              disabled={isPreviewing}
-              onClick={handlePreviewVectorPDF}
-              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 text-xs font-medium py-2.5 px-3 rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            <Button
+              variant="secondary"
+              size="md"
+              isDisabled={isPreviewing}
+              onPress={handlePreviewVectorPDF}
+              className="text-xs font-medium h-9 rounded-xl border border-border"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
               <span>{isPreviewing ? 'Opening...' : 'Preview in New Tab'}</span>
-            </button>
+            </Button>
           </div>
-        </div>
 
-        {/* Secondary: Browser Native Print */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
-          <div className="flex items-center justify-between">
+          {/* Browser Native Print Button */}
+          <div className="pt-2 border-t border-border/60 flex items-center justify-between">
             <div>
-              <span className="text-xs font-medium text-slate-300 block">
+              <span className="text-xs font-medium text-foreground block">
                 Browser Print Dialog
               </span>
-              <span className="text-[11px] text-slate-400">
-                Gunakan printer bawaan Chrome/Firefox untuk mencetak fisik atau simpan via print dialog.
+              <span className="text-[11px] text-muted">
+                Cetak fisik ke printer kantor atau simpan via dialog Chrome/Firefox.
               </span>
             </div>
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-1.5 px-3 rounded border border-slate-700 transition shrink-0 ml-3 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={handlePrint}
+              className="text-xs font-medium h-8 rounded-lg shrink-0 ml-3"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 mr-1" />
               <span>Print Dialog</span>
-            </button>
+            </Button>
           </div>
-        </div>
-      </div>
+        </Card.Content>
+      </Card>
 
-      {/* Backup / Restore */}
-      <div>
-        <div className="border-b border-slate-800 pb-2 mb-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+      {/* Backup, Import & Reset Card */}
+      <Card variant="secondary" className="border border-border">
+        <Card.Header className="flex items-center gap-2 border-b border-border/70 pb-3 px-4 pt-3.5">
+          <div className="p-1.5 rounded-lg bg-accent/15 text-accent">
+            <RefreshCw className="w-4 h-4" />
+          </div>
+          <Card.Title className="text-xs font-semibold uppercase tracking-wider text-foreground">
             Backup, Import & Reset
-          </h3>
-        </div>
+          </Card.Title>
+        </Card.Header>
 
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={handleExportJSON}
-            className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 px-3 rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Backup to JSON</span>
-          </button>
+        <Card.Content className="p-4 space-y-3">
+          <div className="grid grid-cols-2 gap-2.5">
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={handleExportJSON}
+              className="h-8.5 text-xs font-medium rounded-xl border border-border"
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5" />
+              <span>Backup to JSON</span>
+            </Button>
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 px-3 rounded border border-slate-700 transition focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            <span>Restore from JSON</span>
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-        </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={() => fileInputRef.current?.click()}
+              className="h-8.5 text-xs font-medium rounded-xl border border-border"
+            >
+              <Upload className="w-3.5 h-3.5 mr-1.5" />
+              <span>Restore from JSON</span>
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
 
-        <div className="grid grid-cols-2 gap-3 mt-3">
-          <button
-            type="button"
-            onClick={handleResetToDefault}
-            className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs py-2 px-3 rounded border border-amber-800/60 transition focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Load Example CV</span>
-          </button>
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={handleResetToDefault}
+              className="h-8.5 text-xs font-medium rounded-xl border border-warning/40 text-warning hover:bg-warning/10"
+            >
+              <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+              <span>Load Example CV</span>
+            </Button>
 
-          <button
-            type="button"
-            onClick={handleClearAll}
-            className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 text-rose-300 text-xs py-2 px-3 rounded border border-rose-800/60 transition focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span>Clear All Data</span>
-          </button>
-        </div>
-      </div>
+            <Button
+              variant="danger-soft"
+              size="sm"
+              onPress={handleClearAll}
+              className="h-8.5 text-xs font-medium rounded-xl"
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              <span>Clear All Data</span>
+            </Button>
+          </div>
+        </Card.Content>
+      </Card>
     </div>
   );
 };
