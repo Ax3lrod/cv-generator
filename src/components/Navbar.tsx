@@ -39,15 +39,10 @@ export const Navbar: React.FC<Props> = ({
           <FileCheck2 className="w-4 h-4" />
         </div>
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-bold text-base tracking-tight text-foreground">
-              VitaGo
-            </h1>
-            <span className="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface-secondary text-muted border border-border font-semibold">
-              ATS 100%
-            </span>
-          </div>
-          <p className="text-[11px] text-muted hidden sm:block">
+          <h1 className="font-bold text-base tracking-tight text-foreground leading-none">
+            VitaGo
+          </h1>
+          <p className="text-[11px] text-muted hidden sm:block mt-1">
             Your Curriculum Vitae on the Go
           </p>
         </div>

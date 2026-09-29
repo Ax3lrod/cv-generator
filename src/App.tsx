@@ -121,11 +121,11 @@ export function App() {
 
         {/* Right Pane: Live CV Canvas Preview */}
         <main
-          className={`flex-1 h-full overflow-y-auto bg-surface/40 p-4 sm:p-8 flex justify-center cv-preview-container custom-scrollbar ${
+          className={`flex-1 h-full overflow-y-auto bg-surface/40 px-4 py-3 sm:px-6 sm:py-3.5 flex justify-center cv-preview-container custom-scrollbar ${
             mobileView === 'editor' ? 'hidden lg:flex' : 'flex'
           }`}
         >
-          <div className="my-auto py-6">
+          <div className="pb-12">
             <CVPreview
               cvData={cvData}
               designConfig={designConfig}
