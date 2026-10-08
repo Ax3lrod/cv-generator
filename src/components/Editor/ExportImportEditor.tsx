@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { CVData, DesignConfig } from '../../types/cv';
 import { defaultCVData, defaultDesignConfig } from '../../data/defaultCV';
+import { focusBearCVData, focusBearDesignConfig } from '../../data/focusBearCV';
 import { downloadVectorPdf, openVectorPdfInNewTab } from '../../utils/pdfExport';
 import { 
   Printer, 
@@ -13,7 +14,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Loader2,
-  Info
+  Info,
+  Briefcase
 } from 'lucide-react';
 import { Button } from '@heroui/react';
 
@@ -113,7 +115,15 @@ export const ExportImportEditor: React.FC<Props> = ({
     e.target.value = '';
   };
 
-  // 6. Reset to Example Data
+  // 6. Load Focus Bear Tailored CV
+  const handleLoadFocusBearProfile = () => {
+    if (window.confirm('Load the tailored Focus Bear Full Stack Intern profile? Current unsaved changes will be replaced.')) {
+      onUpdateCVData(focusBearCVData);
+      onUpdateDesignConfig(focusBearDesignConfig);
+    }
+  };
+
+  // 7. Reset to Example Data
   const handleResetToDefault = () => {
     if (window.confirm('Reset CV to default template example? Current changes will be overwritten.')) {
       onUpdateCVData(defaultCVData);
@@ -350,6 +360,16 @@ export const ExportImportEditor: React.FC<Props> = ({
               className="hidden"
             />
           </div>
+
+          {/* Quick Preset: Focus Bear Tailored Profile */}
+          <button
+            type="button"
+            onClick={handleLoadFocusBearProfile}
+            className="w-full h-9 text-xs font-medium rounded-xl border border-sky-500/40 bg-sky-950/30 hover:bg-sky-500/15 text-sky-300 flex items-center justify-center gap-2 transition shadow-xs"
+          >
+            <Briefcase className="w-3.5 h-3.5 text-sky-400" />
+            <span>Load Focus Bear Intern Profile</span>
+          </button>
 
           <div className="grid grid-cols-2 gap-2.5 pt-1">
             <button
