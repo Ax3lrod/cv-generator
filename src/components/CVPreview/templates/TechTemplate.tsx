@@ -216,11 +216,25 @@ export const TechTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
             return (
               <div key="achievements" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Achievements')}
-                <div className="space-y-1 text-xs">
+                <div className="space-y-1.5 text-xs">
                   {visibleAch.map(a => (
-                    <div key={a.id} className="cv-entry flex justify-between text-slate-800">
-                      <span><strong>{a.title}</strong>: {a.event}</span>
-                      {a.date && <span className="font-mono text-slate-500">{a.date}</span>}
+                    <div key={a.id} className="cv-entry text-slate-800">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <strong>{a.title}</strong>
+                          {a.event && <span>: {a.event}</span>}
+                        </div>
+                        {a.date && (
+                          <span className="font-mono text-slate-500 whitespace-nowrap shrink-0">
+                            {a.date}
+                          </span>
+                        )}
+                      </div>
+                      {a.description && (
+                        <div className="text-slate-500 mt-0.5 text-[11px]">
+                          {a.description}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

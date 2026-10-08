@@ -302,13 +302,25 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
               <span className="mr-1.5 select-none font-bold text-xs" style={{ color: config.accentColor }}>
                 {bulletSymbol()}
               </span>
-              <div className="flex-1 flex justify-between items-baseline flex-wrap">
-                <span>
-                  <strong className="font-bold">{item.title}</strong>: {item.event}
-                  {item.description && <span className="text-xs text-slate-600 ml-1">({item.description})</span>}
-                </span>
-                {item.date && (
-                  <span className="text-xs text-slate-500 ml-2">{item.date}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1 min-w-0 text-left">
+                    <strong className="font-bold">{item.title}</strong>
+                    {item.event && <span>: {item.event}</span>}
+                  </div>
+                  {item.date && (
+                    <span 
+                      className="text-right text-xs whitespace-nowrap shrink-0 font-medium"
+                      style={{ color: config.subtextColor }}
+                    >
+                      {item.date}
+                    </span>
+                  )}
+                </div>
+                {item.description && (
+                  <div className="text-xs mt-0.5 text-left" style={{ color: config.subtextColor }}>
+                    {item.description}
+                  </div>
                 )}
               </div>
             </li>

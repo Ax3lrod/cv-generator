@@ -229,11 +229,25 @@ export const ExecutiveTemplate: React.FC<TemplateProps> = ({ cvData, config }) =
             return (
               <div key="achievements" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Honors & Awards')}
-                <div className="space-y-1 text-xs text-slate-800">
+                <div className="space-y-1.5 text-xs text-slate-800">
                   {visibleAch.map(a => (
-                    <div key={a.id} className="cv-entry flex justify-between">
-                      <span><strong>{a.title}</strong>: {a.event}</span>
-                      {a.date && <span className="text-slate-500">{a.date}</span>}
+                    <div key={a.id} className="cv-entry">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <strong>{a.title}</strong>
+                          {a.event && <span>: {a.event}</span>}
+                        </div>
+                        {a.date && (
+                          <span className="text-slate-500 whitespace-nowrap shrink-0">
+                            {a.date}
+                          </span>
+                        )}
+                      </div>
+                      {a.description && (
+                        <div className="text-slate-600 mt-0.5">
+                          {a.description}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

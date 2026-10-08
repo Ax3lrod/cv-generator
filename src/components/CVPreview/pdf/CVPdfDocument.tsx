@@ -335,16 +335,23 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
       <Text style={{ width: 8, fontSize: baseFontSize, color: config.accentColor, fontFamily }}>
         {bulletSymbol()}
       </Text>
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <Text style={{ fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, flex: 1 }}>
-          <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>: {item.event}
-          {item.description ? ` (${item.description})` : ''}
-        </Text>
-        {item.date && (
-          <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 8 }}>
-            {item.date}
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Text style={{ fontFamily, fontSize: baseFontSize, lineHeight: config.lineHeight, color: config.textColor, flex: 1 }}>
+            <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+            {item.event ? `: ${item.event}` : ''}
           </Text>
-        )}
+          {item.date && (
+            <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 8 }}>
+              {item.date}
+            </Text>
+          )}
+        </View>
+        {item.description ? (
+          <Text style={{ fontFamily, fontSize: subFontSize, lineHeight: config.lineHeight, color: config.subtextColor, marginTop: 1 }}>
+            {item.description}
+          </Text>
+        ) : null}
       </View>
     </View>
   );
