@@ -140,18 +140,18 @@ export const focusBearCVData: CVData = {
   achievements: [
     {
       id: "ach-1",
-      title: "2nd Place — GEMASTIK XVIII (Smart City)",
-      event: "",
-      date: "",
-      description: "",
+      title: "2nd Place — GEMASTIK XVIII (Smart City Division)",
+      event: "National ICT Competition (Puspresnas / Kemendikbudristek)",
+      date: "Oct 2025",
+      description: "Proposed 'ARJUNA', an adaptive flood early warning platform utilizing digital twin concepts and machine learning.",
       isVisible: true,
     },
     {
       id: "ach-2",
-      title: "3rd Place — FIT Competition 2025 (Web Development)",
-      event: "",
-      date: "",
-      description: "",
+      title: "3rd Place — FIT Competition 2025 (Web Development Category)",
+      event: "Faculty of Information Technology (FTI UKSW)",
+      date: "Aug 2025",
+      description: "Built SustainaMap, an interactive environmental awareness web application with map visualization and personal air quality metrics.",
       isVisible: true,
     }
   ],
