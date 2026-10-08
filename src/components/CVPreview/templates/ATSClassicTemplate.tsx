@@ -254,24 +254,23 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
                     | {item.techStack}
                   </span>
                 )}
-              </div>
-              {(item.subtitle || item.link) && (
-                <div className="flex justify-between items-baseline gap-2 mt-0.5">
-                  {item.subtitle ? (
-                    <div className="italic text-xs text-left flex-1 min-w-0" style={{ color: config.subtextColor }}>
-                      {item.subtitle}
-                    </div>
-                  ) : <div className="flex-1" />}
-                  {item.link && (
+                {item.link && (
+                  <span className="font-normal text-xs ml-2 text-slate-500">
+                    |{' '}
                     <a 
                       href={item.link.startsWith('http') ? item.link : `https://${item.link}`} 
                       target="_blank" 
                       rel="noreferrer" 
-                      className="text-xs text-blue-600 underline shrink-0 whitespace-nowrap ml-2"
+                      className="text-blue-600 underline"
                     >
                       {item.link}
                     </a>
-                  )}
+                  </span>
+                )}
+              </div>
+              {item.subtitle && (
+                <div className="italic text-xs mt-0.5 text-left" style={{ color: config.subtextColor }}>
+                  {item.subtitle}
                 </div>
               )}
               {item.bullets && item.bullets.length > 0 && (
