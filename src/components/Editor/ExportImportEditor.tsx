@@ -103,9 +103,12 @@ export const ExportImportEditor: React.FC<Props> = ({
           onUpdateCVData(parsed.cvData);
           onUpdateDesignConfig(parsed.designConfig);
           alert('CV data and design configuration imported successfully!');
+        } else if (parsed.cvData) {
+          onUpdateCVData(parsed.cvData);
+          alert('CV content imported successfully! Your current layout settings were preserved.');
         } else if (parsed.personalInfo) {
           onUpdateCVData(parsed);
-          alert('CV data imported successfully!');
+          alert('CV content imported successfully! Your current layout settings were preserved.');
         } else {
           alert('Invalid CV file structure.');
         }
@@ -117,19 +120,17 @@ export const ExportImportEditor: React.FC<Props> = ({
     e.target.value = '';
   };
 
-  // 6. Load BitByBit Tailored CV
+  // 6. Load BitByBit Tailored CV Content
   const handleLoadBitByBitProfile = () => {
-    if (window.confirm('Load the tailored bitbybit Full-Stack Engineer Intern profile? Current unsaved changes will be replaced.')) {
+    if (window.confirm('Load the tailored bitbybit Full-Stack Engineer Intern content? Your current styling and layout settings will be preserved.')) {
       onUpdateCVData(bitByBitCVData);
-      onUpdateDesignConfig(bitByBitDesignConfig);
     }
   };
 
-  // 7. Load Focus Bear Tailored CV
+  // 7. Load Focus Bear Tailored CV Content
   const handleLoadFocusBearProfile = () => {
-    if (window.confirm('Load the tailored Focus Bear Full Stack Intern profile? Current unsaved changes will be replaced.')) {
+    if (window.confirm('Load the tailored Focus Bear Full Stack Intern content? Your current styling and layout settings will be preserved.')) {
       onUpdateCVData(focusBearCVData);
-      onUpdateDesignConfig(focusBearDesignConfig);
     }
   };
 

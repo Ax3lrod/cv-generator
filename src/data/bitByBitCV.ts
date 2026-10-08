@@ -141,18 +141,18 @@ export const bitByBitCVData: CVData = {
   achievements: [
     {
       id: "ach-1",
-      title: "2nd Place — GEMASTIK XVIII (Smart City Division)",
-      event: "National ICT Competition (Puspresnas / Kemendikbudristek)",
-      date: "Oct 2025",
-      description: "Proposed 'ARJUNA', an adaptive flood early warning platform utilizing digital twin concepts and machine learning.",
+      title: "2nd Place — GEMASTIK XVIII (Smart City)",
+      event: "",
+      date: "",
+      description: "",
       isVisible: true,
     },
     {
       id: "ach-2",
-      title: "3rd Place — FIT Competition 2025 (Web Development Category)",
-      event: "Faculty of Information Technology (FTI UKSW)",
-      date: "Aug 2025",
-      description: "Built SustainaMap, an interactive environmental awareness web application with map visualization and personal air quality metrics.",
+      title: "3rd Place — FIT Competition 2025 (Web Development)",
+      event: "",
+      date: "",
+      description: "",
       isVisible: true,
     }
   ],
@@ -160,10 +160,10 @@ export const bitByBitCVData: CVData = {
   sectionsOrder: [
     { id: "summary", title: "Professional Summary", isVisible: true },
     { id: "education", title: "Education", isVisible: true },
-    { id: "experiences", title: "Work Experience", isVisible: true },
-    { id: "projects", title: "Key Projects", isVisible: true },
-    { id: "skills", title: "Technical Skills", isVisible: true },
-    { id: "achievements", title: "Honors & Achievements", isVisible: true },
+    { id: "experiences", title: "Experiences", isVisible: true },
+    { id: "projects", title: "Projects", isVisible: true },
+    { id: "achievements", title: "Achievements", isVisible: true },
+    { id: "skills", title: "Skills", isVisible: true },
   ]
 };
 
