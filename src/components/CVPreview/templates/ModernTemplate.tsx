@@ -228,25 +228,11 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ cvData, config }) => {
             return (
               <div key="achievements" className="cv-section" style={{ marginBottom: `${config.sectionGap}mm` }}>
                 {renderSectionHeader('Achievements')}
-                <ul className="space-y-1.5">
+                <ul className="space-y-1">
                   {visibleAch.map(a => (
-                    <li key={a.id} className="cv-entry text-xs text-slate-700">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <strong className="font-bold text-slate-900">{a.title}</strong>
-                          {a.event && <span>: {a.event}</span>}
-                        </div>
-                        {a.date && (
-                          <span className="text-[11px] text-slate-500 font-mono whitespace-nowrap shrink-0">
-                            {a.date}
-                          </span>
-                        )}
-                      </div>
-                      {a.description && (
-                        <div className="text-[11px] text-slate-500 mt-0.5">
-                          {a.description}
-                        </div>
-                      )}
+                    <li key={a.id} className="cv-entry text-xs flex items-baseline justify-between text-slate-700">
+                      <span><strong className="font-bold text-slate-900">{a.title}</strong>: {a.event}</span>
+                      {a.date && <span className="text-[11px] text-slate-500 font-mono">{a.date}</span>}
                     </li>
                   ))}
                 </ul>
