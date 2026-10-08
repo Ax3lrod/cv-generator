@@ -87,10 +87,10 @@ export const focusBearCVData: CVData = {
     },
     {
       id: "proj-2",
-      name: "CiviGo — Civic Service & Queue System",
+      name: "CiviGo Civic Service Platform",
       subtitle: "Cross-Platform Queue Management & Citizen Portal",
       link: "github.com/Ax3lrod/civigo",
-      techStack: "React Native (Expo), Next.js, TypeScript, PostgreSQL (Supabase), Vitest",
+      techStack: "React Native, Next.js, TypeScript, PostgreSQL, Vitest",
       bullets: [
         "Built a cross-platform public service management system featuring an Expo / React Native mobile client for citizens and a Next.js administrative dashboard.",
         "Designed relational PostgreSQL schemas with Supabase, implementing migration scripts, location-based query filters, and RESTful route handlers.",
@@ -100,7 +100,7 @@ export const focusBearCVData: CVData = {
     },
     {
       id: "proj-3",
-      name: "VitaGo — ATS Resume Builder",
+      name: "VitaGo ATS Resume Builder",
       subtitle: "Precision ATS Resume Builder with Vector Print Flow",
       link: "vita-go.vercel.app",
       techStack: "React 19, TypeScript, Vite, Tailwind CSS, WCAG 2.1 AA",

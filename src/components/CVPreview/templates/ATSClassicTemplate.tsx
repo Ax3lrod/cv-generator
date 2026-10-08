@@ -245,29 +245,33 @@ export const ATSClassicTemplate: React.FC<TemplateProps> = ({ cvData, config }) 
         <div className="flex flex-col" style={{ gap: `${config.itemGap}mm` }}>
           {visibleProjects.map((item) => (
             <div key={item.id} className="cv-entry text-left">
-              <div className="flex justify-between items-baseline flex-wrap">
+              <div className="text-left">
                 <span className="font-bold" style={{ fontSize: `${config.itemTitleFontSize}pt` }}>
                   {item.name}
-                  {item.techStack && (
-                    <span className="font-normal text-xs ml-2 text-slate-500">
-                      | {item.techStack}
-                    </span>
-                  )}
                 </span>
-                {item.link && (
-                  <a 
-                    href={item.link.startsWith('http') ? item.link : `https://${item.link}`} 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    className="text-xs text-blue-600 underline"
-                  >
-                    {item.link}
-                  </a>
+                {item.techStack && (
+                  <span className="font-normal text-xs ml-2 text-slate-500">
+                    | {item.techStack}
+                  </span>
                 )}
               </div>
-              {item.subtitle && (
-                <div className="italic text-xs" style={{ color: config.subtextColor }}>
-                  {item.subtitle}
+              {(item.subtitle || item.link) && (
+                <div className="flex justify-between items-baseline gap-2 mt-0.5">
+                  {item.subtitle ? (
+                    <div className="italic text-xs text-left flex-1 min-w-0" style={{ color: config.subtextColor }}>
+                      {item.subtitle}
+                    </div>
+                  ) : <div className="flex-1" />}
+                  {item.link && (
+                    <a 
+                      href={item.link.startsWith('http') ? item.link : `https://${item.link}`} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="text-xs text-blue-600 underline shrink-0 whitespace-nowrap ml-2"
+                    >
+                      {item.link}
+                    </a>
+                  )}
                 </div>
               )}
               {item.bullets && item.bullets.length > 0 && (

@@ -269,30 +269,32 @@ export const CVPdfDocument: React.FC<CVPdfDocumentProps> = ({
 
   const renderProjItem = (item: ProjectItem) => (
     <View key={item.id} wrap={false} style={{ marginBottom: itemGapPt }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', flex: 1, marginRight: 8 }}>
-          <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
-            {item.name}
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap' }}>
+        <Text style={{ fontFamily, fontWeight: 'bold', fontSize: itemTitleFontSize, color: config.textColor }}>
+          {item.name}
+        </Text>
+        {item.techStack && (
+          <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 4 }}>
+            | {item.techStack}
           </Text>
-          {item.techStack && (
-            <Text style={{ fontFamily, fontSize: subFontSize, color: config.subtextColor, marginLeft: 4 }}>
-              | {item.techStack}
-            </Text>
-          )}
-        </View>
-        {item.link && (
-          <Link
-            src={item.link.startsWith('http') ? item.link : `https://${item.link}`}
-            style={{ fontFamily, fontSize: subFontSize, color: '#2563eb', textDecoration: 'underline' }}
-          >
-            {item.link}
-          </Link>
         )}
       </View>
-      {item.subtitle && (
-        <Text style={{ fontFamily, fontStyle: 'italic', fontSize: subFontSize, color: config.subtextColor, marginTop: 0.5 }}>
-          {item.subtitle}
-        </Text>
+      {(item.subtitle || item.link) && (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 0.5 }}>
+          {item.subtitle ? (
+            <Text style={{ fontFamily, fontStyle: 'italic', fontSize: subFontSize, color: config.subtextColor, flex: 1, marginRight: 8 }}>
+              {item.subtitle}
+            </Text>
+          ) : <View style={{ flex: 1 }} />}
+          {item.link && (
+            <Link
+              src={item.link.startsWith('http') ? item.link : `https://${item.link}`}
+              style={{ fontFamily, fontSize: subFontSize, color: '#2563eb', textDecoration: 'underline' }}
+            >
+              {item.link}
+            </Link>
+          )}
+        </View>
       )}
       {item.bullets && item.bullets.length > 0 && (
         <View style={{ marginTop: 1 }}>

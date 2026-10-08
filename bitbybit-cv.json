@@ -72,10 +72,10 @@
   "projects": [
     {
       "id": "proj-1",
-      "name": "AI-Powered NLP & Review Intelligence Pipeline",
+      "name": "AI Review Intelligence Pipeline",
       "subtitle": "Large-Scale Streaming & Conversational Data Processing System",
       "link": "github.com/Ax3lrod/final-project-big-data",
-      "techStack": "Python, FastAPI, BERT, Kafka, PySpark, Trino, Docker",
+      "techStack": "Python, FastAPI, BERT, Kafka, PySpark, Docker",
       "bullets": [
         "Designed and implemented an end-to-end data pipeline processing 6.4M+ text records using Apache Kafka for real-time streaming and PySpark for distributed batch preprocessing.",
         "Built an AI classification pipeline fusing fine-tuned BERT transformer embeddings with anomaly detection (Isolation Forest, K-Means) to detect fraudulent text patterns.",
@@ -85,10 +85,10 @@
     },
     {
       "id": "proj-2",
-      "name": "SaveFile — High-Throughput Platform API & Workers",
+      "name": "SaveFile Platform API & Workers",
       "subtitle": "Gaming Social Platform & Automated Activity Sync Engine",
       "link": "github.com/Ax3lrod/savefile-backend",
-      "techStack": "Node.js, NestJS, TypeScript, PostgreSQL, Prisma, Docker, Steam API",
+      "techStack": "Node.js, NestJS, TypeScript, PostgreSQL, Prisma, Docker",
       "bullets": [
         "Architected a modular monolith backend API with NestJS and Prisma ORM backed by PostgreSQL, designing normalized relational schemas for user libraries.",
         "Engineered automated asynchronous background workers and cron pipelines to ingest, parse, and enrich third-party platform metadata without blocking user request threads.",
@@ -98,7 +98,7 @@
     },
     {
       "id": "proj-3",
-      "name": "CiviGo — Cross-Platform Service Platform & API",
+      "name": "CiviGo Public Service Platform",
       "subtitle": "Public Service Booking & Civic Queue Management System",
       "link": "github.com/Ax3lrod/civigo",
       "techStack": "React, Next.js, TypeScript, PostgreSQL (Supabase), Vitest",
