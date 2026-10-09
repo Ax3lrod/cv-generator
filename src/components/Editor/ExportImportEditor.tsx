@@ -140,6 +140,7 @@ export const ExportImportEditor: React.FC<Props> = ({
   const handleLoadMonolithProfile = () => {
     if (window.confirm('Load the tailored Monolith Society Design Engineer & Full Stack Developer content? Your current styling and layout settings will be preserved.')) {
       onUpdateCVData(monolithCVData);
+      onUpdateDesignConfig({ ...designConfig, forceOnePage: false });
     }
   };
 

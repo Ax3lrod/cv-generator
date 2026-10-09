@@ -8,7 +8,7 @@
     "linkedin": "linkedin.com/in/aryasatyaalaauddin",
     "website": "aryasatyaa.vercel.app",
     "github": "github.com/Ax3lrod",
-    "summary": "Design Engineer and Full-Stack Developer with expertise bridging high-polish UI design and robust software architecture using React, Next.js, TypeScript, Node.js, and PostgreSQL. Experienced building bespoke, accessible web applications with modern design systems (Tailwind CSS, Radix UI, Framer Motion, Lenis) alongside scalable backend APIs and database schemas (Prisma, Supabase, Docker). Proven track record delivering high-velocity event platforms, e-commerce portals, and national registration systems serving tens of thousands of users.",
+    "summary": "Design Engineer and Full-Stack Developer with expertise bridging high-polish UI design and robust software architecture using React, Next.js, TypeScript, Node.js, and PostgreSQL. Experienced building bespoke, accessible web applications with modern design systems (Tailwind CSS, Radix UI, Framer Motion, Lenis) alongside scalable backend APIs and cloud infrastructure (Docker, Ansible, Prisma, Supabase). Proven track record delivering high-velocity event platforms, national registration funnels, and university systems serving tens of thousands of users.",
     "showSummary": true,
     "photoUrl": "",
     "showPhoto": false
@@ -29,70 +29,112 @@
   "experiences": [
     {
       "id": "exp-1",
-      "company": "Society of Renewable Energy ITS Branch",
+      "company": "Society of Renewable Energy ITS (SRE ITS SC)",
       "role": "Director of Web Development",
       "location": "Surabaya, Indonesia",
       "startDate": "Jul 2025",
       "endDate": "Present",
       "bullets": [
-        "Directed a cross-functional engineering team of 11 developers delivering the official web platform (sre-its.com) and digital assets for organizational recruitment.",
-        "Engineered multi-step registration funnels with dynamic REST API integrations and robust client/server form validation, ensuring high-conversion onboarding.",
-        "Established automated CI/CD workflows with GitHub Actions, Husky pre-push hooks, and lint-staged, maintaining zero-regression code quality and high release velocity."
+        "Led a cross-functional engineering team of 11 developers to deliver and maintain the full-scale web-based organizational platform, aligning technical implementation with operational needs.",
+        "Designed and implemented an administrative dashboard and automated validation system to support participant selection and operational workflows.",
+        "Implemented automated CI/CD pipelines with GitHub Actions to improve deployment reliability, enforce code quality standards, and reduce integration errors across the system."
       ],
       "isVisible": true
     },
     {
       "id": "exp-2",
-      "company": "Petrolida 2025 (SPE ITS Student Chapter)",
-      "role": "Lead Front-End / Web Developer",
+      "company": "Institut Teknologi Sepuluh Nopember (ITS)",
+      "role": "Laboratory & Course Assistant of Cloud Computing",
       "location": "Surabaya, Indonesia",
-      "startDate": "Nov 2024",
-      "endDate": "Jun 2025",
+      "startDate": "Feb 2026",
+      "endDate": "Jun 2026",
       "bullets": [
-        "Spearheaded frontend engineering for Petrolida 2025's official web portal, crafting bespoke micro-interactions and kinetic smooth scrolling with Lenis and Framer Motion.",
-        "Architected a modular design system using Radix UI primitives and Tailwind CSS with strict tokenization, ensuring responsive parity across mobile and desktop viewports.",
-        "Engineered an interactive merchandise and ticketing e-commerce system with client-side Zustand state persistence and TanStack Query data synchronization."
+        "Instructed classroom lectures and facilitated hands-on laboratory sessions for the Cloud Computing course, serving as lead instructor (PIC) for Ansible infrastructure automation.",
+        "Authored comprehensive laboratory modules, practicum examination problem sets, and grading rubrics covering Docker, Docker Compose, Ansible, and Logging & Monitoring.",
+        "Evaluated and graded student practicum submissions, administering server environment setups and mentoring undergraduates on containerization and cloud infrastructure."
       ],
       "isVisible": true
     },
     {
       "id": "exp-3",
-      "company": "Ini Lho ITS 2025",
+      "company": "Badan Eksekutif Mahasiswa Institut Teknologi Sepuluh Nopember (BEM ITS)",
       "role": "Front-End Developer",
       "location": "Surabaya, Indonesia",
-      "startDate": "Sep 2024",
-      "endDate": "Mar 2025",
+      "startDate": "Mar 2025",
+      "endDate": "Apr 2026",
       "bullets": [
-        "Engineered high-traffic participant registration platforms for ITS's largest annual orientation outreach (serving thousands of prospective university applicants).",
-        "Built complex, accessible multi-step intake funnels (Open Campus & WSN) with dynamic form controllers using React Hook Form, Zod schema validation, and Biome linting.",
-        "Implemented role-based client routing guards with Higher-Order Components (HOC withAuth) and centralized authentication session state via Zustand."
+        "Developed a multi-language localization feature improving accessibility for 20,000+ university students, enhancing usability across diverse user groups.",
+        "Optimized frontend performance and resolved critical rendering issues, improving page load efficiency and overall user experience.",
+        "Built scalable, reusable UI components using Next.js and Tailwind CSS based on high-fidelity UI/UX design specifications and stakeholder requirements."
       ],
       "isVisible": true
     },
     {
       "id": "exp-4",
-      "company": "ITS Student Executive Board (BEM ITS)",
-      "role": "Front-End & Full-Stack Developer",
+      "company": "Himpunan Mahasiswa Teknologi Informasi ITS (HMIT ITS)",
+      "role": "Staff of Research and Technology Department",
       "location": "Surabaya, Indonesia",
-      "startDate": "Mar 2025",
-      "endDate": "Apr 2026",
+      "startDate": "Feb 2025",
+      "endDate": "Feb 2026",
       "bullets": [
-        "Engineered scalable web applications serving 20,000+ university students using Next.js and Tailwind CSS, achieving sub-second page loads and optimal Core Web Vitals.",
-        "Translated complex Figma designs into modular, accessible, and responsive component libraries adhering to modern design system specifications.",
-        "Collaborated closely in agile sprint cycles with designers and engineers, conducting peer code reviews and driving consistent UX polish across all public pages."
+        "Led backend development by designing robust API architectures and translating organizational requirements into scalable backend solutions.",
+        "Designed a web development curriculum and onboarding program (IT Junior Preps) to prepare students with industry-level skills, in collaboration with Hacktiv8."
       ],
       "isVisible": true
     },
     {
       "id": "exp-5",
-      "company": "Information Technology Student Association (HMIT)",
-      "role": "Staff of Research & Technology Department",
+      "company": "ARA 6.0 (Cybersecurity & IoT Event ITS)",
+      "role": "Frontend IT Development Expert Staff",
       "location": "Surabaya, Indonesia",
-      "startDate": "Feb 2025",
-      "endDate": "Feb 2026",
+      "startDate": "Nov 2024",
+      "endDate": "Mar 2025",
       "bullets": [
-        "Designed modular RESTful backend services and relational database schemas supporting internal organizational management systems.",
-        "Authored and mentored the 'IT Junior Preps' web development curriculum covering modern React, TypeScript, and API architecture in partnership with Hacktiv8."
+        "Took full ownership of developing and implementing 8+ critical features, from slicing high-fidelity landing pages (Home, OlimpIT) to engineering complete front-end logic for authentication and registration.",
+        "Delivered essential components across the platform, including user-facing event portals, dynamic intake forms, and an internal administrative dashboard for merchandise management.",
+        "Collaborated closely within a dynamic 17-member IT team to drive technical execution of a national-scale event website, ensuring high performance and responsive design."
+      ],
+      "isVisible": true
+    },
+    {
+      "id": "exp-6",
+      "company": "Petroleum Integrated Days (Petrolida 2025)",
+      "role": "Frontend Web Development Staff",
+      "location": "Surabaya, Indonesia",
+      "startDate": "Oct 2024",
+      "endDate": "Mar 2025",
+      "bullets": [
+        "Collaborated effectively within a 29-member cross-functional IT team (FE, BE, UI/UX, QA) to develop and deliver the official website for Petrolida, an international energy competition.",
+        "Developed 5+ critical features, heavily focusing on engineering multi-event registration funnels for international participants across Lovol, Petrovis, and City Tour.",
+        "Implemented a real-time order tracking page to provide participants with live updates on their competition registration status and merchandise orders."
+      ],
+      "isVisible": true
+    },
+    {
+      "id": "exp-7",
+      "company": "Ini Lho ITS! 2025",
+      "role": "Frontend IT Development Staff",
+      "location": "Surabaya, Indonesia",
+      "startDate": "Oct 2024",
+      "endDate": "Apr 2025",
+      "bullets": [
+        "Sliced and integrated the Welcome School Nasional (WSN) registration platform, connecting dynamic form UI seamlessly with backend REST APIs.",
+        "Sliced the 'Bimbel' preparation dashboard and integrated profile update APIs to ensure real-time participant data synchronization.",
+        "Authored clean, reusable code across 7 features, including sub-event pages, modals, and an internal admin dashboard for merchandise management."
+      ],
+      "isVisible": true
+    },
+    {
+      "id": "exp-8",
+      "company": "Institut Teknologi Sepuluh Nopember (ITS)",
+      "role": "Assistant Lecturer of Programming Technique and Algorithm",
+      "location": "Surabaya, Indonesia",
+      "startDate": "Aug 2024",
+      "endDate": "Apr 2025",
+      "bullets": [
+        "Instructed and mentored undergraduate students in foundational C programming, structured algorithmic logic, memory management, and pointers.",
+        "Authored learning modules, designed weekly programming laboratory assignments, practicum exam problem sets, and official answer keys.",
+        "Evaluated and graded weekly lab coding submissions and practical examinations, conducting code reviews to foster clean coding standards and efficient problem-solving."
       ],
       "isVisible": true
     }
@@ -112,55 +154,19 @@
     },
     {
       "id": "proj-2",
-      "name": "Petrolida 2025 Web Platform & E-Commerce",
-      "subtitle": "Interactive International Energy Event Platform & Merchandise Portal",
-      "link": "github.com/Ax3lrod/petrolida2025-fe",
-      "techStack": "Next.js 14, TypeScript, Tailwind CSS, Lenis, Radix UI, Zustand",
+      "name": "Steam Review AI Intelligence Pipeline",
+      "subtitle": "Large-Scale Streaming & Conversational Data Processing System",
+      "link": "github.com/Ax3lrod/final-project-big-data",
+      "techStack": "Python, FastAPI, BERT, Kafka, PySpark, Trino, Docker",
       "bullets": [
-        "Built a high-polish event web platform featuring Lenis smooth scrolling, Embla Carousel, Framer Motion transitions, and responsive dark/light theme tokens.",
-        "Implemented e-commerce cart management with Zustand local storage persistence, multi-variant selections, and TanStack Query optimistic updates."
+        "Designed and implemented an end-to-end data pipeline processing 6.4M+ text records using Apache Kafka for real-time streaming and PySpark for distributed batch preprocessing.",
+        "Built an AI classification pipeline fusing fine-tuned BERT transformer embeddings with anomaly detection (Isolation Forest, K-Means) to detect fraudulent text patterns.",
+        "Developed high-throughput REST APIs with FastAPI to serve sub-200ms model inferences and orchestrated 9+ containerized services using Docker Compose."
       ],
       "isVisible": true
     },
     {
       "id": "proj-3",
-      "name": "Ini Lho ITS 2025 Event & Registration Portal",
-      "subtitle": "National Outreach Platform & Multi-Step Participant Intake Funnel",
-      "link": "github.com/Ax3lrod/ilits2025-frontend",
-      "techStack": "Next.js 14, TypeScript, Tailwind CSS, Framer Motion, Zod",
-      "bullets": [
-        "Developed the public registration platform processing thousands of participants across Open Campus and Welcome School Nasional events.",
-        "Architected dynamic multi-step form funnels with file upload previews, strict Zod validation schemas, and role-based client route guards (withAuth HOC)."
-      ],
-      "isVisible": true
-    },
-    {
-      "id": "proj-4",
-      "name": "ARA 6.0 Competition & CTF Portal",
-      "subtitle": "National Cybersecurity Olympiad & Team Management Portal",
-      "link": "github.com/Ax3lrod/ara6-frontend",
-      "techStack": "Next.js 14, TypeScript, Tailwind CSS, Radix UI, TanStack Query, Jest",
-      "bullets": [
-        "Engineered a national competition portal supporting team registrations, member invitations, and automated status tracking for CTF and Olympiad divisions.",
-        "Authored unit test suites using Jest and React Testing Library, ensuring rock-solid form validation and robust API mutation workflows."
-      ],
-      "isVisible": true
-    },
-    {
-      "id": "proj-5",
-      "name": "SaveFile Platform API & Workers",
-      "subtitle": "Gaming Social Platform & Automated Activity Sync Engine",
-      "link": "github.com/Ax3lrod/savefile-backend",
-      "techStack": "Node.js, NestJS, TypeScript, PostgreSQL, Prisma, Docker",
-      "bullets": [
-        "Architected a modular monolith backend API with NestJS and Prisma ORM backed by PostgreSQL, designing normalized relational schemas for user libraries.",
-        "Engineered automated asynchronous background workers and cron pipelines to ingest, parse, and enrich third-party platform metadata without blocking user request threads.",
-        "Implemented secure OAuth authentication, strict DTO request validation, and comprehensive error handling with containerized Docker deployments."
-      ],
-      "isVisible": true
-    },
-    {
-      "id": "proj-6",
       "name": "CiviGo Public Service Platform",
       "subtitle": "Public Service Booking & Civic Queue Management System",
       "link": "github.com/Ax3lrod/civigo",
@@ -182,14 +188,14 @@
     },
     {
       "id": "skill-2",
-      "name": "Backend & Full-Stack",
-      "skills": "Node.js, Express, NestJS, RESTful APIs, Server Actions, PostgreSQL, Prisma ORM, Supabase, Docker",
+      "name": "Backend & Cloud Infrastructure",
+      "skills": "Node.js, Express, NestJS, RESTful APIs, Server Actions, PostgreSQL, Prisma ORM, Supabase, Docker, Docker Compose, Ansible",
       "isVisible": true
     },
     {
       "id": "skill-3",
       "name": "Engineering, State & Tooling",
-      "skills": "Git, GitHub Actions (CI/CD), Zustand, TanStack Query, Vitest, Jest, React Hook Form, Zod, Biome, Linux, Figma to Code",
+      "skills": "Git, GitHub Actions (CI/CD), Zustand, TanStack Query, Vitest, Jest, React Hook Form, Zod, Biome, Linux, C/C++, Figma to Code",
       "isVisible": true
     }
   ],
