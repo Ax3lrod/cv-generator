@@ -3,6 +3,7 @@ import { CVData, DesignConfig } from '../../types/cv';
 import { defaultCVData, defaultDesignConfig } from '../../data/defaultCV';
 import { focusBearCVData, focusBearDesignConfig } from '../../data/focusBearCV';
 import { bitByBitCVData, bitByBitDesignConfig } from '../../data/bitByBitCV';
+import { monolithCVData } from '../../data/monolithCV';
 import { downloadVectorPdf, openVectorPdfInNewTab } from '../../utils/pdfExport';
 import { 
   Printer, 
@@ -17,7 +18,8 @@ import {
   Loader2,
   Info,
   Briefcase,
-  Cpu
+  Cpu,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@heroui/react';
 
@@ -131,6 +133,13 @@ export const ExportImportEditor: React.FC<Props> = ({
   const handleLoadFocusBearProfile = () => {
     if (window.confirm('Load the tailored Focus Bear Full Stack Intern content? Your current styling and layout settings will be preserved.')) {
       onUpdateCVData(focusBearCVData);
+    }
+  };
+
+  // 8. Load Monolith Society Tailored CV Content
+  const handleLoadMonolithProfile = () => {
+    if (window.confirm('Load the tailored Monolith Society Design Engineer & Full Stack Developer content? Your current styling and layout settings will be preserved.')) {
+      onUpdateCVData(monolithCVData);
     }
   };
 
@@ -373,26 +382,38 @@ export const ExportImportEditor: React.FC<Props> = ({
           </div>
 
           {/* Quick Presets for Target Roles */}
-          <div className="grid grid-cols-2 gap-2 pt-0.5">
+          <div className="space-y-1.5 pt-0.5">
             <button
               type="button"
-              onClick={handleLoadBitByBitProfile}
-              className="h-9 text-xs font-medium rounded-xl border border-violet-500/40 bg-violet-950/30 hover:bg-violet-500/15 text-violet-300 flex items-center justify-center gap-1.5 transition shadow-xs px-2 text-center"
-              title="Load tailored CV for bitbybit Full-Stack Engineer Intern"
+              onClick={handleLoadMonolithProfile}
+              className="w-full h-9 text-xs font-semibold rounded-xl border border-emerald-500/50 bg-emerald-950/40 hover:bg-emerald-500/20 text-emerald-300 flex items-center justify-center gap-1.5 transition shadow-xs px-2 text-center"
+              title="Load tailored CV for Monolith Society Design Engineer & Full Stack Developer"
             >
-              <Cpu className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-              <span className="truncate">bitbybit Profile</span>
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span className="truncate">Monolith Society Profile (Design Engineer & Full Stack)</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleLoadFocusBearProfile}
-              className="h-9 text-xs font-medium rounded-xl border border-sky-500/40 bg-sky-950/30 hover:bg-sky-500/15 text-sky-300 flex items-center justify-center gap-1.5 transition shadow-xs px-2 text-center"
-              title="Load tailored CV for Focus Bear Full Stack Developer Intern"
-            >
-              <Briefcase className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-              <span className="truncate">Focus Bear Profile</span>
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={handleLoadBitByBitProfile}
+                className="h-9 text-xs font-medium rounded-xl border border-violet-500/40 bg-violet-950/30 hover:bg-violet-500/15 text-violet-300 flex items-center justify-center gap-1.5 transition shadow-xs px-2 text-center"
+                title="Load tailored CV for bitbybit Full-Stack Engineer Intern"
+              >
+                <Cpu className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                <span className="truncate">bitbybit Profile</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLoadFocusBearProfile}
+                className="h-9 text-xs font-medium rounded-xl border border-sky-500/40 bg-sky-950/30 hover:bg-sky-500/15 text-sky-300 flex items-center justify-center gap-1.5 transition shadow-xs px-2 text-center"
+                title="Load tailored CV for Focus Bear Full Stack Developer Intern"
+              >
+                <Briefcase className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span className="truncate">Focus Bear Profile</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5 pt-1">
